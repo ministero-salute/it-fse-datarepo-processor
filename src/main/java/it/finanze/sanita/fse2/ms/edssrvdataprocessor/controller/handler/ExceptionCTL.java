@@ -1,0 +1,107 @@
+package it.finanze.sanita.fse2.ms.edssrvdataprocessor.controller.handler;
+
+import brave.Tracer;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.LogTraceInfoDTO;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.error.base.ErrorResponseDTO;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.ConnectionRefusedException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.error.ErrorBuilderDTO.*;
+
+/**
+ *	Exceptions handler
+ *  @author G. Baittiner
+ */
+@ControllerAdvice
+@Slf4j
+public class ExceptionCTL extends ResponseEntityExceptionHandler {
+
+    /**
+     * Tracker log.
+     */
+    @Autowired
+    private Tracer tracer;
+    
+    /**
+     * Handle Connection Refused exception.
+     *
+     * @param ex		exception
+     */
+    @ExceptionHandler(ConnectionRefusedException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleConnectionRefusedException(ConnectionRefusedException ex) {
+        // Log me
+        log.warn(Constants.Logs.ERROR_CONNECTION_REFUSED);
+        log.error(Constants.Logs.ERROR_CONNECTION_REFUSED, ex);
+        // Create error DTO
+        ErrorResponseDTO out = createConnectionRefusedError(getLogTraceInfo(), ex);
+        // Set HTTP headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PROBLEM_JSON);
+        // Bye bye
+        return new ResponseEntity<>(out, headers, out.getStatus());
+    } 
+    
+    
+    /**
+     * Handle generic exception.
+     *
+     * @param ex		exception
+     */
+    @ExceptionHandler(value = {Exception.class})
+    protected ResponseEntity<ErrorResponseDTO> handleGenericException(Exception ex) {
+        // Log me
+        log.warn(Constants.Logs.ERROR_HANDLER_GENERIC_EXCEPTION);
+        log.error(Constants.Logs.ERROR_HANDLER_GENERIC_EXCEPTION, ex);
+        // Create error DTO
+        ErrorResponseDTO out = createGenericError(getLogTraceInfo(), ex);
+        // Set HTTP headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PROBLEM_JSON);
+        // Bye bye
+        return new ResponseEntity<>(out, headers, out.getStatus());
+    }
+
+    /**
+     * Handle unsupported operation exception.
+     *
+     * @param ex		exception
+     */
+    @ExceptionHandler(UnsupportedOperationException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleUnsupportedOperationException(UnsupportedOperationException ex) {
+        // Log me
+        log.warn(Constants.Logs.ERROR_HANDLER_UNSUPPORTED_OPERATION_EXCEPTION);
+        log.error(Constants.Logs.ERROR_HANDLER_UNSUPPORTED_OPERATION_EXCEPTION, ex);
+        // Create error DTO
+        ErrorResponseDTO out = createUnsupportedOperationError(getLogTraceInfo(), ex);
+        // Set HTTP headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PROBLEM_JSON);
+        // Bye bye
+        return new ResponseEntity<>(out, headers, out.getStatus());
+    }
+
+    /**
+     * Generate a new {@link LogTraceInfoDTO} instance
+     * @return The new instance
+     */
+    private LogTraceInfoDTO getLogTraceInfo() {
+        // Create instance
+        LogTraceInfoDTO out = new LogTraceInfoDTO(null, null);
+        // Verify if context is available
+        if (tracer.currentSpan() != null) {
+            out = new LogTraceInfoDTO(
+                tracer.currentSpan().context().spanIdString(),
+                tracer.currentSpan().context().traceIdString());
+        }
+        // Return the log trace
+        return out;
+    }
+}
