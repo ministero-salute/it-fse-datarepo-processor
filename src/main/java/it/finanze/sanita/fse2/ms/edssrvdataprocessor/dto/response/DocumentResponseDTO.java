@@ -32,6 +32,9 @@ public class DocumentResponseDTO extends ResponseDTO {
 	private Boolean result; 
 	
 
+	/**
+	 * Constructor 
+	 */
 	public DocumentResponseDTO() {
 		super();
 	}

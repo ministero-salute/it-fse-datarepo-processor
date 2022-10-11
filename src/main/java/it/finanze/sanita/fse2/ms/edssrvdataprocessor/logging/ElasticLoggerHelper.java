@@ -41,7 +41,7 @@ public class ElasticLoggerHelper implements Serializable {
 	
 	
 	/* 
-	 * Implements structured logs, at all logging levels
+	 * Implements trace log 
 	 */
 	public void trace(String message, ILogEnum operation, 
 			   ResultLogEnum result, Date startDateOperation) {
@@ -54,6 +54,9 @@ public class ElasticLoggerHelper implements Serializable {
 				 StructuredArguments.kv(Constants.Logs.ELASTIC_LOGGER_OP_TIMESTAMP_END, dateFormat.format(new Date()))); 
 	} 
 	
+	/* 
+	 * Implements debug log 
+	 */
 	public void debug(String message,  ILogEnum operation,  
 			   ResultLogEnum result, Date startDateOperation) {
 		
@@ -65,6 +68,9 @@ public class ElasticLoggerHelper implements Serializable {
 				 StructuredArguments.kv(Constants.Logs.ELASTIC_LOGGER_OP_TIMESTAMP_END, dateFormat.format(new Date()))); 
 	} 
 	 
+	/* 
+	 * Implements info log 
+	 */
 	public void info(String message, ILogEnum operation,  
 			ResultLogEnum result, Date startDateOperation) {
 		
@@ -76,6 +82,9 @@ public class ElasticLoggerHelper implements Serializable {
 				 StructuredArguments.kv(Constants.Logs.ELASTIC_LOGGER_OP_TIMESTAMP_END, dateFormat.format(new Date()))); 
 	} 
 	
+	/* 
+	 * Implements warn log 
+	 */
 	public void warn(String message, ILogEnum operation,  
 			   ResultLogEnum result, Date startDateOperation) {
 		
@@ -87,6 +96,9 @@ public class ElasticLoggerHelper implements Serializable {
 				 StructuredArguments.kv(Constants.Logs.ELASTIC_LOGGER_OP_TIMESTAMP_END, dateFormat.format(new Date()))); 
 	} 
 	
+	/* 
+	 * Implements error log 
+	 */
 	public void error(String message, ILogEnum operation,  
 			   ResultLogEnum result, Date startDateOperation,
 			   ILogEnum error) {

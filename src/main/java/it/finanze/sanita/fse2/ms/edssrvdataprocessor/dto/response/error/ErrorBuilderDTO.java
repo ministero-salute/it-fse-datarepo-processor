@@ -49,7 +49,7 @@ public final class ErrorBuilderDTO {
      * 
      * @param trace  The LogTraceInfo DTO 
      * @param ex  Exception 
-     * @return  The error response 
+     * @return ErrorResponseDTO  The error response 
      */
     public static ErrorResponseDTO createOperationError(LogTraceInfoDTO trace, OperationException ex) {
         return new ErrorResponseDTO(
@@ -68,7 +68,7 @@ public final class ErrorBuilderDTO {
      * 
      * @param trace  The LogTraceInfo DTO 
      * @param ex  Exception 
-     * @return  The error response 
+     * @return ErrorResponseDTO  The error response 
      */
     public static ErrorResponseDTO createUnsupportedOperationError(LogTraceInfoDTO trace, UnsupportedOperationException ex) {
         return new ErrorResponseDTO(
@@ -87,7 +87,7 @@ public final class ErrorBuilderDTO {
      * 
      * @param trace  The LogTraceInfo DTO 
      * @param ex  Exception 
-     * @return  The error response 
+     * @return ErrorResponseDTO  The error response 
      */
     public static ErrorResponseDTO createConnectionRefusedError(LogTraceInfoDTO trace, ConnectionRefusedException ex) {
         return new ErrorResponseDTO(
@@ -106,7 +106,7 @@ public final class ErrorBuilderDTO {
      * 
      * @param trace  The LogTraceInfo DTO 
      * @param ex  Exception 
-     * @return  The error response 
+     * @return ErrorResponseDTO  The error response 
      */
     public static ErrorResponseDTO createDocumentNotFoundError(LogTraceInfoDTO trace, DocumentNotFoundException ex) {
         return new ErrorResponseDTO(

@@ -150,9 +150,9 @@ public class EdsQueryClient implements IEdsQueryClient {
 
     /**
      * Build request path based on incoming operation value
-     * @param masterIdentifier
-     * @param processorOperationEnum
-     * @return
+     * @param masterIdentifier  The master identifier of the bundle 
+     * @param processorOperationEnum  An enum representing the operation 
+     * @return String  The request path 
      */
     private String buildRequestPath(String masterIdentifier, ProcessorOperationEnum processorOperationEnum) {
         log.info("[EDS QUERY] Build req path {} QUERY ep - START", processorOperationEnum.getName());

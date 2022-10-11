@@ -44,6 +44,10 @@ public class MongoDatabaseCFG {
  
     final List<Converter<?, ?>> conversions = new ArrayList<>();
 
+    /**
+     * Database Factory 
+     * @return MongoDatabaseFactory  MongoDatabaseFactory 
+     */
     @Bean
     public MongoDatabaseFactory mongoDatabaseFactory(){
         return new SimpleMongoClientDatabaseFactory(mongoPropertiesCFG.getUri());
