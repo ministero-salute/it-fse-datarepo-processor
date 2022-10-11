@@ -6,6 +6,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * 
+ * FHIR Normalized DTO 
+ */
 @Data
 @Builder
 @AllArgsConstructor

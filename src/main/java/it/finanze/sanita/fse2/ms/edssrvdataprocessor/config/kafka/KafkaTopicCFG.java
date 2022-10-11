@@ -18,6 +18,9 @@ import javax.annotation.PostConstruct;
 @Component
 public class KafkaTopicCFG {
 
+	/**
+	 * Profile Utility 
+	 */
 	@Autowired
 	private ProfileUtility profileUtility;
 
@@ -45,6 +48,9 @@ public class KafkaTopicCFG {
 	@Value("${kafka.ingestor-publish.deadletter.topic}")
 	private String ingestorPublishDeadLetterTopic;
 
+	/**
+	 * Ingestor Generic Topic 
+	 */
 	@Value("${kafka.dataprocessor.generic.topic}")
 	private String ingestorGenericTopic;
 

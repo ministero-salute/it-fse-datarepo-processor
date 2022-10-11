@@ -16,7 +16,10 @@ import org.springframework.stereotype.Repository;
 import java.io.Serializable;
 import java.util.List;
 
-
+/**
+ * The document repository implementation 
+ *
+ */
 @Repository
 public class DocumentRepo implements IDocumentRepo, Serializable {
 
@@ -25,10 +28,15 @@ public class DocumentRepo implements IDocumentRepo, Serializable {
 	 */
 	private static final long serialVersionUID = -8230326857671732231L;
 
-	
+	/**
+	 * Mongo Template 
+	 */
 	@Autowired
 	private transient MongoTemplate mongoTemplate; 
 	
+	/**
+	 * Profile Utility 
+	 */
 	@Autowired
 	private transient ProfileUtility profileUtility;
 		

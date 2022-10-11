@@ -1,6 +1,10 @@
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility;
 
 
+/** 
+ * A Utility Class that contains the definition of some constant values 
+ *
+ */
 public class ValidationUtility {
 	
 	private ValidationUtility() {

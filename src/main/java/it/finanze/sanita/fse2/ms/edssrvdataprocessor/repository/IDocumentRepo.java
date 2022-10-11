@@ -11,8 +11,8 @@ public interface IDocumentRepo {
 	 * Insert one or more documents on the staging database.
 	 * 
 	 * @param ety Document to insert.
-	 * @return 
-	 * @throws OperationException 
+	 * @return DocumentReferenceETY  The inserted Entity 
+	 * @throws OperationException  A generic MongoDB Exception 
 	 */
 	DocumentReferenceETY insert(DocumentReferenceETY ety) throws OperationException;
 
@@ -27,7 +27,8 @@ public interface IDocumentRepo {
 	/**
 	 * Returns a document from the staging database given its identifier. 
 	 * 
-	 * @return ArrayList<DocumentREferenceETY> .
+	 * @param id  The Mongo ID of the document 
+	 * @return DocumentReferenceETY  The entity having the given id 
 	 */
 	DocumentReferenceETY findById(String id); 
 
@@ -35,7 +36,7 @@ public interface IDocumentRepo {
 	/**
 	 * Returns all the documents from the staging database.
 	 * 
-	 * @return ArrayList<DocumentREferenceETY> .
+	 * @return ArrayList  The list of all documents 
 	 */
 	public List<DocumentReferenceETY> findAll();
 }

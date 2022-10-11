@@ -27,9 +27,15 @@ public class EdsDataQualityClient implements IEdsDataQualityClient {
      */
     private static final long serialVersionUID = 5665880440554069040L;
 
+    /** 
+     * Rest Template 
+     */
     @Autowired
     private transient RestTemplate restTemplate;
 
+    /**
+     * Microservices URL Config 
+     */
     @Autowired
     private transient MicroservicesURLCFG microservicesURLCFG;
 

@@ -57,24 +57,43 @@ public class KafkaSRV implements IKafkaSRV {
 	@Qualifier("notxkafkatemplate")
 	private transient KafkaTemplate<String, String> notxKafkaTemplate;
 	
+	/**
+	 * Kafka Topic Config 
+	 */
 	@Autowired
 	private transient KafkaTopicCFG kafkaTopicCFG;
 
+	/**
+	 * Elastic Logger 
+	 */
 	@Autowired
 	private transient ElasticLoggerHelper elasticLogger;
 
+	/**
+	 * Profile Utility 
+	 */
 	@Autowired
 	private transient ProfileUtility profileUtility;
 
+	/**
+	 * Kafka Consumer Proeprties 
+	 */
 	@Autowired
 	private transient KafkaConsumerPropertiesCFG kafkaConsumerPropertiesCFG;
 
+	/**
+	 * Orchestrator Service 
+	 */
 	@Autowired
 	private transient IOrchestratorSRV orchestratorSRV;
 
+	/**
+	 * Kafka Properties 
+	 */
 	@Autowired
 	private transient KafkaPropertiesCFG kafkaPropCFG;
 
+	
 	@Override
 	@KafkaListener(topics = "#{'${kafka.ingestor-publish.topic.low-priority}'}", clientIdPrefix = "#{'${kafka.consumer.client-id.low}'}", containerFactory = "kafkaListenerDeadLetterContainerFactory", autoStartup = "${event.topic.auto.start}", groupId = "#{'${kafka.consumer.group-id-publish}'}")
 	public void lowPriorityListenerPublishIngestor(ConsumerRecord<String, String> cr, MessageHeaders messageHeaders) throws DocumentNotFoundException, EmptyIdentifierException {

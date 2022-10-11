@@ -7,6 +7,11 @@ import javax.validation.constraints.Size;
 
 import lombok.Data;
 
+/**
+ * A DTO representing the result of the process operation 
+ * 
+ *
+ */
 @Data
 public class DocumentResponseDTO extends ResponseDTO { 
 
@@ -15,10 +20,15 @@ public class DocumentResponseDTO extends ResponseDTO {
 	 */
 	private static final long serialVersionUID = 21641554325694264L; 
 	
-	
+	/**
+	 * Tx ID 
+	 */
 	@Size(min = DEFAULT_STRING_MIN_SIZE, max = DEFAULT_STRING_MAX_SIZE)
 	private String transactionId; 
 	
+	/**
+	 * A boolean representing the result of the operation 
+	 */
 	private Boolean result; 
 	
 

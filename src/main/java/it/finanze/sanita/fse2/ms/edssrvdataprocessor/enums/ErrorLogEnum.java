@@ -2,6 +2,10 @@ package it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums;
 
 import lombok.Getter;
 
+/**
+ * Enum that carries the error description in Structured Lsogs 
+ *
+ */
 @Getter
 public enum ErrorLogEnum implements ILogEnum {
 

@@ -2,10 +2,17 @@ package it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Helper Utility Class 
+ * 
+ *
+ */
 @Slf4j
 public class HelperUtility {
     /**
-     * @param e
+     * Dead Letter Helper 
+     * 
+     * @param e  Exception
      */
     public static void deadLetterHelper(Exception e) {
         StringBuilder sb = new StringBuilder("LIST OF USEFUL EXCEPTIONS TO MOVE TO DEADLETTER OFFSET 'kafka.consumer.dead-letter-exc'. ");

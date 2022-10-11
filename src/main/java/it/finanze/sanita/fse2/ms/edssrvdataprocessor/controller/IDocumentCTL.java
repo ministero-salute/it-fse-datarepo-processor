@@ -34,7 +34,16 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationExcepti
 @Validated
 public interface IDocumentCTL extends Serializable {
 
-	
+	/**
+	 * Called to process a document bundle inserted from GTW onto EDS 
+	 * 
+	 * @param request  The HTTP Servlet Request 
+	 * @param document  Document Bundle inserted into Data Processor 
+	 * @return DocumentResponseDTO  A DTO representing the result of the process 
+	 * @throws IOException  A generic IO Exception 
+	 * @throws OperationException  A generic MongoDB Exception 
+	 * @throws DocumentNotFoundException  An exception which is thrown when a document is not found on the FHIR Server 
+	 */
     @PostMapping(value = "/process", produces = {
 			MediaType.APPLICATION_JSON_VALUE }, consumes = { MediaType.APPLICATION_JSON_VALUE })
     @Operation(summary = "Receives a document to be saved in the staging MongoDB (Update and Delete Flows)", description = "Servizio che consente di salvare un documento alla base dati di staging (Flussi Update e Delete).")
@@ -43,5 +52,6 @@ public interface IDocumentCTL extends Serializable {
             @ApiResponse(responseCode = "200", description = "Creazione Documento avvenuta con successo", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = DocumentResponseDTO.class))),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = ErrorResponseDTO.class))) })
     ResponseEntity<DocumentResponseDTO> processOperation(HttpServletRequest request, @RequestBody DocumentReferenceDTO document) throws IOException, OperationException, DocumentNotFoundException;
+
 
 }

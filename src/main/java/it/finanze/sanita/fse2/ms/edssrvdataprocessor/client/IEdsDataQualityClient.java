@@ -14,8 +14,9 @@ import java.io.Serializable;
 public interface IEdsDataQualityClient extends Serializable {
     /**
      * Send input to data quality srv to be normalized
-     * @param input
-     * @return
+     * 
+     * @param input  The DTO to normalize 
+     * @return FhirNormalizedDTO  A DTO representing the result of the normalization 
      */
     FhirNormalizedDTO normalize(FhirOperationDTO input);
 }

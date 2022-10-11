@@ -1,5 +1,9 @@
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions;
 
+/**
+ * Empty Identifier Exception 
+ *
+ */
 public class EmptyIdentifierException extends Exception {
 
 

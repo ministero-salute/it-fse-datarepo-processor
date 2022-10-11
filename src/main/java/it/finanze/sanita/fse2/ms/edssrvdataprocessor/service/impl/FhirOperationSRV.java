@@ -12,19 +12,33 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * FHIR Operation Service Implementation 
+ * 
+ */
 @Service
 @Slf4j
 public class FhirOperationSRV implements IFhirOperationSRV {
 
+	/**
+	 * Srv Query Client 
+	 */
     @Autowired
     private IEdsQueryClient queryClient;
 
+    /**
+     * Data Quality Client 
+     */
     @Autowired
     private IEdsDataQualityClient dataQualityClient;
 
+    /**
+     * Document Repo 
+     */
     @Autowired
     private IDocumentRepo documentRepo;
 
+    
     @Override
     public void publish(FhirOperationDTO fhirOperationDTO) {
         log.info("[EDS] Publication - START");

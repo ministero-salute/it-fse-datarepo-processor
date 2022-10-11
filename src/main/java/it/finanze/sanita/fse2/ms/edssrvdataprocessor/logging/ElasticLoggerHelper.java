@@ -16,8 +16,8 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ResultLogEnum;
 import net.logstash.logback.argument.StructuredArguments;
 
 /** 
+ * Elastic Logger Helper 
  * 
- * @author: Guido Rocco - IBM 
  */ 
 @Service
 public class ElasticLoggerHelper implements Serializable {

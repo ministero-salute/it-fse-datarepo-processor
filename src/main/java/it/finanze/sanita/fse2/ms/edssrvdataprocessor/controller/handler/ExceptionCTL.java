@@ -18,6 +18,7 @@ import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.error.E
 
 /**
  *	Exceptions handler
+ *
  *  @author G. Baittiner
  */
 @ControllerAdvice
@@ -29,11 +30,11 @@ public class ExceptionCTL extends ResponseEntityExceptionHandler {
      */
     @Autowired
     private Tracer tracer;
-    
+
     /**
-     * Handle Connection Refused exception.
-     *
-     * @param ex		exception
+     * Handles Connection Refused Exception 
+     * @param ex  Exception 
+     * @return ErrorResponseDTO  A DTO representing the error response 
      */
     @ExceptionHandler(ConnectionRefusedException.class)
     protected ResponseEntity<ErrorResponseDTO> handleConnectionRefusedException(ConnectionRefusedException ex) {
@@ -51,9 +52,10 @@ public class ExceptionCTL extends ResponseEntityExceptionHandler {
     
     
     /**
-     * Handle generic exception.
-     *
-     * @param ex		exception
+     * Handles Generic Exception 
+     * 
+     * @param ex  Exception 
+     * @return ErrorResponseDTO  A DTO representing the error response 
      */
     @ExceptionHandler(value = {Exception.class})
     protected ResponseEntity<ErrorResponseDTO> handleGenericException(Exception ex) {
@@ -70,9 +72,10 @@ public class ExceptionCTL extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Handle unsupported operation exception.
-     *
-     * @param ex		exception
+     * Handles Unsupported Operation Exception 
+     * 
+     * @param ex  Exception 
+     * @return ErrorResponseDTO  A DTO representing the error response 
      */
     @ExceptionHandler(UnsupportedOperationException.class)
     protected ResponseEntity<ErrorResponseDTO> handleUnsupportedOperationException(UnsupportedOperationException ex) {

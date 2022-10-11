@@ -22,6 +22,9 @@ public class MongoPropertiesCFG implements Serializable {
 	private static final long serialVersionUID = 1895975715839605374L; 
 	
 	
+	/**
+	 * The Mongo DB URI 
+	 */
 	@Value("${data.mongodb.uri}")
 	private String uri;
 	

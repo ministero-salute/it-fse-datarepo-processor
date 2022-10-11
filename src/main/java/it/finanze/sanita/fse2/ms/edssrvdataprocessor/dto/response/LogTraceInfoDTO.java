@@ -4,6 +4,10 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.AbstractDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+/**
+ * Log Trace Info DTO 
+ *
+ */
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class LogTraceInfoDTO implements AbstractDTO {

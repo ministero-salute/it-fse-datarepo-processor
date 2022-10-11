@@ -2,6 +2,10 @@ package it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums;
 
 import lombok.Getter;
 
+/**
+ * Enum that represents the operation in Structured Logs 
+ *
+ */
 @Getter
 public enum OperationLogEnum implements ILogEnum {
 
@@ -12,9 +16,14 @@ public enum OperationLogEnum implements ILogEnum {
 	FHIR_REPLACE("FHIR-REPLACE", "Replace su server FHIR"),
 	FHIR_DELETE("FHIR-DELETE", "Delete su server FHIR");
 
-	
+	/**
+	 * The operation code 
+	 */
 	private String code;
 
+	/**
+	 * The operation description 
+	 */
 	private String description;
 
 	OperationLogEnum(String inCode, String inDescription) {

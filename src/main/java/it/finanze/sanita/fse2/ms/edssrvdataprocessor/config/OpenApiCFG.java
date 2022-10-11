@@ -20,15 +20,24 @@ import io.swagger.v3.oas.models.servers.Server;
 
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.CustomSwaggerCFG; 
 
+/**
+ * Custom Swagger Config 
+ *
+ */
 @Configuration
 @SuppressWarnings("all")
 public class OpenApiCFG {
 
+	/**
+	 * Custom Open API 
+	 */
 	@Autowired
 	private CustomSwaggerCFG customOpenapi;
 
+	/**
+	 * Empty Constructor 
+	 */
 	public OpenApiCFG() {
-		// Empty constructor.
 	}
 	
 	@Bean

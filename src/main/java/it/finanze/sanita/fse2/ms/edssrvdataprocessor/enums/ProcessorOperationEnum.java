@@ -2,6 +2,10 @@ package it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums;
 
 import lombok.Getter;
 
+/**
+ * Describes the operation to be executed 
+ *
+ */
 @Getter
 public enum ProcessorOperationEnum {
 
@@ -11,6 +15,9 @@ public enum ProcessorOperationEnum {
 	UPDATE("UPDATE"),
 	READ("READ");
 
+	/**
+	 * The operation name 
+	 */
 	private String name;
 
 	ProcessorOperationEnum(String pname) {
