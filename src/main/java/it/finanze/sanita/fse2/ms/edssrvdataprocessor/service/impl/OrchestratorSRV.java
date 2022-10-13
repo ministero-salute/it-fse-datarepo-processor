@@ -100,7 +100,7 @@ public class OrchestratorSRV implements IOrchestratorSRV {
             throw new BusinessException("Error: master identifier not defined on DB");
         }
         String masterIdentifier = documentReferenceETY.getIdentifier();
-        String jsonString = documentReferenceETY.getJsonString();
+        String jsonString = documentReferenceETY.getDocument().toJson();
         return FhirOperationDTO.builder()
                 .masterIdentifier(masterIdentifier)
                 .jsonString(jsonString)

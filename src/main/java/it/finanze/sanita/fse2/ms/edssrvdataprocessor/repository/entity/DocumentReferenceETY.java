@@ -38,7 +38,7 @@ public class DocumentReferenceETY {
 	/**
 	 * Json String
 	 */
-	@Field("json_string")
-	private String jsonString;
+	@Field("document")
+	private org.bson.Document document;
 	
 }
