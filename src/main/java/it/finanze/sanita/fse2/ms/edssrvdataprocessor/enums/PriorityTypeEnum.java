@@ -8,9 +8,9 @@ import lombok.Getter;
  */
 @Getter
 public enum PriorityTypeEnum {
-    LOW("low"),
-    MEDIUM("medium"),
-    HIGH("high");
+    LOW("LOW"),
+    MEDIUM("MEDIUM"),
+    HIGH("HIGH");
 
 	/**
 	 * Priority Description 
