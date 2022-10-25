@@ -23,27 +23,27 @@ public final class Constants {
 		/**
 		 * Base path.
 		 */
-		public static final String BASE = "it.sanita.edssrvdataprocessor";
+		public static final String BASE = "it.finanze.sanita.fse2.ms.edssrvdataprocessor";
 
 		/**
 		 * Controller path.
 		 */
-		public static final String CONTROLLER = "it.sanita.edssrvdataprocessor.controller";
+		public static final String CONTROLLER = "it.finanze.sanita.fse2.ms.edssrvdataprocessor.controller";
 
 		/**
 		 * Service path.
 		 */
-		public static final String SERVICE = "it.sanita.edssrvdataprocessor.service";
+		public static final String SERVICE = "it.finanze.sanita.fse2.ms.edssrvdataprocessor.service";
 
 		/**
 		 * Configuration path.
 		 */
-		public static final String CONFIG = "it.sanita.edssrvdataprocessor.config";
+		public static final String CONFIG = "it.finanze.sanita.fse2.ms.edssrvdataprocessor.config";
 		
 		/**
 		 * Configuration mongo path.
 		 */
-		public static final String CONFIG_MONGO = "it.sanita.edssrvdataprocessor.config.mongo";
+		public static final String CONFIG_MONGO = "it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.mongo";
 		
 		/**
 		 * Configuration mongo repository path.
