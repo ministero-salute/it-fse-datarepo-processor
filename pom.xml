@@ -8,7 +8,7 @@
 		<version>2.7.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>it.finanze.sanita.fse2.ms</groupId>
+	<groupId>it.finanze.sanita.fse2</groupId>
 	<artifactId>eds-srv-dataprocessor</artifactId>
 	<version>0.0.3-SNAPSHOT</version>	<!-- Sprint 3 -->
 	<name>eds-srv-dataprocessor</name>
