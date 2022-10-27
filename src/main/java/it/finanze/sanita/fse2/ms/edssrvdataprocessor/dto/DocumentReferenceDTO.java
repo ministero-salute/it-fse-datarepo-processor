@@ -14,24 +14,40 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
+/**
+ * Document Reference DTO 
+ *
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class DocumentReferenceDTO {
 
+	/**
+	 * The master identifier of the document 
+	 */
 	@JsonProperty("identifier")
 	@Size(min = DEFAULT_STRING_MIN_SIZE, max = DEFAULT_STRING_MAX_SIZE)
 	private String identifier; 
 	
+	/**
+	 * An enum representing the operation to be performed 
+	 */
 	@JsonProperty("operation")
 	@Size(min = DEFAULT_STRING_MIN_SIZE, max = DEFAULT_STRING_MAX_SIZE)
 	private ProcessorOperationEnum operation;    
 
+	/**
+	 * The JSON String of the document 
+	 */
 	@JsonProperty(value = "jsonString", required = false)
 	@Size(min = DEFAULT_STRING_MIN_SIZE, max = DEFAULT_STRING_MAX_SIZE)
 	private String jsonString;
 
+	/** 
+	 * An Enum representing the priority of the operation (HIGH. MEDIUM or LOW)
+	 */
 	@JsonProperty(value = "priorityType", required = false)
-	private PriorityTypeEnum priorityTypeEnum;
+	private PriorityTypeEnum priorityTypeEnum; 
+	
 }

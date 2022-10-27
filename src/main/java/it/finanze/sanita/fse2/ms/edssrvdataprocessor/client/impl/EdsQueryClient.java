@@ -23,6 +23,10 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
 
+/**
+ * The implementation of the Srv Query Client 
+ *
+ */
 @Slf4j
 @Component
 public class EdsQueryClient implements IEdsQueryClient {
@@ -32,9 +36,15 @@ public class EdsQueryClient implements IEdsQueryClient {
      */
     private static final long serialVersionUID = 5665880440554069040L;
 
+    /**
+     * Rest Template 
+     */
     @Autowired
     private transient RestTemplate restTemplate;
 
+    /*
+     * Microservices URL Config 
+     */
     @Autowired
     private transient MicroservicesURLCFG microservicesURLCFG;
 
@@ -140,9 +150,9 @@ public class EdsQueryClient implements IEdsQueryClient {
 
     /**
      * Build request path based on incoming operation value
-     * @param masterIdentifier
-     * @param processorOperationEnum
-     * @return
+     * @param masterIdentifier  The master identifier of the bundle 
+     * @param processorOperationEnum  An enum representing the operation 
+     * @return String  The request path 
      */
     private String buildRequestPath(String masterIdentifier, ProcessorOperationEnum processorOperationEnum) {
         log.info("[EDS QUERY] Build req path {} QUERY ep - START", processorOperationEnum.getName());

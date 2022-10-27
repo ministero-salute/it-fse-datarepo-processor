@@ -7,10 +7,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * SpringBoot Application 
+ *
+ */
 @SpringBootApplication
 @ComponentScan
 public class EdsSrvDataprocessorApplication {
 
+	/** 
+	 * Main Function 
+	 * @param args  The args for the main function 
+	 */
 	public static void main(String[] args) {
 		SpringApplication.run(EdsSrvDataprocessorApplication.class, args);
 	} 

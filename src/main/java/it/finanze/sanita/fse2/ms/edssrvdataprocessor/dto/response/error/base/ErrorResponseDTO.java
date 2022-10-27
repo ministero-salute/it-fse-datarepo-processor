@@ -41,23 +41,38 @@ public class ErrorResponseDTO implements AbstractDTO {
 	@Size(min = 0, max = 100)
 	private String spanID;
 
+	/**
+	 * Identifier of the problem 
+	 */
 	@Schema(description = "Identificativo del problema verificatosi")
 	@Size(min = 0, max = 100)
 	private String type;
 	
+	/**
+	 * Error title 
+	 */
 	@Schema(description = "Sintesi del problema (invariante per occorrenze diverse dello stesso problema)")
 	@Size(min = 0, max = 1000)
 	private String title;
 
+	/**
+	 * Error description 
+	 */
 	@Schema(description = "Descrizione del problema")
 	@Size(min = 0, max = 1000)
 	private String detail;
 
+	/**
+	 * HTTP Status 
+	 */
 	@Schema(description = "Stato http")
 	@Min(value = 100)
 	@Max(value = 599)
 	private Integer status;
 	
+	/**
+	 * URI that carries further info about the problem 
+	 */
 	@Schema(description = "URI che potrebbe fornire ulteriori informazioni riguardo l'occorrenza del problema")
 	@Size(min = 0, max = 100)
 	private String instance;

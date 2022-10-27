@@ -2,6 +2,10 @@ package it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums;
 
 import lombok.Getter;
 
+/**
+ * Enum that carries the error description in Structured Lsogs 
+ *
+ */
 @Getter
 public enum ErrorLogEnum implements ILogEnum {
 
@@ -12,7 +16,14 @@ public enum ErrorLogEnum implements ILogEnum {
 	KO_FHIR_UPDATE("KO_FHIR_UPDATE", "Error while update on FHIR server"),
 	KO_FHIR_DELETE("KO_FHIR_DELETE", "Error while delete on FHIR server");
 
-	private String code;
+	/**
+	 * Error Code 
+	 */
+	private String code; 
+	
+	/**
+	 * Error Description 
+	 */
 	private String description;
 
 	ErrorLogEnum(String inCode, String inDescription) {

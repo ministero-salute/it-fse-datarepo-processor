@@ -8,21 +8,37 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 
+/**
+ * Document Reference Entity 
+ *
+ */
 @Document(collection = "ingestion-staging")
 @Data
 @NoArgsConstructor
 public class DocumentReferenceETY {
 
+	/** 
+	 * Mongo ID  
+	 */
 	@Id
 	private String id; 
 
+	/**
+	 * Identifier 
+	 */
 	@Field("identifier")
 	private String identifier;
 	
+	/**
+	 * Operation 
+	 */
 	@Field("operation")
 	private ProcessorOperationEnum operation;
 
-	@Field("json_string")
-	private String jsonString;
+	/**
+	 * Json String
+	 */
+	@Field("document")
+	private org.bson.Document document;
 	
 }

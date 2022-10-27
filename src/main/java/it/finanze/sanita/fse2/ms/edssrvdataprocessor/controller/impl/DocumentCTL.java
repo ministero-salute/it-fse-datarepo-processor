@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 
 /** 
+ * The implementation of the Document Controller 
  * 
  * @author Guido Rocco
  */
@@ -26,6 +27,9 @@ import javax.servlet.http.HttpServletRequest;
 @Slf4j
 public class DocumentCTL extends AbstractCTL implements IDocumentCTL {
 
+	/**
+	 * Orchestrator Service 
+	 */
 	@Autowired
 	private OrchestratorSRV orchestratorSRV;
 
@@ -35,7 +39,9 @@ public class DocumentCTL extends AbstractCTL implements IDocumentCTL {
 	private static final long serialVersionUID = -8298415975725845794L; 
 	
 	
-
+	/**
+	 * Proocess Operation Implementation 
+	 */
 	@Override
 	public ResponseEntity<DocumentResponseDTO> processOperation(HttpServletRequest request, @RequestBody DocumentReferenceDTO document)
 			throws DocumentNotFoundException {

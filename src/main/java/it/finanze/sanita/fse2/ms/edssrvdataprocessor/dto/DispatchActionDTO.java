@@ -5,6 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Dispatch Action DTO 
+ *
+ */
 @Data
 @Builder
 @AllArgsConstructor

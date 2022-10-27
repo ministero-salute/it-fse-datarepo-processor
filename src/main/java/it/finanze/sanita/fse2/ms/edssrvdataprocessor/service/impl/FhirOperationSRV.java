@@ -8,36 +8,62 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnu
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.BusinessException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.IDocumentRepo;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.IFhirOperationSRV;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility.ProfileUtility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * FHIR Operation Service Implementation 
+ * 
+ */
 @Service
 @Slf4j
 public class FhirOperationSRV implements IFhirOperationSRV {
 
+	/**
+	 * Srv Query Client 
+	 */
     @Autowired
     private IEdsQueryClient queryClient;
 
+    /**
+     * Data Quality Client 
+     */
     @Autowired
     private IEdsDataQualityClient dataQualityClient;
 
+    /**
+     * Document Repo 
+     */
     @Autowired
     private IDocumentRepo documentRepo;
 
+    @Autowired
+    private ProfileUtility profileUtility;
+    
     @Override
     public void publish(FhirOperationDTO fhirOperationDTO) {
         log.info("[EDS] Publication - START");
         try {
-            // 1. Check FHIR existence
-            queryClient.fhirCheckExist(fhirOperationDTO.getMasterIdentifier());
-
-            // 2. Normalize
-            FhirNormalizedDTO normalizedData = dataQualityClient.normalize(fhirOperationDTO);
-            log.info("identifier: {} ; normalized data: {}", normalizedData.getMasterIdentifier(), normalizedData.isNormalized());
-
-            // 3. Publish on FHIR through query client API
-            queryClient.fhirPublication(normalizedData.getMasterIdentifier(), normalizedData.getJsonString(), ProcessorOperationEnum.PUBLISH);
+        	if(profileUtility.isDevProfile()) {
+        		FhirNormalizedDTO devNormalizedData	= new FhirNormalizedDTO();
+        		devNormalizedData.setJsonString(fhirOperationDTO.getJsonString());
+        		devNormalizedData.setMasterIdentifier(fhirOperationDTO.getMasterIdentifier());
+        		devNormalizedData.setNormalized(true);
+        		queryClient.fhirPublication(devNormalizedData.getMasterIdentifier(), devNormalizedData.getJsonString(), ProcessorOperationEnum.PUBLISH);
+        	} else {
+        		// 1. Check FHIR existence
+        		queryClient.fhirCheckExist(fhirOperationDTO.getMasterIdentifier());
+        		
+        		// 2. Normalize
+        		FhirNormalizedDTO normalizedData = dataQualityClient.normalize(fhirOperationDTO);
+        		log.info("identifier: {} ; normalized data: {}", normalizedData.getMasterIdentifier(), normalizedData.isNormalized());
+        		
+        		// 3. Publish on FHIR through query client API
+        		queryClient.fhirPublication(normalizedData.getMasterIdentifier(), normalizedData.getJsonString(), ProcessorOperationEnum.PUBLISH);
+        	}
+        	
         } catch (Exception e) {
             throw new BusinessException("Error: failed to publish bundle");
         }

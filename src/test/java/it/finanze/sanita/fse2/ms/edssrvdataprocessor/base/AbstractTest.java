@@ -10,6 +10,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.MockProducer;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.bson.Document;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -38,7 +39,7 @@ public abstract class AbstractTest {
         ety.setIdentifier(TestConstants.TEST_IDENTIFIER);
         ety.setOperation(operation);
         if (operation != ProcessorOperationEnum.DELETE) {
-            ety.setJsonString(TestConstants.TEST_JSON_STRING);
+            ety.setDocument(Document.parse(TestConstants.TEST_JSON_STRING));
         }
 
         DocumentReferenceETY insertedEty = documentRepo.insert(ety);

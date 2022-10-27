@@ -17,6 +17,9 @@ public class ResourceExistResDTO extends ResponseDTO {
 	 */
 	private static final long serialVersionUID = -1550025571939901939L;
 
+	/**
+	 * True if the document exists 
+	 */
 	private boolean exist;
 
 	public ResourceExistResDTO() {

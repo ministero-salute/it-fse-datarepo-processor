@@ -12,6 +12,10 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.BusinessExceptio
 import lombok.extern.slf4j.Slf4j;
 
 
+/**
+ * String Utility Class 
+ * 
+ */
 @Slf4j
 public final class StringUtility {
 
@@ -19,9 +23,14 @@ public final class StringUtility {
 	 * Private constructor to avoid instantiation.
 	 */
 	private StringUtility() {
-		// Constructor intentionally empty.
+
 	}
 	
+	/**
+	 * Called to generate a Transaction ID 
+	 * @param mode  An enum representing the generation mode for the Transaction ID 
+	 * @return String  The Transaction ID 
+	 */
 	public static String generateTransactionUID(final UIDModeEnum mode) {
 	    
 		String uid = null;
@@ -58,15 +67,7 @@ public final class StringUtility {
 		return uid;
 	} 
 	
-	
-	/**
-	 * Transformation from Json to Object.
-	 * 
-	 * @param <T>	Generic type of return
-	 * @param json	json
-	 * @param cls	Object class to return
-	 * @return		object
-	 */
+
 	public static <T> T fromJSON(final String json, final Class<T> cls) {
 		return new Gson().fromJson(json, cls);
 	}
@@ -75,7 +76,7 @@ public final class StringUtility {
 	 * Transformation from Object to Json.
 	 * 
 	 * @param obj	object to transform
-	 * @return		json
+	 * @return String  json
 	 */
 	public static String toJSON(final Object obj) {
 		return new Gson().toJson(obj);

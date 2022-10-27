@@ -10,10 +10,13 @@ package it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions;
 public class ConnectionRefusedException extends RuntimeException {
 
 	/**
-	 * Serial.
+	 * Serial Version UID.
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	/**
+	 * Conncetion URL 
+	 */
 	private final String url;
 
 	public ConnectionRefusedException(final String inUrl, final String msg) {

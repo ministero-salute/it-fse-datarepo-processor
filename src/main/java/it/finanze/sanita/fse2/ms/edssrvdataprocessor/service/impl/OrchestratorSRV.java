@@ -16,6 +16,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+/**
+ * Orchestrator Service Implementation 
+ *
+ */
 @Service
 @Slf4j
 public class OrchestratorSRV implements IOrchestratorSRV {
@@ -25,16 +29,25 @@ public class OrchestratorSRV implements IOrchestratorSRV {
 	 */
 	private static final long serialVersionUID = 6157760736386483794L; 
 	
-
+	/**
+	 * FHIR Operation Service 
+	 */
 	@Autowired
     private transient IFhirOperationSRV fhirOperationSRV;
 
+	/**
+	 * Document Repo 
+	 */
     @Autowired
     private transient IDocumentRepo documentRepo;
 
+    /**
+     * True if we are in synchronous flow 
+     */
     @Value("${eds.dataprocessor.operation.sync}")
     private boolean syncOperation;
 
+    
     @Override
     public void dispatchAction(ProcessorOperationEnum operationEnum, DispatchActionDTO dispatchActionDTO) throws DocumentNotFoundException {
         log.info("[EDS] Dispatching action from type received: {}", operationEnum.getName());
@@ -73,8 +86,8 @@ public class OrchestratorSRV implements IOrchestratorSRV {
 
     /**
      * Extract FHIR data from staging DB
-     * @param mongoId
-     * @return
+     * @param mongoId  The Mongo ID of the document 
+     * @return FhirOperationDTO  A DTO representing the retrieved document 
      */
     private FhirOperationDTO extractFhirData(String mongoId) throws DocumentNotFoundException {
         DocumentReferenceETY documentReferenceETY = documentRepo.findById(mongoId);
@@ -87,11 +100,12 @@ public class OrchestratorSRV implements IOrchestratorSRV {
             throw new BusinessException("Error: master identifier not defined on DB");
         }
         String masterIdentifier = documentReferenceETY.getIdentifier();
-        String jsonString = documentReferenceETY.getJsonString();
+        String jsonString = documentReferenceETY.getDocument().toJson();
         return FhirOperationDTO.builder()
                 .masterIdentifier(masterIdentifier)
                 .jsonString(jsonString)
                 .build();
     } 
+    
 
 }

@@ -30,19 +30,34 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants;
 @EnableMongoRepositories(basePackages = Constants.ComponentScan.CONFIG_MONGO)
 public class MongoDatabaseCFG {
 
+	/**
+	 * Mongo properties Configuration 
+	 */
 	@Autowired
 	private MongoPropertiesCFG mongoPropertiesCFG;
 
+	/**
+	 * App Context 
+	 */
     @Autowired
     private ApplicationContext appContext;
  
     final List<Converter<?, ?>> conversions = new ArrayList<>();
 
+    /**
+     * Database Factory 
+     * @return MongoDatabaseFactory  MongoDatabaseFactory 
+     */
     @Bean
     public MongoDatabaseFactory mongoDatabaseFactory(){
         return new SimpleMongoClientDatabaseFactory(mongoPropertiesCFG.getUri());
     }
 
+    /**
+     * Returns the Mongo Template 
+     * 
+     * @return MongoTemplate  Mongo Template 
+     */
     @Bean
     @Primary
     public MongoTemplate mongoTemplate() {

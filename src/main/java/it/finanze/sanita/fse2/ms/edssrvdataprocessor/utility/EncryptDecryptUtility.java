@@ -10,10 +10,11 @@ public class EncryptDecryptUtility {
     }
 
     /** 
-     *  Metodo per l'encrypt.
-     *  @param pwd
-     *  @param msg
-     *  @return String
+     *  Method for encrypt 
+     *  
+     *  @param pwd  The password for the encryption 
+     *  @param msg  The message to encrypt 
+     *  @return String  The encrypted string 
      */
 	public static final String encrypt(String pwd, String msg) {
 	    AES256TextEncryptor textEncryptor = new AES256TextEncryptor();
@@ -22,10 +23,11 @@ public class EncryptDecryptUtility {
 	}
 	
     /**
-     *  Metodo per il decrypt.
-     *  @param pwd
-     *  @param cryptedMsg
-     *  @return String
+     *  Method for decrypt 
+     *  
+     *  @param pwd  The password for the decryption 
+     *  @param cryptedMsg  The encrypted message to decrypt 
+     *  @return String  The decrypted message 
      */
     public static String decrypt(String pwd, String cryptedMsg) {
         AES256TextEncryptor textEncryptor = new AES256TextEncryptor();
