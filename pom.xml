@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>it.finanze.sanita.fse2</groupId>
-	<artifactId>eds-srv-dataprocessor</artifactId>
+	<artifactId>datarepo-processor-ms</artifactId>
 	<version>0.0.3-SNAPSHOT</version>	<!-- Sprint 3 -->
-	<name>eds-srv-dataprocessor</name>
+	<name>datarepo-processor-ms</name>
 	<description>The Microservice for EDS Data Processor</description>
 	<properties>
 		<java.version>1.8</java.version>
