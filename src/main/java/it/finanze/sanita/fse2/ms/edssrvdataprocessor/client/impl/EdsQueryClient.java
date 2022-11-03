@@ -1,5 +1,14 @@
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestTemplate;
+
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.IEdsQueryClient;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.MicroservicesURLCFG;
@@ -12,16 +21,6 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.ConnectionRefuse
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentAlreadyExistsException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility.StringUtility;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.Optional;
 
 /**
  * The implementation of the Srv Query Client 
@@ -47,33 +46,26 @@ public class EdsQueryClient implements IEdsQueryClient {
      */
     @Autowired
     private transient MicroservicesURLCFG microservicesURLCFG;
-
+ 
     @Override
-    public void fhirCheckExist(String masterIdentifier) throws DocumentAlreadyExistsException {
-        log.info("[EDS QUERY] Calling EDS check exist ep - START");
+    public ResourceExistResDTO fhirCheckExist(final String masterIdentifier) throws DocumentAlreadyExistsException {
+    	log.debug("[EDS QUERY] Calling EDS check exist ep - START");
+    	ResponseEntity<ResourceExistResDTO> response = null;
+    	String url = buildRequestPath(masterIdentifier, ProcessorOperationEnum.READ);
 
-        ResponseEntity<ResourceExistResDTO> response = null;
-        String url = this.buildRequestPath(masterIdentifier, ProcessorOperationEnum.READ);
-        
-        try {
-            response = restTemplate.getForEntity(url, ResourceExistResDTO.class);
-            log.info(Constants.Logs.SRV_QUERY_RESPONSE, response.getStatusCode());
-        } catch(ResourceAccessException cex) {
-            log.error("Connect error while call eds query check exist ep :" + cex);
-            throw new ConnectionRefusedException(microservicesURLCFG.getEdsQueryHost(), Constants.Logs.ERROR_CONNECTION_REFUSED);
-        } catch(Exception ex) {
-            log.error("Generic error while call eds query check exist ep :" + ex);
-            throw new BusinessException("Generic error while call eds query check exist ep :" + ex);
-        }
-
-        boolean isSuccessfulCall = response.getStatusCode().is2xxSuccessful();
-        boolean isExist = Optional.ofNullable(response.getBody()).orElse(new ResourceExistResDTO()).isExist();
-        if (!(isExist && isSuccessfulCall)) {
-            log.info(Constants.Logs.DOCUMENT_NOT_FOUND_ON_FHIR_SERVER);
-        } else {
-            throw new DocumentAlreadyExistsException(Constants.Logs.DOCUMENT_NOT_FOUND_ON_FHIR_SERVER);
-        }
+    	try {
+    		response = restTemplate.getForEntity(url, ResourceExistResDTO.class);
+    		log.info(Constants.Logs.SRV_QUERY_RESPONSE, response.getStatusCode());
+    	} catch(ResourceAccessException cex) {
+    		log.error("Connect error while call eds query check exist ep :" + cex);
+    		throw new ConnectionRefusedException(microservicesURLCFG.getEdsQueryHost(), Constants.Logs.ERROR_CONNECTION_REFUSED);
+    	} catch(Exception ex) {
+    		log.error("Generic error while call eds query check exist ep :" + ex);
+    		throw new BusinessException("Generic error while call eds query check exist ep :" + ex);
+    	}
+    	return response.getBody();
     }
+
 
     @Override
     public void fhirDelete(String masterIdentifier) {
@@ -115,11 +107,11 @@ public class EdsQueryClient implements IEdsQueryClient {
 
         switch (processorOperationEnum) {
             case PUBLISH:
-                url = this.buildRequestPath(masterIdentifier, ProcessorOperationEnum.PUBLISH);
+                url = buildRequestPath(masterIdentifier, ProcessorOperationEnum.PUBLISH);
                 operationMethod = HttpMethod.POST;
                 break;
             case REPLACE:
-                url = this.buildRequestPath(masterIdentifier, ProcessorOperationEnum.REPLACE);
+                url = buildRequestPath(masterIdentifier, ProcessorOperationEnum.REPLACE);
                 operationMethod = HttpMethod.PUT;
                 break;
             case UPDATE:

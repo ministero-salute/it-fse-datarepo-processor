@@ -4,8 +4,10 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.IEdsDataQualityClien
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.IEdsQueryClient;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.FhirOperationDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.FhirNormalizedDTO;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.ResourceExistResDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.BusinessException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentAlreadyExistsException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.IDocumentRepo;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.IFhirOperationSRV;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility.ProfileUtility;
@@ -33,39 +35,31 @@ public class FhirOperationSRV implements IFhirOperationSRV {
     @Autowired
     private IEdsDataQualityClient dataQualityClient;
 
-    /**
-     * Document Repo 
-     */
-    @Autowired
-    private IDocumentRepo documentRepo;
-
-    @Autowired
-    private ProfileUtility profileUtility;
     
     @Override
-    public void publish(FhirOperationDTO fhirOperationDTO) {
+    public void publish(final FhirOperationDTO fhirOperationDTO) {
         log.info("[EDS] Publication - START");
         try {
-        	if(profileUtility.isDevProfile()) {
-        		FhirNormalizedDTO devNormalizedData	= new FhirNormalizedDTO();
-        		devNormalizedData.setJsonString(fhirOperationDTO.getJsonString());
-        		devNormalizedData.setMasterIdentifier(fhirOperationDTO.getMasterIdentifier());
-        		devNormalizedData.setNormalized(true);
-        		queryClient.fhirPublication(devNormalizedData.getMasterIdentifier(), devNormalizedData.getJsonString(), ProcessorOperationEnum.PUBLISH);
-        	} else {
-        		// 1. Check FHIR existence
-        		queryClient.fhirCheckExist(fhirOperationDTO.getMasterIdentifier());
+        	// 1. Check FHIR existence
+        	ResourceExistResDTO response = queryClient.fhirCheckExist(fhirOperationDTO.getMasterIdentifier());
+
+        	if(Boolean.FALSE.equals(response.isExist())){
+        		//TODO - Fare mock qui per dev
+        		// 2. Normalize //TODO
+        		FhirNormalizedDTO normalizedData = new FhirNormalizedDTO(fhirOperationDTO.getMasterIdentifier(), fhirOperationDTO.getJsonString(), true);
+//        		FhirNormalizedDTO normalizedData = dataQualityClient.normalize(fhirOperationDTO);
         		
-        		// 2. Normalize
-        		FhirNormalizedDTO normalizedData = dataQualityClient.normalize(fhirOperationDTO);
         		log.info("identifier: {} ; normalized data: {}", normalizedData.getMasterIdentifier(), normalizedData.isNormalized());
         		
         		// 3. Publish on FHIR through query client API
         		queryClient.fhirPublication(normalizedData.getMasterIdentifier(), normalizedData.getJsonString(), ProcessorOperationEnum.PUBLISH);
+        	} else {
+        		log.error("Documento già esisten sul server fhir : " + fhirOperationDTO.getMasterIdentifier());
+        		throw new DocumentAlreadyExistsException("Documento già esistente"); 
         	}
-        	
-        } catch (Exception e) {
-            throw new BusinessException("Error: failed to publish bundle");
+        } catch (Exception ex) {
+        	log.error("Error: failed to publish bundle", ex);
+            throw new BusinessException("Error: failed to publish bundle", ex);
         }
     }
 

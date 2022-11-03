@@ -54,7 +54,7 @@ public class OrchestratorSRV implements IOrchestratorSRV {
         FhirOperationDTO fhirOperationDTO = null;
         switch (operationEnum) {
             case PUBLISH:
-                fhirOperationDTO = this.extractFhirData(dispatchActionDTO.getMongoId());
+                fhirOperationDTO = extractFhirData(dispatchActionDTO.getMongoId());
                 fhirOperationSRV.publish(fhirOperationDTO);
                 break;
             case UPDATE:

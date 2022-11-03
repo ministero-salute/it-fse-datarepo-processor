@@ -1,5 +1,6 @@
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.client;
 
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.ResourceExistResDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentAlreadyExistsException;
 
@@ -17,8 +18,8 @@ public interface IEdsQueryClient extends Serializable {
      * @param masterIdentifier  The master identifier of the document
      * @throws DocumentAlreadyExistsException  An exception thrown when the document already exists on FHIR Server 
      */
-    void fhirCheckExist(String masterIdentifier) throws DocumentAlreadyExistsException;
-
+//    void fhirCheckExist(String masterIdentifier) throws DocumentAlreadyExistsException;
+    ResourceExistResDTO fhirCheckExist(String masterIdentifier) throws DocumentAlreadyExistsException;
     /**
      * Delete resource on FHIR server by masterIdentifier
      * 
