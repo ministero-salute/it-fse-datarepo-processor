@@ -18,8 +18,6 @@ import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.error.E
 
 /**
  *	Exceptions handler
- *
- *  @author G. Baittiner
  */
 @ControllerAdvice
 @Slf4j
