@@ -1,3 +1,6 @@
+/*
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.kafka;
 
 
@@ -17,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *	@author vincenzoingenito
  *
  *	Kafka producer configuration.
  */

@@ -1,3 +1,6 @@
+/*
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.kafka;
 
 import lombok.extern.slf4j.Slf4j;

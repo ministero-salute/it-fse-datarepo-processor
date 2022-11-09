@@ -1,3 +1,6 @@
+/*
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.controller.impl;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -21,7 +24,6 @@ import javax.servlet.http.HttpServletRequest;
 /** 
  * The implementation of the Document Controller 
  * 
- * @author Guido Rocco
  */
 @RestController
 @Slf4j

@@ -1,3 +1,6 @@
+/*
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.mongo;
 
 import java.util.ArrayList;
@@ -22,7 +25,6 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants;
 
 /**
  * 
- * @author vincenzoingenito
  *
  *	Configuration for MongoDB.
  */

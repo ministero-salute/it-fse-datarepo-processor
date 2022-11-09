@@ -1,3 +1,6 @@
+/*
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.controller.impl;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * The Class LivenessCheckController.
  *
- * @author Simone Lungarella
  */
 @RestController
 @Tag(name = "Health check Status Actuator")

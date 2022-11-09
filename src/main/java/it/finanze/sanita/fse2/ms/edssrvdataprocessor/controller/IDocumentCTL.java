@@ -1,3 +1,6 @@
+/*
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.controller;
 
 import java.io.IOException;
@@ -27,7 +30,6 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationExcepti
 /**
  * Ingestion Controller.
  * 
- * @author Guido Rocco
  */
 @RequestMapping(path = "/v1")
 @Tag(name = "Document Data Processor Controller")

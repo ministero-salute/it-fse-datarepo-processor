@@ -1,10 +1,12 @@
+/*
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response;
 
 import lombok.Data;
 
 /**
  *
- * @author Riccardo Bonesi
  *
  *	DTO used to return check exist result.
  */
