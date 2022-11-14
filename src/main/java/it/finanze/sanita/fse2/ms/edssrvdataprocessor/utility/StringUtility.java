@@ -4,9 +4,15 @@
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility;
 
 import java.net.InetAddress;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.TimeZone;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.gson.Gson;
 
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants;
@@ -68,11 +74,6 @@ public final class StringUtility {
 		}
 
 		return uid;
-	} 
-	
-
-	public static <T> T fromJSON(final String json, final Class<T> cls) {
-		return new Gson().fromJson(json, cls);
 	}
 
 	/**
@@ -84,6 +85,22 @@ public final class StringUtility {
 	public static String toJSON(final Object obj) {
 		return new Gson().toJson(obj);
 	}
-	
+
+	public static String toJSONJackson(final Object obj) {
+		String out;
+		try {
+			final ObjectMapper objectMapper = new ObjectMapper();
+			objectMapper.registerModule(new JavaTimeModule());
+			objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+			objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
+			objectMapper.setTimeZone(TimeZone.getDefault());
+			objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+			out = objectMapper.writeValueAsString(obj);
+		} catch(Exception ex) {
+			log.error("Error while running to json jackson");
+			throw new BusinessException(ex);
+		}
+		return out;
+	}
 
 }

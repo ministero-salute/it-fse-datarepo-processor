@@ -56,6 +56,9 @@ public class KafkaTopicCFG {
 	@Value("${kafka.dataprocessor.generic.topic}")
 	private String ingestorGenericTopic;
 
+	@Value("${kafka.statusmanager.topic}")
+	private String statusManagerTopic;
+
 	@PostConstruct
 	public void afterInit() {
 		if (profileUtility.isTestProfile()) {
@@ -64,6 +67,7 @@ public class KafkaTopicCFG {
 			this.ingestorPublishHighPriorityTopic = Constants.Profile.TEST_PREFIX + this.ingestorPublishHighPriorityTopic;
 			this.ingestorGenericTopic = Constants.Profile.TEST_PREFIX + this.ingestorGenericTopic;
 			this.ingestorPublishDeadLetterTopic = Constants.Profile.TEST_PREFIX + this.ingestorPublishDeadLetterTopic;
+			this.statusManagerTopic = Constants.Profile.TEST_PREFIX + this.statusManagerTopic;
 		}
 	}
 
