@@ -5,7 +5,7 @@ package it.finanze.sanita.fse2.ms.edssrvdataprocessor.client;
 
 
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.FhirOperationDTO;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.FhirNormalizedDTO;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.ValidationResultDTO;
 
 import java.io.Serializable;
 
@@ -14,11 +14,12 @@ import java.io.Serializable;
  * 
  */
 public interface IEdsDataQualityClient extends Serializable {
+	
     /**
-     * Send input to data quality srv to be normalized
+     * Send input to data quality srv to be validated
      * 
-     * @param input  The DTO to normalize 
-     * @return FhirNormalizedDTO  A DTO representing the result of the normalization 
+     * @param input  The DTO to validate 
+     * @return ValidationResultDTO  A DTO representing the result of the validation 
      */
-    FhirNormalizedDTO normalize(FhirOperationDTO input);
+    ValidationResultDTO validateBundleNormativeR4(FhirOperationDTO input);
 }

@@ -63,26 +63,16 @@ public class OrchestratorSRV implements IOrchestratorSRV {
                 fhirOperationSRV.publish(fhirOperationDTO);
                 break;
             case UPDATE:
-                if (syncOperation) {
-                    String jsonString = dispatchActionDTO.getDocumentReferenceDTO().getJsonString();
-                    String masterIdentifier = dispatchActionDTO.getDocumentReferenceDTO().getIdentifier();
-                    fhirOperationSRV.update(masterIdentifier, jsonString);
-                } else {
-                    fhirOperationDTO = this.extractFhirData(dispatchActionDTO.getMongoId());
-                    fhirOperationSRV.update(fhirOperationDTO.getMasterIdentifier(), fhirOperationDTO.getJsonString());
-                }
+                String jsonString = dispatchActionDTO.getDocumentReferenceDTO().getJsonString();
+                String masterIdentifier = dispatchActionDTO.getDocumentReferenceDTO().getIdentifier();
+                fhirOperationSRV.update(masterIdentifier, jsonString);
                 break;
             case REPLACE:
                 fhirOperationDTO = extractFhirData(dispatchActionDTO.getMongoId());
                 fhirOperationSRV.replace(fhirOperationDTO);
                 break;
             case DELETE:
-                if (syncOperation) {
-                    fhirOperationSRV.delete(dispatchActionDTO.getDocumentReferenceDTO().getIdentifier());
-                } else {
-                    fhirOperationDTO = this.extractFhirData(dispatchActionDTO.getMongoId());
-                    fhirOperationSRV.delete(fhirOperationDTO.getMasterIdentifier());
-                }
+                fhirOperationSRV.delete(dispatchActionDTO.getDocumentReferenceDTO().getIdentifier());
                 break;
             default:
                 throw new UnsupportedOperationException("Operation not configured");

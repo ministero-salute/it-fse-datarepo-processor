@@ -5,7 +5,8 @@ package it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums;
 
 public enum EventStatusEnum {
 
-	BLOCKING_ERROR("BLOCKING_ERROR");
+	BLOCKING_ERROR("BLOCKING_ERROR"),
+	NON_BLOCKING_ERROR("NON_BLOCKING_ERROR");
 
 	private final String name;
 

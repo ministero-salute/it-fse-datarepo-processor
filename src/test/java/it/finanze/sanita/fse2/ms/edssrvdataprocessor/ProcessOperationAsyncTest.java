@@ -3,25 +3,16 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor;
 
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.base.AbstractTest;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.base.TestConstants;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.IEdsDataQualityClient;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.IEdsQueryClient;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.MicroservicesURLCFG;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.kafka.KafkaTopicCFG;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.controller.impl.DocumentCTL;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.FhirNormalizedDTO;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.ResourceExistResDTO;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.ResponseDTO;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnum;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.BusinessException;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentAlreadyExistsException;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentNotFoundException;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.EmptyIdentifierException;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.mongo.impl.DocumentRepo;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.impl.KafkaSRV;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
+
+import java.util.HashMap;
+
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
 import org.junit.jupiter.api.BeforeAll;
@@ -43,13 +34,21 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.when;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.base.AbstractTest;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.kafka.KafkaTopicCFG;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.controller.impl.DocumentCTL;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.ResourceExistResDTO;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.ResponseDTO;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.ValidationResultDTO;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnum;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.BusinessException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentAlreadyExistsException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentNotFoundException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.EmptyIdentifierException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.mongo.impl.DocumentRepo;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.impl.KafkaSRV;
 
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -58,11 +57,6 @@ import static org.mockito.BDDMockito.when;
 @DirtiesContext
 @EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "port=9092" })
 class ProcessOperationAsyncTest extends AbstractTest {
-    @Autowired
-    private IEdsQueryClient queryClient;
-
-    @Autowired
-    private IEdsDataQualityClient dataQualityClient;
     
     @MockBean
     private RestTemplate restTemplate;
@@ -80,9 +74,6 @@ class ProcessOperationAsyncTest extends AbstractTest {
     private KafkaTopicCFG kafkaTopicConfig;
 
 	private MessageHeaders headers;
-
-	@Autowired
-	private MicroservicesURLCFG microservicesURLCFG;
 
 	@BeforeAll
 	void init() {
@@ -106,12 +97,11 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		getMock.setExist(false);
 		given(restTemplate.getForEntity(anyString(), eq(ResourceExistResDTO.class))).willReturn(new ResponseEntity<>(getMock, HttpStatus.OK));
 
-		FhirNormalizedDTO normalizedMock = FhirNormalizedDTO
+		ValidationResultDTO validatedMock = ValidationResultDTO
 				.builder()
-				.masterIdentifier(TestConstants.TEST_MASTER_IDENTIFIER)
-				.jsonString(TestConstants.TEST_JSON_STRING)
+				.isValid(true)
 				.build();
-		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(FhirNormalizedDTO.class))).thenReturn(new ResponseEntity<>(normalizedMock, HttpStatus.OK));
+		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ValidationResultDTO.class))).thenReturn(new ResponseEntity<>(validatedMock, HttpStatus.OK));
 
 		ResponseEntity<ResponseDTO> responsePubMock = new ResponseEntity<>(null, HttpStatus.OK);
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ResponseDTO.class))).thenReturn(responsePubMock);
@@ -179,11 +169,11 @@ class ProcessOperationAsyncTest extends AbstractTest {
 
 		// Start rest template mock
 
-		FhirNormalizedDTO normalizedMock = FhirNormalizedDTO
+		ValidationResultDTO validatedMock = ValidationResultDTO
 				.builder()
-				.masterIdentifier(TestConstants.TEST_MASTER_IDENTIFIER)
+				.isValid(true)
 				.build();
-		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(FhirNormalizedDTO.class))).thenReturn(new ResponseEntity<>(normalizedMock, HttpStatus.OK));
+		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ValidationResultDTO.class))).thenReturn(new ResponseEntity<>(validatedMock, HttpStatus.OK));
 
 		ResponseEntity<ResponseDTO> responsePubMock = new ResponseEntity<>(null, HttpStatus.OK);
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(ResponseDTO.class))).thenReturn(responsePubMock);
@@ -301,7 +291,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		getMock.setExist(true);
 		given(restTemplate.getForEntity(anyString(), eq(ResourceExistResDTO.class))).willReturn(new ResponseEntity<>(getMock, HttpStatus.OK));
 
-		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(FhirNormalizedDTO.class)))
+		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ValidationResultDTO.class)))
 				.thenThrow(new BusinessException(""));
 		assertThrows(BusinessException.class, () ->
 				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, headers)
@@ -318,7 +308,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		getMock.setExist(true);
 		given(restTemplate.getForEntity(anyString(), eq(ResourceExistResDTO.class))).willReturn(new ResponseEntity<>(getMock, HttpStatus.OK));
 
-		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(FhirNormalizedDTO.class)))
+		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ValidationResultDTO.class)))
 				.thenThrow(new ResourceAccessException(""));
 		assertThrows(BusinessException.class, () ->
 				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, headers)
@@ -335,7 +325,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		getMock.setExist(true);
 		given(restTemplate.getForEntity(anyString(), eq(ResourceExistResDTO.class))).willReturn(new ResponseEntity<>(getMock, HttpStatus.OK));
 
-		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(FhirNormalizedDTO.class)))
+		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ValidationResultDTO.class)))
 				.thenReturn(new ResponseEntity<>(null, HttpStatus.BAD_REQUEST));
 		assertThrows(BusinessException.class, () ->
 				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, headers)
@@ -348,11 +338,11 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		String topic = kafkaTopicConfig.getIngestorPublishHighPriorityTopic();
 		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.PUBLISH, false, false, false);
 
-		FhirNormalizedDTO normalizedMock = FhirNormalizedDTO
+		ValidationResultDTO validatedMock = ValidationResultDTO
 				.builder()
-				.masterIdentifier(TestConstants.TEST_MASTER_IDENTIFIER)
+				.isValid(true)
 				.build();
-		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(FhirNormalizedDTO.class))).thenReturn(new ResponseEntity<>(normalizedMock, HttpStatus.OK));
+		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ValidationResultDTO.class))).thenReturn(new ResponseEntity<>(validatedMock, HttpStatus.OK));
 
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ResponseDTO.class)))
 				.thenThrow(new BusinessException(""));
@@ -368,11 +358,11 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		String topic = kafkaTopicConfig.getIngestorPublishHighPriorityTopic();
 		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.PUBLISH, false, false, false);
 
-		FhirNormalizedDTO normalizedMock = FhirNormalizedDTO
+		ValidationResultDTO validatedMock = ValidationResultDTO
 				.builder()
-				.masterIdentifier(TestConstants.TEST_MASTER_IDENTIFIER)
+				.isValid(true)
 				.build();
-		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(FhirNormalizedDTO.class))).thenReturn(new ResponseEntity<>(normalizedMock, HttpStatus.OK));
+		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ValidationResultDTO.class))).thenReturn(new ResponseEntity<>(validatedMock, HttpStatus.OK));
 
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ResponseDTO.class)))
 				.thenThrow(new ResourceAccessException(""));
@@ -388,11 +378,11 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		String topic = kafkaTopicConfig.getIngestorPublishHighPriorityTopic();
 		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.PUBLISH, false, false, false);
 
-		FhirNormalizedDTO normalizedMock = FhirNormalizedDTO
+		ValidationResultDTO validatedMock = ValidationResultDTO
 				.builder()
-				.masterIdentifier(TestConstants.TEST_MASTER_IDENTIFIER)
+				.isValid(true)
 				.build();
-		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(FhirNormalizedDTO.class))).thenReturn(new ResponseEntity<>(normalizedMock, HttpStatus.OK));
+		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ValidationResultDTO.class))).thenReturn(new ResponseEntity<>(validatedMock, HttpStatus.OK));
 
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ResponseDTO.class)))
 				.thenReturn(new ResponseEntity<>(null, HttpStatus.BAD_REQUEST));
@@ -448,11 +438,11 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		String topic = kafkaTopicConfig.getIngestorGenericTopic();
 		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.UPDATE, false, false, false);
 
-		FhirNormalizedDTO normalizedMock = FhirNormalizedDTO
+		ValidationResultDTO validatedMock = ValidationResultDTO
 				.builder()
-				.masterIdentifier(TestConstants.TEST_MASTER_IDENTIFIER)
+				.isValid(true)
 				.build();
-		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(FhirNormalizedDTO.class))).thenReturn(new ResponseEntity<>(normalizedMock, HttpStatus.OK));
+		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(ValidationResultDTO.class))).thenReturn(new ResponseEntity<>(validatedMock, HttpStatus.OK));
 
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(ResponseDTO.class)))
 				.thenThrow(new BusinessException(""));
@@ -468,11 +458,11 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		String topic = kafkaTopicConfig.getIngestorGenericTopic();
 		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.UPDATE, false, false, false);
 
-		FhirNormalizedDTO normalizedMock = FhirNormalizedDTO
+		ValidationResultDTO validatedMock = ValidationResultDTO
 				.builder()
-				.masterIdentifier(TestConstants.TEST_MASTER_IDENTIFIER)
+				.isValid(true)
 				.build();
-		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(FhirNormalizedDTO.class))).thenReturn(new ResponseEntity<>(normalizedMock, HttpStatus.OK));
+		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(ValidationResultDTO.class))).thenReturn(new ResponseEntity<>(validatedMock, HttpStatus.OK));
 
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(ResponseDTO.class)))
 				.thenThrow(new ResourceAccessException(""));
@@ -488,11 +478,11 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		String topic = kafkaTopicConfig.getIngestorGenericTopic();
 		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.UPDATE, false, false, false);
 
-		FhirNormalizedDTO normalizedMock = FhirNormalizedDTO
+		ValidationResultDTO validatedMock = ValidationResultDTO
 				.builder()
-				.masterIdentifier(TestConstants.TEST_MASTER_IDENTIFIER)
+				.isValid(true)
 				.build();
-		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(FhirNormalizedDTO.class))).thenReturn(new ResponseEntity<>(normalizedMock, HttpStatus.OK));
+		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(ValidationResultDTO.class))).thenReturn(new ResponseEntity<>(validatedMock, HttpStatus.OK));
 
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(ResponseDTO.class)))
 				.thenReturn(new ResponseEntity<>(null, HttpStatus.BAD_REQUEST));
@@ -508,11 +498,11 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		String topic = kafkaTopicConfig.getIngestorGenericTopic();
 		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.REPLACE, false, false, false);
 
-		FhirNormalizedDTO normalizedMock = FhirNormalizedDTO
+		ValidationResultDTO validatedMock = ValidationResultDTO
 				.builder()
-				.masterIdentifier(TestConstants.TEST_MASTER_IDENTIFIER)
+				.isValid(true)
 				.build();
-		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(FhirNormalizedDTO.class))).thenReturn(new ResponseEntity<>(normalizedMock, HttpStatus.OK));
+		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(ValidationResultDTO.class))).thenReturn(new ResponseEntity<>(validatedMock, HttpStatus.OK));
 
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(ResponseDTO.class)))
 				.thenThrow(new BusinessException(""));
@@ -528,11 +518,11 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		String topic = kafkaTopicConfig.getIngestorGenericTopic();
 		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.REPLACE, false, false, false);
 
-		FhirNormalizedDTO normalizedMock = FhirNormalizedDTO
+		ValidationResultDTO validatedMock = ValidationResultDTO
 				.builder()
-				.masterIdentifier(TestConstants.TEST_MASTER_IDENTIFIER)
+				.isValid(true)
 				.build();
-		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(FhirNormalizedDTO.class))).thenReturn(new ResponseEntity<>(normalizedMock, HttpStatus.OK));
+		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(ValidationResultDTO.class))).thenReturn(new ResponseEntity<>(validatedMock, HttpStatus.OK));
 
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(ResponseDTO.class)))
 				.thenThrow(new ResourceAccessException(""));
@@ -548,11 +538,11 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		String topic = kafkaTopicConfig.getIngestorGenericTopic();
 		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.REPLACE, false, false, false);
 
-		FhirNormalizedDTO normalizedMock = FhirNormalizedDTO
+		ValidationResultDTO validatedMock = ValidationResultDTO
 				.builder()
-				.masterIdentifier(TestConstants.TEST_MASTER_IDENTIFIER)
+				.isValid(true)
 				.build();
-		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(FhirNormalizedDTO.class))).thenReturn(new ResponseEntity<>(normalizedMock, HttpStatus.OK));
+		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(ValidationResultDTO.class))).thenReturn(new ResponseEntity<>(validatedMock, HttpStatus.OK));
 
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(ResponseDTO.class)))
 				.thenReturn(new ResponseEntity<>(null, HttpStatus.BAD_REQUEST));

@@ -26,8 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 /**
- * 
- *
  * Kafka management service.
  */
 @Service
