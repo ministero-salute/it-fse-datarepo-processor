@@ -27,4 +27,9 @@ public class FhirOperationDTO {
      * The JSON String of the document 
      */
     private String jsonString;
+    
+    /**
+     * Workflow instance id. 
+     */
+    private String workflowInstanceId;
 }

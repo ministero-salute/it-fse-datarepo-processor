@@ -44,4 +44,10 @@ public class DocumentReferenceETY {
 	@Field("document")
 	private org.bson.Document document;
 	
+	/**
+	 * Workflow instance id.
+	 */
+	@Field("workflow_instance_id")
+	private String workflowInstanceId;
+	
 }

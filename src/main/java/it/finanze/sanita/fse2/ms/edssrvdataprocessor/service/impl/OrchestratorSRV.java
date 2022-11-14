@@ -71,7 +71,7 @@ public class OrchestratorSRV implements IOrchestratorSRV {
                 }
                 break;
             case REPLACE:
-                fhirOperationDTO = this.extractFhirData(dispatchActionDTO.getMongoId());
+                fhirOperationDTO = extractFhirData(dispatchActionDTO.getMongoId());
                 fhirOperationSRV.replace(fhirOperationDTO);
                 break;
             case DELETE:
@@ -107,6 +107,7 @@ public class OrchestratorSRV implements IOrchestratorSRV {
         return FhirOperationDTO.builder()
                 .masterIdentifier(masterIdentifier)
                 .jsonString(jsonString)
+                .workflowInstanceId(documentReferenceETY.getWorkflowInstanceId())
                 .build();
     } 
     
