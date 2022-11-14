@@ -24,4 +24,6 @@ public interface IOrchestratorSRV extends Serializable {
      * @throws DocumentNotFoundException  An exception thrown when the document is not found on MongoDB 
      */
     void dispatchAction(ProcessorOperationEnum operationEnum, DispatchActionDTO dispatchActionDTO) throws DocumentNotFoundException;
+
+    String getWorkflowInstanceId(String id);
 }

@@ -108,6 +108,7 @@ public final class Constants {
 		 * Identifier
 		 */
 		public static final String IDENTIFIER = "identifier";
+		public static final String MISSING_WORKFLOW_PLACEHOLDER = "UNKNOWN_WORKFLOW_ID";
 
 		/** 
 		 * This method is intentionally left blank. 

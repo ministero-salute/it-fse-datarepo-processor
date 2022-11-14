@@ -5,7 +5,7 @@ package it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums;
 
 public enum EventTypeEnum {
 
-	PUBLISH("PUBLISH");
+	EDS_PROCESSOR("EDS_PROCESSOR");
 
 	private final String name;
 

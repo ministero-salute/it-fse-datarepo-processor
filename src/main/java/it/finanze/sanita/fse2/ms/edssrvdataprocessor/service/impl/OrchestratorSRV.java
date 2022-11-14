@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.Optional;
+
 /**
  * Orchestrator Service Implementation 
  *
@@ -110,6 +112,10 @@ public class OrchestratorSRV implements IOrchestratorSRV {
                 .workflowInstanceId(documentReferenceETY.getWorkflowInstanceId())
                 .build();
     } 
-    
+
+    public String getWorkflowInstanceId(String id) {
+        Optional<DocumentReferenceETY> entity = Optional.ofNullable(documentRepo.findById(id));
+        return entity.isPresent() ? entity.get().getWorkflowInstanceId() : Constants.App.MISSING_WORKFLOW_PLACEHOLDER;
+    }
 
 }

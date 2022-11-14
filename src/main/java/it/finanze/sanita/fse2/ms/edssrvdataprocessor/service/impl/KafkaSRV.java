@@ -7,6 +7,8 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.kafka.KafkaConsumerPropertiesCFG;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.kafka.KafkaPropertiesCFG;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.DispatchActionDTO;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.EventStatusEnum;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.EventTypeEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentNotFoundException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.EmptyIdentifierException;
@@ -85,10 +87,13 @@ public class KafkaSRV extends KafkaAbstractSRV implements IKafkaSRV {
 		boolean esito = false;
 		int counter = 0;
 
+		String wif = Constants.App.MISSING_WORKFLOW_PLACEHOLDER;
+
 		while(Boolean.FALSE.equals(esito) && counter<=kafkaConsumerPropertiesCFG.getNRetry()) {
 			try {
 				if (StringUtils.hasText(cr.value())) {
 					String mongoId = EncryptDecryptUtility.decrypt(kafkaPropCFG.getCrypto(), cr.value());
+					wif = orchestratorSRV.getWorkflowInstanceId(mongoId);
 					DispatchActionDTO dispatchActionDTO = DispatchActionDTO.builder()
 							.mongoId(mongoId)
 							.documentReferenceDTO(null)
@@ -103,12 +108,14 @@ public class KafkaSRV extends KafkaAbstractSRV implements IKafkaSRV {
 				HelperUtility.deadLetterHelper(e);
 				if(kafkaConsumerPropertiesCFG.getDeadLetterExceptions().contains(e.getClass().getName())) {
 					log.error("Dead letter exception - exiting...");
+					sendStatusMessage(wif, EventTypeEnum.EDS_PROCESSOR, EventStatusEnum.BLOCKING_ERROR, e.getMessage());
 					throw e;
 				} else if(kafkaConsumerPropertiesCFG.getTemporaryExceptions().contains(e.getClass().getName())) {
 					log.error("Temporary exception - exiting...");
 				} else {
 					counter++;
 					if(counter==kafkaConsumerPropertiesCFG.getNRetry()) {
+						sendStatusMessage(wif, EventTypeEnum.EDS_PROCESSOR, EventStatusEnum.BLOCKING_ERROR, e.getMessage());
 						throw e;
 					}
 				}
