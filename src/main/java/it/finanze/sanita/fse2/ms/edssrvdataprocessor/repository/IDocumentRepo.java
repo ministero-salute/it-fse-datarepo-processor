@@ -6,8 +6,6 @@ package it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.DocumentReferenceETY;
 
-import java.util.List;
-
 /**
  * Documents Repo Interface 
  *
@@ -22,14 +20,6 @@ public interface IDocumentRepo {
 	 * @throws OperationException  A generic MongoDB Exception 
 	 */
 	DocumentReferenceETY insert(DocumentReferenceETY ety) throws OperationException;
-
-	/**
-	 * Returns all the documents from the staging database.
-	 * 
-	 * @param identifier The identifier of the document to delete
-	 */
-	void deleteByIdentifier(String identifier); 
-	
 	
 	/**
 	 * Returns a document from the staging database given its identifier. 
@@ -39,11 +29,4 @@ public interface IDocumentRepo {
 	 */
 	DocumentReferenceETY findById(String id); 
 
-	
-	/**
-	 * Returns all the documents from the staging database.
-	 * 
-	 * @return ArrayList  The list of all documents 
-	 */
-	public List<DocumentReferenceETY> findAll();
 }
