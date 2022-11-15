@@ -28,23 +28,18 @@ import java.util.Optional;
 @Service
 @Slf4j
 public class OrchestratorSRV implements IOrchestratorSRV {
-
-    /**
-	 * Serial Version UID 
-	 */
-	private static final long serialVersionUID = 6157760736386483794L; 
 	
 	/**
 	 * FHIR Operation Service 
 	 */
 	@Autowired
-    private transient IFhirOperationSRV fhirOperationSRV;
+    private IFhirOperationSRV fhirOperationSRV;
 
 	/**
 	 * Document Repo 
 	 */
     @Autowired
-    private transient IDocumentRepo documentRepo;
+    private IDocumentRepo documentRepo;
 
     @Override
     public void dispatchAction(ProcessorOperationEnum operationEnum, DispatchActionDTO dispatchActionDTO) throws DocumentNotFoundException, OperationException {

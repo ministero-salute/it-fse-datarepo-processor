@@ -8,12 +8,10 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnu
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentNotFoundException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
 
-import java.io.Serializable;
-
 /**
  * Orchestrator Service Interface
  */
-public interface IOrchestratorSRV extends Serializable {
+public interface IOrchestratorSRV {
 	
     /**
      * Dispatch action starting from type of operation
