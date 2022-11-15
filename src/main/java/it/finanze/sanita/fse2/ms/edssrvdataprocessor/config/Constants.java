@@ -133,47 +133,6 @@ public final class Constants {
 	 *
 	 */	
 	public static final class Logs {
-
-		/**
-		 * App name in Structured Logs 
-		 */
-		public static final String ELASTIC_LOGGER_APP_NAME = "application";
-
-		/**
-		 * Operation Name in Structured Logs 
-		 */
-		public static final String ELASTIC_LOGGER_OP_NAME = "operation";
-
-		/**
-		 * Operation Timestamp in Structured Logs 
-		 */
-		public static final String ELASTIC_LOGGER_OP_TIMESTAMP = "op-log-timestamp";
-
-		/**
-		 * Operation Result in Structured Logs 
-		 */
-		public static final String ELASTIC_LOGGER_OP_RESULT = "op-result";
-
-		/**
-		 * Operation Timestamp Start in Structured Logs 
-		 */
-		public static final String ELASTIC_LOGGER_OP_TIMESTAMP_START = "op-timestamp-start";
-
-		/**
-		 * Operation Timestamp End in Structured Logs 
-		 */
-		public static final String ELASTIC_LOGGER_OP_TIMESTAMP_END = "op-timestamp-end";
-
-		/**
-		 * Operation Error Code in Structured Logs 
-		 */
-		public static final String ELASTIC_LOGGER_OP_ERROR_CODE = "op-error";
-
-		/**
-		 * Operation Error Description in Structured Logs 
-		 */
-		public static final String ELASTIC_LOGGER_OP_ERROR_DESCRIPTION = "op-error-description";
-
 		/**
 		 * When there is an error retrieving the host info 
 		 */
@@ -188,11 +147,6 @@ public final class Constants {
 		 * When a document is not found on MongoDB 
 		 */
 		public static final String ERROR_DOCUMENT_NOT_FOUND = "Error: document not found on staging database";
-
-		/**
-		 * When the document is not found on FHIR Server 
-		 */
-		public static final String DOCUMENT_NOT_FOUND_ON_FHIR_SERVER = "Document not found on FHIR server";
 
 		/**
 		 * When an empty identifier is received from Kafka 
