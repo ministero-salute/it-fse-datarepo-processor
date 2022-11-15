@@ -20,6 +20,8 @@ public final class Constants {
 		 */
 		public static final String CONFIG_MONGO = "it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.mongo";
 
+		public static final String REPOSITORY = "it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository";
+
 		/**
 		 * This method is intentionally left blank 
 		 */
@@ -42,6 +44,11 @@ public final class Constants {
 		 * Test Profile - Async Flow 
 		 */
 		public static final String TEST_ASYNC = "test-async";
+
+		/**
+		 * Test profile
+		 */
+		public static final String TEST = "test";
 
 		/**
 		 * Dev Profile 
