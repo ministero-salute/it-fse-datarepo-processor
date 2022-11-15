@@ -3,7 +3,16 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.config;
 
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ErrorLogEnum;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.OperationLogEnum;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnum;
+
+import java.util.EnumMap;
+import java.util.Map;
+
 /**
+ * 
+ *
  * Constants application.
  */
 public final class Constants {
@@ -12,12 +21,7 @@ public final class Constants {
 	 *	Path scan.
 	 */
 	public static final class ComponentScan {
-
-		/**
-		 * Base path.
-		 */
-		public static final String BASE = "it.finanze.sanita.fse2.ms.edssrvdataprocessor";
-
+		
 		/**
 		 * Configuration mongo path.
 		 */
@@ -32,9 +36,7 @@ public final class Constants {
 		/**
 		 * This method is intentionally left blank 
 		 */
-		private ComponentScan() {
-
-		}
+		private ComponentScan() {}
 
 	}
  
@@ -92,6 +94,38 @@ public final class Constants {
 		private App() {
 
 		}
+	}
+
+	public static final class AppConstants {
+
+		/**
+		 * This method is intentionally left blank. 
+		 */
+		private AppConstants() {
+			
+		}
+
+		/**
+		 * Log Map
+		 */
+		public static final Map<ProcessorOperationEnum, OperationLogEnum> logMap = new EnumMap<>(ProcessorOperationEnum.class);
+			static {
+				logMap.put(ProcessorOperationEnum.PUBLISH, OperationLogEnum.FHIR_PUBLISH);
+				logMap.put(ProcessorOperationEnum.REPLACE, OperationLogEnum.FHIR_REPLACE);
+				logMap.put(ProcessorOperationEnum.UPDATE, OperationLogEnum.FHIR_UPDATE);
+				logMap.put(ProcessorOperationEnum.DELETE, OperationLogEnum.FHIR_DELETE);
+			}
+
+		/**
+		 * Log Error Map 
+		 */
+		public static final Map<ProcessorOperationEnum, ErrorLogEnum> logErrorMap = new EnumMap<>(ProcessorOperationEnum.class);
+			static {
+				logErrorMap.put(ProcessorOperationEnum.PUBLISH, ErrorLogEnum.KO_FHIR_PUBLISH);
+				logErrorMap.put(ProcessorOperationEnum.REPLACE, ErrorLogEnum.KO_FHIR_REPLACE);
+				logErrorMap.put(ProcessorOperationEnum.UPDATE, ErrorLogEnum.KO_FHIR_UPDATE);
+				logErrorMap.put(ProcessorOperationEnum.DELETE, ErrorLogEnum.KO_FHIR_DELETE);
+			}
 	}
 
 	/**
@@ -199,6 +233,22 @@ public final class Constants {
 	 */
 	private Constants() {
 
+	}
+
+	/**
+	 * Collections
+	 */
+	public static final class Collections {
+
+		/**
+		 * Schema collection name
+		 */
+		public static final String DOCUMENT_REFERENCE = "ingestion-staging";
+
+		/**
+		 * Private constructor to disallow to access from other classes
+		 */
+		private Collections() {}
 	}
 
 }

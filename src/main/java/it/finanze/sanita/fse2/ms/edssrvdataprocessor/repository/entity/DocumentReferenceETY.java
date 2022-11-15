@@ -15,7 +15,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
  * Document Reference Entity 
  *
  */
-@Document(collection = "ingestion-staging")
+@Document(collection = "#{@referenceBean}")
 @Data
 @NoArgsConstructor
 public class DocumentReferenceETY {
