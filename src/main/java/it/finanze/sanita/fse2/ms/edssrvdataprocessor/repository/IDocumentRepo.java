@@ -7,8 +7,7 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationExcepti
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.DocumentReferenceETY;
 
 /**
- * Documents Repo Interface 
- *
+ * Documents Repo Interface
  */
 public interface IDocumentRepo {
 

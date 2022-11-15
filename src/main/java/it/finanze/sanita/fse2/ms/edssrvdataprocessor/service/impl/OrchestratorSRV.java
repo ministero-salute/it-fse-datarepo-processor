@@ -57,7 +57,7 @@ public class OrchestratorSRV implements IOrchestratorSRV {
     @Override
     public void dispatchAction(ProcessorOperationEnum operationEnum, DispatchActionDTO dispatchActionDTO) throws DocumentNotFoundException, OperationException {
         log.info("[EDS] Dispatching action from type received: {}", operationEnum.getName());
-        FhirOperationDTO fhirOperationDTO = null;
+        FhirOperationDTO fhirOperationDTO;
         switch (operationEnum) {
             case PUBLISH:
                 fhirOperationDTO = extractFhirData(dispatchActionDTO.getMongoId());

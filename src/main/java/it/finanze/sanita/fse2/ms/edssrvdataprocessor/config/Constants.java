@@ -155,6 +155,11 @@ public final class Constants {
 		public static final String DOCUMENT_REFERENCE = "ingestion-staging";
 
 		/**
+		 * Successful transaction data
+		 */
+		public static final String TRANSACTION_STATUS = "transaction-status";
+
+		/**
 		 * Private constructor to disallow to access from other classes
 		 */
 		private Collections() {}

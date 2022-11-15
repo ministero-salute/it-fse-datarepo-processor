@@ -21,4 +21,9 @@ public class CollectionNaming {
     public String getDocumentReference() {
         return profileUtility.isTestProfile() ? TEST_PREFIX + DOCUMENT_REFERENCE : DOCUMENT_REFERENCE;
     }
+
+    @Bean("transactionBean")
+    public String getTransactionStatus() {
+        return profileUtility.isTestProfile() ? TEST_PREFIX + TRANSACTION_STATUS : TRANSACTION_STATUS;
+    }
 }
