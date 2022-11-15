@@ -1,5 +1,6 @@
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.tx.GetTxPageResDTO;
@@ -18,6 +19,7 @@ import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility.RoutesUtilit
 public interface ITransactionsCTL {
 
     @GetMapping(value = API_TRANSACTIONS_PATH)
+    @Operation(summary = "Restituisce transazioni processate in base al tipo", description = "Restituite tutte le transazioni correttamente processate in base al tipo")
     GetTxPageResDTO getTransactions(
         @PathVariable(API_PATH_TYPE_VAR)
         @Parameter(description = "Identificatore tipologia transazioni")
