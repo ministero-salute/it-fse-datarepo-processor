@@ -3,8 +3,6 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.controller;
 
-import java.io.Serializable;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import brave.Tracer;
@@ -15,20 +13,13 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.LogTraceInfoDT
  *
  *	Abstract controller.
  */
-public abstract class AbstractCTL implements Serializable {
-
-
-	
-	/**
-	 * Serial version UID 
-	 */
-	private static final long serialVersionUID = 320718612495182423L; 
+public abstract class AbstractCTL {
 	
 	/**
 	 * Tracer 
 	 */
 	@Autowired
-	private transient Tracer tracer;
+	private Tracer tracer;
 
 
 	protected LogTraceInfoDTO getLogTraceInfo() {

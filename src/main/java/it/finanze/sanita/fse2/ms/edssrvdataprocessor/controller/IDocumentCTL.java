@@ -4,7 +4,6 @@
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.controller;
 
 import java.io.IOException;
-import java.io.Serializable;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -34,7 +33,7 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationExcepti
 @RequestMapping(path = "/v1")
 @Tag(name = "Document Data Processor Controller")
 @Validated
-public interface IDocumentCTL extends Serializable {
+public interface IDocumentCTL {
 
 	/**
 	 * Called to process a document bundle inserted from GTW onto EDS 

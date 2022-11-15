@@ -34,12 +34,6 @@ public class DocumentCTL extends AbstractCTL implements IDocumentCTL {
 	 */
 	@Autowired
 	private OrchestratorSRV orchestratorSRV;
-
-	/**
-	 * Serial version UID 
-	 */
-	private static final long serialVersionUID = -8298415975725845794L; 
-	
 	
 	/**
 	 * Proocess Operation Implementation 
