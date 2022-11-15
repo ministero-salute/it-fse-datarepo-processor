@@ -13,12 +13,17 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 /**
  * Document Reference Entity 
- *
  */
 @Document(collection = "#{@referenceBean}")
 @Data
 @NoArgsConstructor
 public class DocumentReferenceETY {
+
+	public static final String FIELD_ID = "_id";
+	public static final String FIELD_IDENTIFIER = "identifier";
+	public static final String FIELD_OPERATION = "operation";
+	public static final String FIELD_DOCUMENT = "document";
+	public static final String FIELD_WIF = "workflow_instance_id";
 
 	/** 
 	 * Mongo ID  
@@ -29,25 +34,25 @@ public class DocumentReferenceETY {
 	/**
 	 * Identifier 
 	 */
-	@Field("identifier")
+	@Field(FIELD_IDENTIFIER)
 	private String identifier;
 	
 	/**
 	 * Operation 
 	 */
-	@Field("operation")
+	@Field(FIELD_OPERATION)
 	private ProcessorOperationEnum operation;
 
 	/**
 	 * Json String
 	 */
-	@Field("document")
+	@Field(FIELD_DOCUMENT)
 	private org.bson.Document document;
 	
 	/**
 	 * Workflow instance id.
 	 */
-	@Field("workflow_instance_id")
+	@Field(FIELD_WIF)
 	private String workflowInstanceId;
 	
 }
