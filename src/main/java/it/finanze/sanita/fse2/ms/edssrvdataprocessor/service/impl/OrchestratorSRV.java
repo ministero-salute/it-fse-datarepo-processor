@@ -16,7 +16,6 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.IFhirOperationSRV;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.IOrchestratorSRV;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -47,13 +46,6 @@ public class OrchestratorSRV implements IOrchestratorSRV {
     @Autowired
     private transient IDocumentRepo documentRepo;
 
-    /**
-     * True if we are in synchronous flow 
-     */
-    @Value("${eds.dataprocessor.operation.sync}")
-    private boolean syncOperation;
-
-    
     @Override
     public void dispatchAction(ProcessorOperationEnum operationEnum, DispatchActionDTO dispatchActionDTO) throws DocumentNotFoundException, OperationException {
         log.info("[EDS] Dispatching action from type received: {}", operationEnum.getName());
