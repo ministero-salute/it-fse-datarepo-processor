@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants;
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants.Profile.TEST;
 
 /**
  * Profile Utility Class 
@@ -30,20 +30,7 @@ public class ProfileUtility {
      */
     public boolean isTestProfile() {
         if (environment != null && environment.getActiveProfiles().length > 0) {
-            return environment.getActiveProfiles()[0].contains(Constants.Profile.TEST_SYNC) 
-            		|| environment.getActiveProfiles()[0].contains(Constants.Profile.TEST_ASYNC) ;
-        }
-        return false;
-    }
-
-    /**
-     * True if we are in dev environmnet 
-     * 
-     * @return  A boolean which is true if we are in dev environment 
-     */
-    public boolean isDevProfile() {
-        if (environment != null && environment.getActiveProfiles().length > 0) {
-            return environment.getActiveProfiles()[0].contains(Constants.Profile.DEV);
+            return environment.getActiveProfiles()[0].toLowerCase().contains(TEST);
         }
         return false;
     }
