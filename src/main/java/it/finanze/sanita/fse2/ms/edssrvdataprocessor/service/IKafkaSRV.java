@@ -5,6 +5,7 @@ package it.finanze.sanita.fse2.ms.edssrvdataprocessor.service;
 
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentNotFoundException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.EmptyIdentifierException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.messaging.MessageHeaders;
 
@@ -23,7 +24,7 @@ public interface IKafkaSRV extends Serializable {
 	 * @throws DocumentNotFoundException  An exception thrown when the document has not been found on the FHIR Server  
 	 * @throws EmptyIdentifierException  An exception thrown when the document has an empty identifier 
 	 */
-	void lowPriorityListenerPublishIngestor(ConsumerRecord<String, String> cr, MessageHeaders messageHeaders) throws DocumentNotFoundException, EmptyIdentifierException;
+	void lowPriorityListenerPublishIngestor(ConsumerRecord<String, String> cr, MessageHeaders messageHeaders) throws DocumentNotFoundException, EmptyIdentifierException, OperationException;
 
 	/**
 	 * Kafka listener for Publish Ingestor communications in medium priority
@@ -33,7 +34,7 @@ public interface IKafkaSRV extends Serializable {
 	 * @throws DocumentNotFoundException  An exception thrown when the document has not been found on the FHIR Server  
 	 * @throws EmptyIdentifierException  An exception thrown when the document has an empty identifier 
 	 */
-	void mediumPriorityListenerPublishIngestor(ConsumerRecord<String, String> cr, MessageHeaders messageHeaders) throws DocumentNotFoundException, EmptyIdentifierException;
+	void mediumPriorityListenerPublishIngestor(ConsumerRecord<String, String> cr, MessageHeaders messageHeaders) throws DocumentNotFoundException, EmptyIdentifierException, OperationException;
 
 	/**
 	 * Kafka listener for Publish Ingestor communications in high priority
@@ -43,7 +44,7 @@ public interface IKafkaSRV extends Serializable {
 	 * @throws DocumentNotFoundException  An exception thrown when the document has not been found on the FHIR Server  
 	 * @throws EmptyIdentifierException  An exception thrown when the document has an empty identifier 
 	 */
-	void highPriorityListenerPublishIngestor(ConsumerRecord<String, String> cr, MessageHeaders messageHeaders) throws DocumentNotFoundException, EmptyIdentifierException;
+	void highPriorityListenerPublishIngestor(ConsumerRecord<String, String> cr, MessageHeaders messageHeaders) throws DocumentNotFoundException, EmptyIdentifierException, OperationException;
 
 	/**
 	 * Kafka listener for Replace CDA Ingestor communications
@@ -53,5 +54,5 @@ public interface IKafkaSRV extends Serializable {
 	 * @throws DocumentNotFoundException  An exception thrown when the document has not been found on the FHIR Server  
 	 * @throws EmptyIdentifierException  An exception thrown when the document has an empty identifier 
 	 */
-	void genericListenerPublishIngestor(ConsumerRecord<String, String> cr, MessageHeaders messageHeaders) throws DocumentNotFoundException, EmptyIdentifierException;
+	void genericListenerPublishIngestor(ConsumerRecord<String, String> cr, MessageHeaders messageHeaders) throws DocumentNotFoundException, EmptyIdentifierException, OperationException;
 }
