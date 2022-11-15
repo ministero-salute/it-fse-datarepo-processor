@@ -3,9 +3,6 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.IEdsDataQualityClient;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.IEdsQueryClient;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.FhirOperationDTO;
@@ -16,9 +13,14 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.EventTypeEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.BusinessException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentAlreadyExistsException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.ITransactionRepo;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.IFhirOperationSRV;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.KafkaAbstractSRV;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.TransactionStatusETY.from;
 
 /**
  * FHIR Operation Service Implementation 
@@ -33,6 +35,9 @@ public class FhirOperationSRV extends KafkaAbstractSRV implements IFhirOperation
 	 */
     @Autowired
     private IEdsQueryClient queryClient;
+
+    @Autowired
+    private ITransactionRepo transactionRepo;
 
     /**
      * Data Quality Client 
@@ -53,7 +58,7 @@ public class FhirOperationSRV extends KafkaAbstractSRV implements IFhirOperation
     				sendStatusMessage(fhirOperationDTO.getWorkflowInstanceId(), EventTypeEnum.VALIDAZIONE_NORMATIVE_R4, EventStatusEnum.NON_BLOCKING_ERROR, validatedData.getMessage());
     			}
     			queryClient.fhirPublication(fhirOperationDTO.getMasterIdentifier(), fhirOperationDTO.getJsonString(), ProcessorOperationEnum.PUBLISH);
-    			
+    			transactionRepo.insert(from(fhirOperationDTO.getWorkflowInstanceId(), ProcessorOperationEnum.PUBLISH));
     		} else {
     			log.error("Documento già esistente sul server fhir : " + fhirOperationDTO.getMasterIdentifier());
     			throw new DocumentAlreadyExistsException("Documento già esistente"); 
@@ -94,7 +99,8 @@ public class FhirOperationSRV extends KafkaAbstractSRV implements IFhirOperation
     		
     		if(validatedData.isValid()) {
     			queryClient.fhirPublication(fhirOperationDTO.getMasterIdentifier(), fhirOperationDTO.getJsonString(), ProcessorOperationEnum.REPLACE);
-    		} else {
+                transactionRepo.insert(from(fhirOperationDTO.getWorkflowInstanceId(), ProcessorOperationEnum.REPLACE));
+            } else {
     			//TODO - Throw new Exception
     		}
         } catch (Exception e) {
