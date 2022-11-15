@@ -26,12 +26,6 @@ public final class Constants {
 		 * Configuration mongo path.
 		 */
 		public static final String CONFIG_MONGO = "it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.mongo";
-		
-		/**
-		 * Configuration mongo repository path.
-		 */
-
-		public static final String INGESTION_STAGING = "ingestion-staging";
 
 		/**
 		 * This method is intentionally left blank 
@@ -81,11 +75,6 @@ public final class Constants {
 	 *
 	 */
 	public static final class App {
-		
-		/**
-		 * Identifier
-		 */
-		public static final String IDENTIFIER = "identifier";
 		public static final String MISSING_WORKFLOW_PLACEHOLDER = "UNKNOWN_WORKFLOW_ID";
 
 		/** 
@@ -142,6 +131,11 @@ public final class Constants {
 		 * When there is an error inserting a document on MongoDB 
 		 */
 		public static final String ERROR_MONGO_INSERT = "MongoDB: Error while inserting document";
+
+		/**
+		 * When there is an error inserting a document on MongoDB
+		 */
+		public static final String ERROR_MONGO_FIND_BY_ID = "MongoDB: Error while find document by id";
 
 		/**
 		 * When a document is not found on MongoDB 

@@ -11,6 +11,7 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.DocumentReferenceDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.DocumentResponseDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.UIDModeEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentNotFoundException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.impl.OrchestratorSRV;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility.StringUtility;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +41,7 @@ public class DocumentCTL extends AbstractCTL implements IDocumentCTL {
 	 */
 	@Override
 	public ResponseEntity<DocumentResponseDTO> processOperation(HttpServletRequest request, @RequestBody DocumentReferenceDTO document)
-			throws DocumentNotFoundException {
+		throws DocumentNotFoundException, OperationException {
 		log.info("Called POST /ingest"); 
 		log.info("Received masterIdentifier: " + document.getIdentifier());
 		final String transactionId = StringUtility.generateTransactionUID(UIDModeEnum.UUID_UUID);

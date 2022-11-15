@@ -27,6 +27,6 @@ public interface IDocumentRepo {
 	 * @param id  The Mongo ID of the document 
 	 * @return DocumentReferenceETY  The entity having the given id 
 	 */
-	DocumentReferenceETY findById(String id); 
+	DocumentReferenceETY findById(String id) throws OperationException;
 
 }

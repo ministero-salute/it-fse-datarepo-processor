@@ -6,13 +6,12 @@ package it.finanze.sanita.fse2.ms.edssrvdataprocessor.service;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.DispatchActionDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentNotFoundException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
 
 import java.io.Serializable;
 
 /**
- * Orchestrator Service Interface 
- * 
- *
+ * Orchestrator Service Interface
  */
 public interface IOrchestratorSRV extends Serializable {
 	
@@ -23,7 +22,7 @@ public interface IOrchestratorSRV extends Serializable {
      * @param dispatchActionDTO  A DTO representing the document to process  
      * @throws DocumentNotFoundException  An exception thrown when the document is not found on MongoDB 
      */
-    void dispatchAction(ProcessorOperationEnum operationEnum, DispatchActionDTO dispatchActionDTO) throws DocumentNotFoundException;
+    void dispatchAction(ProcessorOperationEnum operationEnum, DispatchActionDTO dispatchActionDTO) throws DocumentNotFoundException, OperationException;
 
-    String getWorkflowInstanceId(String id);
+    String getWorkflowInstanceId(String id) throws OperationException;
 }
