@@ -16,7 +16,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -24,27 +23,19 @@ import java.util.List;
  *
  */
 @Repository
-public class DocumentRepo implements IDocumentRepo, Serializable {
-
-	/**
-	 * Serial version UID 
-	 */
-	private static final long serialVersionUID = -8230326857671732231L;
+public class DocumentRepo implements IDocumentRepo {
 
 	/**
 	 * Mongo Template 
 	 */
 	@Autowired
-	private transient MongoTemplate mongoTemplate; 
+	private MongoTemplate mongoTemplate;
 	
 	/**
 	 * Profile Utility 
 	 */
 	@Autowired
-	private transient ProfileUtility profileUtility;
-		
-	String collection = Constants.ComponentScan.INGESTION_STAGING;
-
+	private ProfileUtility profileUtility;
 	
 	@Override
 	public DocumentReferenceETY insert(DocumentReferenceETY ety) throws OperationException {
