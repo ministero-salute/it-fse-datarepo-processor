@@ -3,9 +3,8 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.controller.impl;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.controller.IDocumentCTL;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.controller.AbstractCTL;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.controller.IDocumentCTL;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.DispatchActionDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.DocumentReferenceDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.DocumentResponseDTO;
@@ -16,11 +15,7 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.impl.OrchestratorSR
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility.StringUtility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletRequest;
 
 /** 
  * The implementation of the Document Controller 
@@ -40,7 +35,7 @@ public class DocumentCTL extends AbstractCTL implements IDocumentCTL {
 	 * Proocess Operation Implementation 
 	 */
 	@Override
-	public ResponseEntity<DocumentResponseDTO> processOperation(HttpServletRequest request, @RequestBody DocumentReferenceDTO document)
+	public DocumentResponseDTO processOperation(DocumentReferenceDTO document)
 		throws DocumentNotFoundException, OperationException {
 		log.info("Called POST /ingest"); 
 		log.info("Received masterIdentifier: " + document.getIdentifier());
@@ -52,6 +47,6 @@ public class DocumentCTL extends AbstractCTL implements IDocumentCTL {
 					.mongoId(null)
 					.documentReferenceDTO(document)
 					.build());
-		return new ResponseEntity<>(new DocumentResponseDTO(getLogTraceInfo(), transactionId, true), HttpStatus.OK);
+		return new DocumentResponseDTO(getLogTraceInfo(), transactionId, true);
 	}
 }
