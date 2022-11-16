@@ -25,4 +25,6 @@ public interface ITransactionRepo {
 	TransactionStatusETY insert(TransactionStatusETY tx) throws OperationException;
 
     Page<TransactionStatusETY> getByTimestamp(String type, Date timestamp, Pageable of) throws OperationException;
+
+    long deleteByTimestamp(String type, Date timestamp) throws OperationException;
 }

@@ -42,4 +42,9 @@ public class TransactionsSVR implements ITransactionsSVR {
         // Return page
         return new SimpleImmutableEntry<>(current, wif);
     }
+
+    @Override
+    public long deleteTransactions(String type, Date timestamp) throws OperationException {
+        return repository.deleteByTimestamp(type, timestamp);
+    }
 }

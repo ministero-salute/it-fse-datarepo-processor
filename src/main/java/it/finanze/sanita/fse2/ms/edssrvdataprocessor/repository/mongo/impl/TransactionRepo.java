@@ -4,6 +4,7 @@
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.mongo.impl;
 
 import com.mongodb.MongoException;
+import com.mongodb.client.result.DeleteResult;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.ITransactionRepo;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.TransactionStatusETY;
@@ -18,8 +19,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Date;
 import java.util.List;
 
-import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants.Logs.ERROR_MONGO_INSERT;
-import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants.Logs.ERR_REP_DOCS_NOT_FOUND;
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants.Logs.*;
 import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.TransactionStatusETY.*;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
@@ -66,6 +66,22 @@ public class TransactionRepo implements ITransactionRepo {
 		}
 		// Return data
 		return new PageImpl<>(entities, page, count);
+	}
+
+	@Override
+	public long deleteByTimestamp(String type, Date timestamp) throws OperationException {
+		// Working var
+		DeleteResult res;
+		// Create query
+		Query query = new Query();
+		query.addCriteria(where(FIELD_TYPE).is(type).and(FIELD_INSERTION_DATE).lte(timestamp));
+		try {
+			res = mongo.remove(query, TransactionStatusETY.class);
+		}catch (MongoException e) {
+			// Catch data-layer runtime exceptions and turn into a checked exception
+			throw new OperationException(ERR_REP_DEL_DOCS, e);
+		}
+		return res.getDeletedCount();
 	}
 
 }

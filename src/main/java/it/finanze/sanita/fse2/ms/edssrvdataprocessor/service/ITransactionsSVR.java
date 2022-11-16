@@ -11,4 +11,5 @@ import java.util.List;
 
 public interface ITransactionsSVR {
     SimpleImmutableEntry<Page<TransactionStatusETY>, List<String>> getTransactions(int page, int limit, Date timestamp, String type) throws OperationException, OutOfRangeException;
+    long deleteTransactions(String type, Date timestamp) throws OperationException;
 }

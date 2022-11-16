@@ -2,6 +2,7 @@ package it.finanze.sanita.fse2.ms.edssrvdataprocessor.controller.impl;
 
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.controller.AbstractCTL;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.controller.ITransactionsCTL;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.tx.DeleteTxResDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.tx.GetTxPageResDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OutOfRangeException;
@@ -29,5 +30,9 @@ public class TransactionsCTL extends AbstractCTL implements ITransactionsCTL {
         SimpleImmutableEntry<Page<TransactionStatusETY>, List<String>> slice = service.getTransactions(page, limit, timestamp, type);
         // When returning, it builds the URL according to provided values
         return new GetTxPageResDTO(getLogTraceInfo(), slice.getValue(), type, timestamp, slice.getKey());
+    }
+
+    public DeleteTxResDTO deleteTransactions(String type, Date timestamp) throws OperationException {
+        return new DeleteTxResDTO(type, timestamp, service.deleteTransactions(type, timestamp));
     }
 }

@@ -97,8 +97,8 @@ public final class Constants {
 		public static final String ERR_VAL_FUTURE_DATE = "La data di aggiornamento non può essere nel futuro";
 		public static final String ERR_VAL_TYPE_BLANK = "Il type non può essere vuoto";
 		public static final String ERR_VAL_UNABLE_CONVERT = "Impossibile convertire %s al tipo %s";
-
 		public static final String ERR_REP_DOCS_NOT_FOUND = "Impossibile recuperare i documenti richiesti";
+		public static final String ERR_REP_DEL_DOCS = "Impossibile cancellare i documenti richiesti";
 
 		/**
 		 * When there is an error retrieving the host info 
