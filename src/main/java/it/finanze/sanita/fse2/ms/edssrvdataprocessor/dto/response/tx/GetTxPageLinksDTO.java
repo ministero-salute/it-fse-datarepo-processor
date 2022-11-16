@@ -3,7 +3,7 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.tx;
 
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.DocumentReferenceETY;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.TransactionStatusETY;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.http.client.utils.URIBuilder;
@@ -19,14 +19,14 @@ public class GetTxPageLinksDTO {
     private String next;
     private String prev;
 
-    public static GetTxPageLinksDTO fromPage(String type, Page<DocumentReferenceETY> page) {
+    public static GetTxPageLinksDTO fromPage(String type, Page<TransactionStatusETY> page) {
         return new GetTxPageLinksDTO(
             getNext(type, page),
             getPrev(type, page)
         );
     }
 
-    private static String getPrev(String type, Page<DocumentReferenceETY> page) {
+    private static String getPrev(String type, Page<TransactionStatusETY> page) {
         // Default state
         String prev = null;
         // Check if there is a previous page and the current page is on the right index
@@ -45,7 +45,7 @@ public class GetTxPageLinksDTO {
         return prev;
     }
 
-    private static String getNext(String type, Page<DocumentReferenceETY> page) {
+    private static String getNext(String type, Page<TransactionStatusETY> page) {
         // Default state
         String next = null;
         // Check if there is a next page

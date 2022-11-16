@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.LogTraceInfoDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.ResponseDTO;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.DocumentReferenceETY;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.TransactionStatusETY;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.domain.Page;
@@ -30,7 +30,7 @@ public class GetTxPageResDTO extends ResponseDTO {
         LogTraceInfoDTO traceInfo,
         List<String> wif,
         String type,
-        Page<DocumentReferenceETY> page
+        Page<TransactionStatusETY> page
     ) {
         super(traceInfo);
         this.wif = wif;
