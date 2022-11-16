@@ -11,10 +11,12 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OutOfRangeExcept
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility.MiscUtility;
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants.Logs.ERR_VAL_UNABLE_CONVERT;
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
 
@@ -80,6 +82,21 @@ public final class ErrorBuilderDTO {
             ex.getMessage(),
             SC_INTERNAL_SERVER_ERROR,
             ErrorType.SERVER.toInstance(ErrorInstance.Server.INTERNAL)
+        );
+    }
+
+    public static ErrorResponseDTO createArgumentMismatchError(LogTraceInfoDTO trace, MethodArgumentTypeMismatchException ex) {
+        return new ErrorResponseDTO(
+            trace,
+            ErrorType.VALIDATION.getType(),
+            ErrorType.VALIDATION.getTitle(),
+            String.format(
+                ERR_VAL_UNABLE_CONVERT,
+                ex.getName(),
+                ex.getParameter().getParameter().getType().getSimpleName()
+            ),
+            SC_BAD_REQUEST,
+            ErrorType.VALIDATION.toInstance(ErrorInstance.Validation.CONSTRAINT_FIELD, ex.getName())
         );
     }
 

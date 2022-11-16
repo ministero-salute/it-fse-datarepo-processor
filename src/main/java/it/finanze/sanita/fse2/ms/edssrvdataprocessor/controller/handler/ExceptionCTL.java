@@ -17,9 +17,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.validation.ConstraintViolationException;
+
+import java.util.Date;
 
 import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.error.ErrorBuilderDTO.*;
 
@@ -69,6 +72,25 @@ public class ExceptionCTL extends ResponseEntityExceptionHandler {
         log.error(Constants.Logs.ERROR_HANDLER_GENERIC_EXCEPTION, ex);
         // Create error DTO
         ErrorResponseDTO out = createGenericError(getLogTraceInfo(), ex);
+        // Set HTTP headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PROBLEM_JSON);
+        // Bye bye
+        return new ResponseEntity<>(out, headers, out.getStatus());
+    }
+
+    /**
+     * Handles exceptions thrown by the inability to convert a certain value from a type X to a type Y.
+     * (e.g. {@link String} to {@link Date})
+     *
+     * @param ex exception
+     */
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
+        // Log me
+        log.error("HANDLER MethodArgumentTypeMismatchException()", ex);
+        // Create error DTO
+        ErrorResponseDTO out = createArgumentMismatchError(getLogTraceInfo(), ex);
         // Set HTTP headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PROBLEM_JSON);

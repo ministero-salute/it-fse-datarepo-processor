@@ -90,6 +90,16 @@ public final class Constants {
 	 *
 	 */	
 	public static final class Logs {
+		public static final String ERR_VAL_PAGE_NOT_EXISTS = "La pagina richiesta non esiste, range valido da <%d> a <%d>";
+		public static final String ERR_VAL_PAGE_IDX_LESS_ZERO = "L'indice pagina non può essere minore di zero";
+		public static final String ERR_VAL_PAGE_LIMIT_LESS_ZERO = "Il limite pagina non può essere minore o uguale a zero";
+
+		public static final String ERR_VAL_FUTURE_DATE = "La data di aggiornamento non può essere nel futuro";
+		public static final String ERR_VAL_TYPE_BLANK = "Il type non può essere vuoto";
+		public static final String ERR_VAL_UNABLE_CONVERT = "Impossibile convertire %s al tipo %s";
+
+		public static final String ERR_REP_DOCS_NOT_FOUND = "Impossibile recuperare i documenti richiesti";
+
 		/**
 		 * When there is an error retrieving the host info 
 		 */

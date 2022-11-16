@@ -13,6 +13,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.domain.Page;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -22,6 +23,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 public class GetTxPageResDTO extends ResponseDTO {
 
+    private Date timestamp;
     @ArraySchema(schema = @Schema(implementation = String.class))
     private List<String> wif;
     private GetTxPageLinksDTO links;
@@ -30,9 +32,11 @@ public class GetTxPageResDTO extends ResponseDTO {
         LogTraceInfoDTO traceInfo,
         List<String> wif,
         String type,
+        Date timestamp,
         Page<TransactionStatusETY> page
     ) {
         super(traceInfo);
+        this.timestamp = timestamp;
         this.wif = wif;
         this.links = GetTxPageLinksDTO.fromPage(type, page);
     }
