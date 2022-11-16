@@ -3,24 +3,28 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.impl;
 
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.TransactionStatusETY.from;
+
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.IEdsDataQualityClient;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.IEdsQueryClient;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.FhirOperationDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.ResourceExistResDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.ValidationResultDTO;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.EventStatusEnum;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.EventTypeEnum;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.OperationLogEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnum;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ResultLogEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.BusinessException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentAlreadyExistsException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.logging.LoggerHelper;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.ITransactionRepo;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.IFhirOperationSRV;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.KafkaAbstractSRV;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.TransactionStatusETY.from;
 
 /**
  * FHIR Operation Service Implementation 
@@ -45,6 +49,8 @@ public class FhirOperationSRV extends KafkaAbstractSRV implements IFhirOperation
     @Autowired
     private IEdsDataQualityClient dataQualityClient;
 
+    @Autowired
+    private LoggerHelper kafkaLogger;
     
     @Override
     public void publish(final FhirOperationDTO fhirOperationDTO) {
@@ -52,9 +58,10 @@ public class FhirOperationSRV extends KafkaAbstractSRV implements IFhirOperation
     	try {
     		ResourceExistResDTO response = queryClient.fhirCheckExist(fhirOperationDTO.getMasterIdentifier());
     		if(Boolean.FALSE.equals(response.isExist())){
+    			Date startDate = new Date();
     			ValidationResultDTO validatedData = dataQualityClient.validateBundleNormativeR4(fhirOperationDTO);
     			if(!validatedData.isValid()) {
-    				sendStatusMessage(fhirOperationDTO.getWorkflowInstanceId(), EventTypeEnum.VALIDAZIONE_NORMATIVE_R4, EventStatusEnum.NON_BLOCKING_ERROR, validatedData.getMessage());
+    				kafkaLogger.info(validatedData.getMessage(), OperationLogEnum.VALIDATE_NORMATIVE_R4, ResultLogEnum.KO, startDate);
     			}
     			queryClient.fhirPublication(fhirOperationDTO.getMasterIdentifier(), fhirOperationDTO.getJsonString(), ProcessorOperationEnum.PUBLISH);
     			transactionRepo.insert(from(fhirOperationDTO.getWorkflowInstanceId(), ProcessorOperationEnum.PUBLISH));
@@ -94,9 +101,10 @@ public class FhirOperationSRV extends KafkaAbstractSRV implements IFhirOperation
     public void replace(FhirOperationDTO fhirOperationDTO) {
         log.info("[EDS] Replace - START");
         try {
+        	Date startDate = new Date();
         	ValidationResultDTO validatedData = dataQualityClient.validateBundleNormativeR4(fhirOperationDTO);
 			if(!validatedData.isValid()) {
-				sendStatusMessage(fhirOperationDTO.getWorkflowInstanceId(), EventTypeEnum.VALIDAZIONE_NORMATIVE_R4, EventStatusEnum.NON_BLOCKING_ERROR, validatedData.getMessage());
+				kafkaLogger.info(validatedData.getMessage(), OperationLogEnum.VALIDATE_NORMATIVE_R4, ResultLogEnum.KO, startDate);
 			}
 			queryClient.fhirPublication(fhirOperationDTO.getMasterIdentifier(), fhirOperationDTO.getJsonString(), ProcessorOperationEnum.REPLACE);
 			transactionRepo.insert(from(fhirOperationDTO.getWorkflowInstanceId(), ProcessorOperationEnum.REPLACE));

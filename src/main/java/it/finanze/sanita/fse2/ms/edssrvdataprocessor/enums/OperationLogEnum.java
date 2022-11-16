@@ -17,7 +17,8 @@ public enum OperationLogEnum implements ILogEnum {
 	FHIR_PUBLISH("FHIR-PUBLISH", "Pubblicazione su server FHIR"),
 	FHIR_UPDATE("FHIR-UPDATE", "Update su server FHIR"),
 	FHIR_REPLACE("FHIR-REPLACE", "Replace su server FHIR"),
-	FHIR_DELETE("FHIR-DELETE", "Delete su server FHIR");
+	FHIR_DELETE("FHIR-DELETE", "Delete su server FHIR"),
+	VALIDATE_NORMATIVE_R4("FHIR-VALIDATE-NORMATIVE-R4", "Validazione normative R4");
 
 	/**
 	 * The operation code 
