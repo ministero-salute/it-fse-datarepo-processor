@@ -10,6 +10,11 @@ import lombok.NoArgsConstructor;
 public final class ErrorInstance {
 
         @NoArgsConstructor(access = AccessLevel.PRIVATE)
+        public static final class Validation {
+                public static final String CONSTRAINT_FIELD = "/constraint/field";
+        }
+
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
         public static final class Client {
                 public static final String UNSUPPORTED = "/unsupported-operation";
         }

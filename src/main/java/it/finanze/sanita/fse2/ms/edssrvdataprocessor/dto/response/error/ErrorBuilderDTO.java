@@ -6,13 +6,16 @@ package it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.error;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.LogTraceInfoDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.error.base.ErrorResponseDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.ConnectionRefusedException;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentNotFoundException;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.EmptyIdentifierException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility.MiscUtility;
 import lombok.Builder;
 import lombok.Data;
 
-import static org.apache.http.HttpStatus.*;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
+import static org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
 
 /**
  * Used to build an error response from a given DTO 
@@ -27,6 +30,20 @@ public final class ErrorBuilderDTO {
      */
     private ErrorBuilderDTO() {}
 
+    public static ErrorResponseDTO createConstraintError(LogTraceInfoDTO trace, ConstraintViolationException ex) {
+        // Retrieve the first constraint error
+        ConstraintViolation<?> violation = ex.getConstraintViolations().iterator().next();
+        String field = MiscUtility.extractKeyFromPath(violation.getPropertyPath());
+        // Return associated information
+        return new ErrorResponseDTO(
+            trace,
+            ErrorType.VALIDATION.getType(),
+            ErrorType.VALIDATION.getTitle(),
+            violation.getMessage(),
+            SC_BAD_REQUEST,
+            ErrorType.VALIDATION.toInstance(ErrorInstance.Validation.CONSTRAINT_FIELD, field)
+        );
+    }
 
     /**
      * Creates a Generic Error Response 
@@ -102,42 +119,5 @@ public final class ErrorBuilderDTO {
             ErrorType.SERVER.toInstance(ErrorInstance.Server.INTERNAL)
         );
     } 
-    
 
-    /**
-     * Creates a Document Not Found Error Response 
-     * 
-     * @param trace  The LogTraceInfo DTO 
-     * @param ex  Exception 
-     * @return ErrorResponseDTO  The error response 
-     */
-    public static ErrorResponseDTO createDocumentNotFoundError(LogTraceInfoDTO trace, DocumentNotFoundException ex) {
-        return new ErrorResponseDTO(
-            trace,
-            ErrorType.RESOURCE.getType(),
-            ErrorType.RESOURCE.getTitle(),
-            ex.getMessage(),
-            SC_NOT_FOUND,
-            ErrorType.RESOURCE.toInstance(ErrorInstance.Resource.NOT_FOUND)
-        );
-    } 
-    
-
-    /**
-     * Creates a Empty Identifier Error Response 
-     * 
-     * @param trace  The LogTraceInfo DTO 
-     * @param ex  Exception 
-     * @return  The error response 
-     */
-    public static ErrorResponseDTO createEmptyIdentifierError(LogTraceInfoDTO trace, EmptyIdentifierException ex) {
-            return new ErrorResponseDTO(
-                trace,
-                ErrorType.RESOURCE.getType(),
-                ErrorType.RESOURCE.getTitle(),
-                ex.getMessage(),
-                SC_NOT_FOUND,
-                ErrorType.RESOURCE.toInstance(ErrorInstance.Resource.EMPTY)
-            );           
-    }
 }
