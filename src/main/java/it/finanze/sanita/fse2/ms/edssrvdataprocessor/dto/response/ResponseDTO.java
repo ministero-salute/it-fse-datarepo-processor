@@ -38,6 +38,9 @@ public class ResponseDTO implements AbstractDTO {
 	@Size(min = 0, max = 100)
 	private String spanID;
 
+	private boolean esito;
+	
+	private String message;
 	/**
 	 * Instantiates a new response DTO.
 	 */

@@ -51,7 +51,6 @@ public class FhirOperationSRV extends KafkaAbstractSRV implements IFhirOperation
     	log.info("[EDS] Publication - START");
     	try {
     		ResourceExistResDTO response = queryClient.fhirCheckExist(fhirOperationDTO.getMasterIdentifier());
-
     		if(Boolean.FALSE.equals(response.isExist())){
     			ValidationResultDTO validatedData = dataQualityClient.validateBundleNormativeR4(fhirOperationDTO);
     			if(!validatedData.isValid()) {
@@ -95,14 +94,12 @@ public class FhirOperationSRV extends KafkaAbstractSRV implements IFhirOperation
     public void replace(FhirOperationDTO fhirOperationDTO) {
         log.info("[EDS] Replace - START");
         try {
-            ValidationResultDTO validatedData = dataQualityClient.validateBundleNormativeR4(fhirOperationDTO);
-    		
-    		if(validatedData.isValid()) {
-    			queryClient.fhirPublication(fhirOperationDTO.getMasterIdentifier(), fhirOperationDTO.getJsonString(), ProcessorOperationEnum.REPLACE);
-                transactionRepo.insert(from(fhirOperationDTO.getWorkflowInstanceId(), ProcessorOperationEnum.REPLACE));
-            } else {
-    			//TODO - Throw new Exception
-    		}
+        	ValidationResultDTO validatedData = dataQualityClient.validateBundleNormativeR4(fhirOperationDTO);
+			if(!validatedData.isValid()) {
+				sendStatusMessage(fhirOperationDTO.getWorkflowInstanceId(), EventTypeEnum.VALIDAZIONE_NORMATIVE_R4, EventStatusEnum.NON_BLOCKING_ERROR, validatedData.getMessage());
+			}
+			queryClient.fhirPublication(fhirOperationDTO.getMasterIdentifier(), fhirOperationDTO.getJsonString(), ProcessorOperationEnum.REPLACE);
+			transactionRepo.insert(from(fhirOperationDTO.getWorkflowInstanceId(), ProcessorOperationEnum.REPLACE));
         } catch (Exception e) {
             throw new BusinessException("Error: failed to replace bundle");
         }

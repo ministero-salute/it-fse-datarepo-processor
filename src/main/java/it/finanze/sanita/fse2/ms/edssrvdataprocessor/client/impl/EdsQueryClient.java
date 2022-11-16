@@ -118,17 +118,15 @@ public class EdsQueryClient implements IEdsQueryClient {
                 operationMethod = HttpMethod.PUT;
                 break;
             case UPDATE:
-                url = this.buildRequestPath(masterIdentifier, ProcessorOperationEnum.UPDATE);
+                url = buildRequestPath(masterIdentifier, ProcessorOperationEnum.UPDATE);
                 operationMethod = HttpMethod.PUT;
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported operation for this method");
         }
 
-        ResponseEntity<ResponseDTO> response = null;
-
         try {
-            response = restTemplate.exchange(url, operationMethod, entity, ResponseDTO.class);
+        	ResponseEntity<ResponseDTO> response = restTemplate.exchange(url, operationMethod, entity, ResponseDTO.class);
             log.info(Constants.Logs.SRV_QUERY_RESPONSE, response.getStatusCode());
         } catch(ResourceAccessException cex) {
             log.error("Connect error while call eds query publish ep :" + cex);
@@ -137,10 +135,7 @@ public class EdsQueryClient implements IEdsQueryClient {
             log.error("Generic error while call eds query publish ep :" + ex);
             throw new BusinessException("Generic error while call eds query publish ep :" + ex);
         }
-
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            throw new BusinessException("Failed to publish resource on FHIR server");
-        }
+ 
     }
 
     /**
@@ -161,7 +156,8 @@ public class EdsQueryClient implements IEdsQueryClient {
                         masterIdentifier;
             case UPDATE:
                 return  microservicesURLCFG.getEdsQueryHost() +
-                        "/v1/document/metadata";
+                        "/v1/document/metadata/" +
+                        masterIdentifier;
             case REPLACE:
                 return  microservicesURLCFG.getEdsQueryHost() +
                         "/v1/document/replace";
