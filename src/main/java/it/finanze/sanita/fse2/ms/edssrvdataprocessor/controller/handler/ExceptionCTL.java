@@ -9,6 +9,7 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.LogTraceInfoDT
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.error.base.ErrorResponseDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.ConnectionRefusedException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OutOfRangeException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -87,6 +88,24 @@ public class ExceptionCTL extends ResponseEntityExceptionHandler {
         log.error("HANDLER handleOperationException()", ex);
         // Create error DTO
         ErrorResponseDTO out = createOperationError(getLogTraceInfo(), ex);
+        // Set HTTP headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PROBLEM_JSON);
+        // Bye bye
+        return new ResponseEntity<>(out, headers, out.getStatus());
+    }
+
+    /**
+     * Handles an invalid index reference
+     *
+     * @param ex exception
+     */
+    @ExceptionHandler(OutOfRangeException.class)
+    protected ResponseEntity<ErrorResponseDTO> handleOutOfRangeException(OutOfRangeException ex) {
+        // Log me
+        log.error("HANDLER handleOutOfRangeException()", ex);
+        // Create error DTO
+        ErrorResponseDTO out = createOutOfRangeError(getLogTraceInfo(), ex);
         // Set HTTP headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PROBLEM_JSON);

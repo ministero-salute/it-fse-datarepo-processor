@@ -7,6 +7,7 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.LogTraceInfoDT
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.error.base.ErrorResponseDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.ConnectionRefusedException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OutOfRangeException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility.MiscUtility;
 import lombok.Builder;
 import lombok.Data;
@@ -79,6 +80,17 @@ public final class ErrorBuilderDTO {
             ex.getMessage(),
             SC_INTERNAL_SERVER_ERROR,
             ErrorType.SERVER.toInstance(ErrorInstance.Server.INTERNAL)
+        );
+    }
+
+    public static ErrorResponseDTO createOutOfRangeError(LogTraceInfoDTO trace, OutOfRangeException ex) {
+        return new ErrorResponseDTO(
+            trace,
+            ErrorType.VALIDATION.getType(),
+            ErrorType.VALIDATION.getTitle(),
+            ex.getMessage(),
+            SC_BAD_REQUEST,
+            ErrorType.VALIDATION.toInstance(ErrorInstance.Validation.CONSTRAINT_FIELD, ex.getField())
         );
     }
 
