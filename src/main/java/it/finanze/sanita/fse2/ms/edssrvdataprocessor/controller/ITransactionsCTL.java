@@ -42,6 +42,30 @@ public interface ITransactionsCTL {
         summary = "Restituisce transazioni processate in base al tipo e timestamp",
         description = "Restituisce tutte le transazioni correttamente processate in base al tipo e timestamp"
     )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Documenti restituite correttamente",
+            content = @Content(
+                mediaType = APPLICATION_JSON_VALUE,
+                schema = @Schema(implementation = GetTxPageResDTO.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "I parametri forniti non sono validi",
+            content = @Content(
+                mediaType = APPLICATION_PROBLEM_JSON_VALUE,
+                schema = @Schema(implementation = ErrorResponseDTO.class))
+        ),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Errore interno del server",
+            content = @Content(
+                mediaType = APPLICATION_PROBLEM_JSON_VALUE,
+                schema = @Schema(implementation = ErrorResponseDTO.class))
+        ),
+    })
     GetTxPageResDTO getTransactions(
         @PathVariable(API_PATH_TYPE_VAR)
         @Parameter(description = "Identificatore tipologia transazioni")

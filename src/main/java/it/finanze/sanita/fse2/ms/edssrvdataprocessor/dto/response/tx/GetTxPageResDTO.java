@@ -3,9 +3,6 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.tx;
 
-
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Schema;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.LogTraceInfoDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.ResponseDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.TransactionStatusETY;
@@ -24,7 +21,6 @@ import java.util.List;
 public class GetTxPageResDTO extends ResponseDTO {
 
     private Date timestamp;
-    @ArraySchema(schema = @Schema(implementation = String.class))
     private List<String> wif;
     private GetTxPageLinksDTO links;
 
