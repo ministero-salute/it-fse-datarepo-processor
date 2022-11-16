@@ -2,7 +2,12 @@ package it.finanze.sanita.fse2.ms.edssrvdataprocessor.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.error.base.ErrorResponseDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.tx.DeleteTxResDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.tx.GetTxPageResDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
@@ -23,6 +28,7 @@ import java.util.Date;
 import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants.Logs.*;
 import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility.RoutesUtility.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
 
 @Tag(name = API_TRANSACTIONS_TAG)
 @Validated
@@ -64,6 +70,30 @@ public interface ITransactionsCTL {
         summary = "Cancella transazioni processate in base al tipo e timestamp",
         description = "Restituisce il numero di transazioni cancellate in base al tipo e timestamp"
     )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Documenti cancellati correttamente",
+            content = @Content(
+                mediaType = APPLICATION_JSON_VALUE,
+                schema = @Schema(implementation = DeleteTxResDTO.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "I parametri forniti non sono validi",
+            content = @Content(
+                mediaType = APPLICATION_PROBLEM_JSON_VALUE,
+                schema = @Schema(implementation = ErrorResponseDTO.class))
+        ),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Errore interno del server",
+            content = @Content(
+                mediaType = APPLICATION_PROBLEM_JSON_VALUE,
+                schema = @Schema(implementation = ErrorResponseDTO.class))
+        ),
+    })
     DeleteTxResDTO deleteTransactions(
         @PathVariable(API_PATH_TYPE_VAR)
         @Parameter(description = "Identificatore tipologia transazioni")
