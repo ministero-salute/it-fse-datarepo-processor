@@ -34,6 +34,6 @@ public class TransactionsCTL extends AbstractCTL implements ITransactionsCTL {
 
     @Override
     public DeleteTxResDTO deleteTransactions(Date timestamp) throws OperationException {
-        return new DeleteTxResDTO(timestamp, service.deleteTransactions(timestamp));
+        return new DeleteTxResDTO(getLogTraceInfo(), timestamp, service.deleteTransactions(timestamp));
     }
 }
