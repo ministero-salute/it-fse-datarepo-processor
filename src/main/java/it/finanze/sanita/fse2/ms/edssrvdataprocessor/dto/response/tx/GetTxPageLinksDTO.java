@@ -6,8 +6,8 @@ package it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.tx;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.TransactionStatusETY;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.apache.http.client.utils.URIBuilder;
 import org.springframework.data.domain.Page;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Date;
 
@@ -36,15 +36,15 @@ public class GetTxPageLinksDTO {
         // Check if there is a previous page and the current page is on the right index
         if(page.hasPrevious() && page.hasContent()) {
             // Create URI
-            prev = new URIBuilder(fromCurrentContextPath().build().toUri())
-                .setPathSegments(
+            prev = UriComponentsBuilder.fromUri(fromCurrentContextPath().build().toUri())
+                .pathSegment(
                     API_VERSION,
                     API_TRANSACTIONS
                 )
-                .addParameter(API_QP_TIMESTAMP, ISO_DATE_TIME.format(convertToOffsetDateTime(timestamp)))
-                .addParameter(API_QP_PAGE, String.valueOf(page.getNumber() - 1))
-                .addParameter(API_QP_LIMIT, String.valueOf(page.getSize()))
-                .toString();
+                .queryParam(API_QP_TIMESTAMP, ISO_DATE_TIME.format(convertToOffsetDateTime(timestamp)))
+                .queryParam(API_QP_PAGE, String.valueOf(page.getNumber() - 1))
+                .queryParam(API_QP_LIMIT, String.valueOf(page.getSize()))
+                .toUriString();
         }
         return prev;
     }
@@ -55,15 +55,15 @@ public class GetTxPageLinksDTO {
         // Check if there is a next page
         if(page.hasNext()) {
             // Create URI
-            next = new URIBuilder(fromCurrentContextPath().build().toUri())
-                .setPathSegments(
+            next = UriComponentsBuilder.fromUri(fromCurrentContextPath().build().toUri())
+                .pathSegment(
                     API_VERSION,
                     API_TRANSACTIONS
                 )
-                .addParameter(API_QP_TIMESTAMP, ISO_DATE_TIME.format(convertToOffsetDateTime(timestamp)))
-                .addParameter(API_QP_PAGE, String.valueOf(page.getNumber() + 1))
-                .addParameter(API_QP_LIMIT, String.valueOf(page.getSize()))
-                .toString();
+                .queryParam(API_QP_TIMESTAMP, ISO_DATE_TIME.format(convertToOffsetDateTime(timestamp)))
+                .queryParam(API_QP_PAGE, String.valueOf(page.getNumber() + 1))
+                .queryParam(API_QP_LIMIT, String.valueOf(page.getSize()))
+                .toUriString();
         }
         return next;
     }
