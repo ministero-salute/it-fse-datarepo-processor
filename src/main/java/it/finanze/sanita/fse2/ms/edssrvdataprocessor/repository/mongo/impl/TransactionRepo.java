@@ -48,13 +48,13 @@ public class TransactionRepo implements ITransactionRepo {
 	}
 
 	@Override
-	public Page<TransactionStatusETY> getByTimestamp(String type, Date timestamp, Pageable page) throws OperationException {
+	public Page<TransactionStatusETY> getByTimestamp(Date timestamp, Pageable page) throws OperationException {
 		// Working vars
 		List<TransactionStatusETY> entities;
 		long count;
 		// Create query
 		Query query = new Query();
-		query.addCriteria(where(FIELD_TYPE).is(type).and(FIELD_INSERTION_DATE).lte(timestamp));
+		query.addCriteria(where(FIELD_INSERTION_DATE).lte(timestamp));
 		try {
 			// Get count
 			count = mongo.count(query, TransactionStatusETY.class);
@@ -69,12 +69,12 @@ public class TransactionRepo implements ITransactionRepo {
 	}
 
 	@Override
-	public long deleteByTimestamp(String type, Date timestamp) throws OperationException {
+	public long deleteByTimestamp(Date timestamp) throws OperationException {
 		// Working var
 		DeleteResult res;
 		// Create query
 		Query query = new Query();
-		query.addCriteria(where(FIELD_TYPE).is(type).and(FIELD_INSERTION_DATE).lte(timestamp));
+		query.addCriteria(where(FIELD_INSERTION_DATE).lte(timestamp));
 		try {
 			res = mongo.remove(query, TransactionStatusETY.class);
 		}catch (MongoException e) {

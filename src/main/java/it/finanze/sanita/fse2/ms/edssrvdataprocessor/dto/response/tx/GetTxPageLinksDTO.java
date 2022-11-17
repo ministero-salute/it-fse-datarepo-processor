@@ -19,14 +19,14 @@ public class GetTxPageLinksDTO {
     private String next;
     private String prev;
 
-    public static GetTxPageLinksDTO fromPage(String type, Page<TransactionStatusETY> page) {
+    public static GetTxPageLinksDTO fromPage(Page<TransactionStatusETY> page) {
         return new GetTxPageLinksDTO(
-            getNext(type, page),
-            getPrev(type, page)
+            getNext(page),
+            getPrev(page)
         );
     }
 
-    private static String getPrev(String type, Page<TransactionStatusETY> page) {
+    private static String getPrev(Page<TransactionStatusETY> page) {
         // Default state
         String prev = null;
         // Check if there is a previous page and the current page is on the right index
@@ -35,8 +35,7 @@ public class GetTxPageLinksDTO {
             prev = new URIBuilder(fromCurrentContextPath().build().toUri())
                 .setPathSegments(
                     API_VERSION,
-                    API_TRANSACTIONS,
-                    type
+                    API_TRANSACTIONS
                 )
                 .addParameter(API_QP_PAGE, String.valueOf(page.getNumber() - 1))
                 .addParameter(API_QP_LIMIT, String.valueOf(page.getSize()))
@@ -45,7 +44,7 @@ public class GetTxPageLinksDTO {
         return prev;
     }
 
-    private static String getNext(String type, Page<TransactionStatusETY> page) {
+    private static String getNext(Page<TransactionStatusETY> page) {
         // Default state
         String next = null;
         // Check if there is a next page
@@ -54,8 +53,7 @@ public class GetTxPageLinksDTO {
             next = new URIBuilder(fromCurrentContextPath().build().toUri())
                 .setPathSegments(
                     API_VERSION,
-                    API_TRANSACTIONS,
-                    type
+                    API_TRANSACTIONS
                 )
                 .addParameter(API_QP_PAGE, String.valueOf(page.getNumber() + 1))
                 .addParameter(API_QP_LIMIT, String.valueOf(page.getSize()))

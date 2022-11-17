@@ -17,10 +17,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.Date;
@@ -39,8 +37,8 @@ public interface ITransactionsCTL {
         produces = { APPLICATION_JSON_VALUE }
     )
     @Operation(
-        summary = "Restituisce transazioni processate in base al tipo e timestamp",
-        description = "Restituisce tutte le transazioni correttamente processate in base al tipo e timestamp"
+        summary = "Restituisce transazioni processate in base al timestamp",
+        description = "Restituisce tutte le transazioni correttamente processate in base al timestamp"
     )
     @ApiResponses(value = {
         @ApiResponse(
@@ -67,10 +65,6 @@ public interface ITransactionsCTL {
         ),
     })
     GetTxPageResDTO getTransactions(
-        @PathVariable(API_PATH_TYPE_VAR)
-        @Parameter(description = "Identificatore tipologia transazioni")
-        @NotBlank(message = ERR_VAL_TYPE_BLANK)
-        String type,
         @RequestParam(API_QP_TIMESTAMP)
         @Parameter(description = "Identificatore arco-temporale")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
@@ -91,8 +85,8 @@ public interface ITransactionsCTL {
         produces = { APPLICATION_JSON_VALUE }
     )
     @Operation(
-        summary = "Cancella transazioni processate in base al tipo e timestamp",
-        description = "Restituisce il numero di transazioni cancellate in base al tipo e timestamp"
+        summary = "Cancella transazioni processate in base al timestamp",
+        description = "Restituisce il numero di transazioni cancellate in base al timestamp"
     )
     @ApiResponses(value = {
         @ApiResponse(
@@ -119,10 +113,6 @@ public interface ITransactionsCTL {
         ),
     })
     DeleteTxResDTO deleteTransactions(
-        @PathVariable(API_PATH_TYPE_VAR)
-        @Parameter(description = "Identificatore tipologia transazioni")
-        @NotBlank(message = ERR_VAL_TYPE_BLANK)
-        String type,
         @RequestParam(API_QP_TIMESTAMP)
         @Parameter(description = "Identificatore arco-temporale")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

@@ -27,9 +27,9 @@ public class TransactionsSVR implements ITransactionsSVR {
     private ITransactionRepo repository;
 
     @Override
-    public SimpleImmutableEntry<Page<TransactionStatusETY>, List<String>> getTransactions(int page, int limit, Date timestamp, String type) throws OperationException, OutOfRangeException {
+    public SimpleImmutableEntry<Page<TransactionStatusETY>, List<String>> getTransactions(int page, int limit, Date timestamp) throws OperationException, OutOfRangeException {
         // Retrieve page
-        Page<TransactionStatusETY> current = repository.getByTimestamp(type, timestamp, PageRequest.of(page, limit));
+        Page<TransactionStatusETY> current = repository.getByTimestamp(timestamp, PageRequest.of(page, limit));
         // Check valid index was provided
         if(page > current.getTotalPages()) {
             // Let the caller know about it
@@ -44,7 +44,7 @@ public class TransactionsSVR implements ITransactionsSVR {
     }
 
     @Override
-    public long deleteTransactions(String type, Date timestamp) throws OperationException {
-        return repository.deleteByTimestamp(type, timestamp);
+    public long deleteTransactions(Date timestamp) throws OperationException {
+        return repository.deleteByTimestamp(timestamp);
     }
 }

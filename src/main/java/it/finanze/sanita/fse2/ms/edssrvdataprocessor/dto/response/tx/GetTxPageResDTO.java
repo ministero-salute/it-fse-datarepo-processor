@@ -27,13 +27,12 @@ public class GetTxPageResDTO extends ResponseDTO {
     public GetTxPageResDTO(
         LogTraceInfoDTO traceInfo,
         List<String> wif,
-        String type,
         Date timestamp,
         Page<TransactionStatusETY> page
     ) {
         super(traceInfo);
         this.timestamp = timestamp;
         this.wif = wif;
-        this.links = GetTxPageLinksDTO.fromPage(type, page);
+        this.links = GetTxPageLinksDTO.fromPage(page);
     }
 }

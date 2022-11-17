@@ -10,6 +10,6 @@ import java.util.Date;
 import java.util.List;
 
 public interface ITransactionsSVR {
-    SimpleImmutableEntry<Page<TransactionStatusETY>, List<String>> getTransactions(int page, int limit, Date timestamp, String type) throws OperationException, OutOfRangeException;
-    long deleteTransactions(String type, Date timestamp) throws OperationException;
+    SimpleImmutableEntry<Page<TransactionStatusETY>, List<String>> getTransactions(int page, int limit, Date timestamp) throws OperationException, OutOfRangeException;
+    long deleteTransactions(Date timestamp) throws OperationException;
 }

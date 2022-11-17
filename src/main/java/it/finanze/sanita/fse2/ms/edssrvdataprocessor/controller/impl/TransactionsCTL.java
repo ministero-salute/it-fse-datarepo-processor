@@ -25,14 +25,15 @@ public class TransactionsCTL extends AbstractCTL implements ITransactionsCTL {
     private ITransactionsSVR service;
 
     @Override
-    public GetTxPageResDTO getTransactions(String type, Date timestamp, int page, int limit) throws OperationException, OutOfRangeException {
+    public GetTxPageResDTO getTransactions(Date timestamp, int page, int limit) throws OperationException, OutOfRangeException {
         // Retrieve Pair<Page, Entities>
-        SimpleImmutableEntry<Page<TransactionStatusETY>, List<String>> slice = service.getTransactions(page, limit, timestamp, type);
+        SimpleImmutableEntry<Page<TransactionStatusETY>, List<String>> slice = service.getTransactions(page, limit, timestamp);
         // When returning, it builds the URL according to provided values
-        return new GetTxPageResDTO(getLogTraceInfo(), slice.getValue(), type, timestamp, slice.getKey());
+        return new GetTxPageResDTO(getLogTraceInfo(), slice.getValue(), timestamp, slice.getKey());
     }
 
-    public DeleteTxResDTO deleteTransactions(String type, Date timestamp) throws OperationException {
-        return new DeleteTxResDTO(type, timestamp, service.deleteTransactions(type, timestamp));
+    @Override
+    public DeleteTxResDTO deleteTransactions(Date timestamp) throws OperationException {
+        return new DeleteTxResDTO(timestamp, service.deleteTransactions(timestamp));
     }
 }

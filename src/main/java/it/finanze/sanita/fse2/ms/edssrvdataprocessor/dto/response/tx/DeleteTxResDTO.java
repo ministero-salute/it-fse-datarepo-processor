@@ -11,7 +11,6 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 public class DeleteTxResDTO extends ResponseDTO {
-    private String type;
     private Date timestamp;
     private long deletedTransactions;
 }
