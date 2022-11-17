@@ -33,6 +33,6 @@ public class GetTxPageResDTO {
         this.spanID = info.getSpanID();
         this.timestamp = timestamp;
         this.wif = wif;
-        this.links = GetTxPageLinksDTO.fromPage(page);
+        this.links = GetTxPageLinksDTO.fromPage(timestamp, page);
     }
 }
