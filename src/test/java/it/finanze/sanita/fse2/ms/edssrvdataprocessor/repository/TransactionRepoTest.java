@@ -22,7 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants.ComponentScan.CONFIG_MONGO;
 import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants.ComponentScan.REPOSITORY;
-import static org.junit.jupiter.api.TestInstance.Lifecycle.*;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @DataMongoTest
 @ComponentScans( value = {
@@ -51,7 +51,6 @@ class TransactionRepoTest {
     void init() throws OperationException {
         for (int i = 0; i < 100; ++i) {
             repository.insert(TransactionStatusETY.from("WIF - #" + i, ProcessorOperationEnum.PUBLISH));
-            repository.insert(TransactionStatusETY.from("WIF - #" + i, ProcessorOperationEnum.REPLACE));
         }
     }
 
