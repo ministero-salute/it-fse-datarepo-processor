@@ -20,14 +20,14 @@ import org.springframework.context.annotation.ComponentScans;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
-import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants.ComponentScan.CONFIG_MONGO;
-import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants.ComponentScan.REPOSITORY;
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants.ComponentScan.*;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @DataMongoTest
 @ComponentScans( value = {
     @ComponentScan(CONFIG_MONGO),
     @ComponentScan(REPOSITORY),
+    @ComponentScan(UTILITY)
 })
 @ActiveProfiles(Constants.Profile.TEST)
 @TestInstance(PER_CLASS)

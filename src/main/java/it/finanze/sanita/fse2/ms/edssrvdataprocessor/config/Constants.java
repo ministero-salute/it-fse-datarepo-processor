@@ -21,6 +21,7 @@ public final class Constants {
 		public static final String CONFIG_MONGO = "it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.mongo";
 
 		public static final String REPOSITORY = "it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository";
+		public static final String UTILITY = "it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility";
 
 		/**
 		 * This method is intentionally left blank 
