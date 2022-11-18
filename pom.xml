@@ -27,6 +27,7 @@
 			src/main/java/it/finanze/sanita/fse2/ms/edssrvdataprocessor/config/OpenApiCFG.java
 		</sonar.exclusions>
 	</properties>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -63,15 +64,7 @@
 			<artifactId>spring-kafka-test</artifactId>
 			<scope>test</scope>
 		</dependency> 
-		
-		<!-- CRYPT -->
-		<!-- https://mvnrepository.com/artifact/org.jasypt/jasypt -->
-		<dependency>
-			<groupId>org.jasypt</groupId>
-			<artifactId>jasypt</artifactId>
-			<version>1.9.3</version>
-		</dependency>
-		
+	 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
@@ -105,7 +98,6 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-sleuth</artifactId>
-			<version>3.1.3</version>
 		</dependency> 
 		
 		<!-- TEST -->
@@ -126,13 +118,6 @@
 			<artifactId>logback-jackson</artifactId>
 			<version>0.1.5</version>
 		</dependency> 
-
-		<dependency>
-		    <groupId>org.mongodb</groupId>
-		    <artifactId>mongodb-driver-async</artifactId>
-		    <version>3.12.11</version>
-		</dependency> 
-		
 		
 		<!-- DEVTOOL -->
 		<dependency>
@@ -140,15 +125,7 @@
 			  <artifactId>lombok</artifactId>
 			<scope>provided</scope>
 		</dependency>
-
-		
-		<dependency>
-	        <groupId>org.junit.jupiter</groupId>
-	        <artifactId>junit-jupiter</artifactId>
-	        <version>5.9.0</version>
-	        <scope>test</scope>
-   		</dependency>
-
+ 
     </dependencies>
 	
 	

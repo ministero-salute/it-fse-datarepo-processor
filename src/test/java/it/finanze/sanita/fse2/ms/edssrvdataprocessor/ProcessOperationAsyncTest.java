@@ -14,7 +14,6 @@ import static org.mockito.Mockito.when;
 import java.util.HashMap;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -222,29 +221,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 				kafkaService.genericListenerPublishIngestor(consumerRecord4, headers)
 		);
 	}
-
-	@Test
-	@DisplayName("Decryption error test")
-	void processDecryptionTest() throws OperationException {
-		String topicPub = kafkaTopicConfig.getIngestorPublishHighPriorityTopic();
-		String topicGen = kafkaTopicConfig.getIngestorGenericTopic();
-		ConsumerRecord<String, String> consumerRecord1 = this.kafkaInit(topicPub, ProcessorOperationEnum.PUBLISH, false, true, false);
-		ConsumerRecord<String, String> consumerRecord2 = this.kafkaInit(topicGen, ProcessorOperationEnum.REPLACE, false, true, false);
-		ConsumerRecord<String, String> consumerRecord3 = this.kafkaInit(topicGen, ProcessorOperationEnum.UPDATE,  false, true, false);
-		ConsumerRecord<String, String> consumerRecord4 = this.kafkaInit(topicGen, ProcessorOperationEnum.DELETE,  false, true, false);
-		assertThrows(EncryptionOperationNotPossibleException.class, () ->
-				kafkaService.highPriorityListenerPublishIngestor(consumerRecord1, headers)
-		);
-		assertThrows(EncryptionOperationNotPossibleException.class, () ->
-				kafkaService.genericListenerPublishIngestor(consumerRecord2, headers)
-		);
-		assertThrows(EncryptionOperationNotPossibleException.class, () ->
-				kafkaService.genericListenerPublishIngestor(consumerRecord3, headers)
-		);
-		assertThrows(EncryptionOperationNotPossibleException.class, () ->
-				kafkaService.genericListenerPublishIngestor(consumerRecord4, headers)
-		);
-	}
+ 
 
 	@Test
 	@DisplayName("Publish - CheckExist - Rest template exception test")

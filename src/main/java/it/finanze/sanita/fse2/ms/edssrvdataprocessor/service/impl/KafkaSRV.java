@@ -3,6 +3,13 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.impl;
 
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.messaging.MessageHeaders;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.kafka.KafkaConsumerPropertiesCFG;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.kafka.KafkaPropertiesCFG;
@@ -16,15 +23,8 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationExcepti
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.IKafkaSRV;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.IOrchestratorSRV;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.KafkaAbstractSRV;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility.EncryptDecryptUtility;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility.HelperUtility;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.messaging.MessageHeaders;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 /**
  * Kafka management service.
@@ -49,12 +49,7 @@ public class KafkaSRV extends KafkaAbstractSRV implements IKafkaSRV {
 	 */
 	@Autowired
 	private transient IOrchestratorSRV orchestratorSRV;
-
-	/**
-	 * Kafka Properties 
-	 */
-	@Autowired
-	private transient KafkaPropertiesCFG kafkaPropCFG;
+ 
 	
 	@Override
 	@KafkaListener(topics = "#{'${kafka.ingestor-publish.topic.low-priority}'}", clientIdPrefix = "#{'${kafka.consumer.client-id.low}'}", containerFactory = "kafkaListenerDeadLetterContainerFactory", autoStartup = "${event.topic.auto.start}", groupId = "#{'${kafka.consumer.group-id-publish}'}")
@@ -91,7 +86,7 @@ public class KafkaSRV extends KafkaAbstractSRV implements IKafkaSRV {
 		while(Boolean.FALSE.equals(esito) && counter<=kafkaConsumerPropertiesCFG.getNRetry()) {
 			try {
 				if (StringUtils.hasText(cr.value())) {
-					String mongoId = EncryptDecryptUtility.decrypt(kafkaPropCFG.getCrypto(), cr.value());
+					String mongoId = cr.value();
 					wif = orchestratorSRV.getWorkflowInstanceId(mongoId);
 					DispatchActionDTO dispatchActionDTO = DispatchActionDTO.builder()
 							.mongoId(mongoId)
