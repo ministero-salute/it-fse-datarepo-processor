@@ -102,14 +102,14 @@ public class KafkaSRV extends KafkaAbstractSRV implements IKafkaSRV {
 				HelperUtility.deadLetterHelper(e);
 				if(kafkaConsumerPropertiesCFG.getDeadLetterExceptions().contains(e.getClass().getName())) {
 					log.error("Dead letter exception - exiting...");
-					sendStatusMessage(wif, EventTypeEnum.EDS_PROCESSOR, EventStatusEnum.BLOCKING_ERROR, e.getMessage());
+					sendStatusMessage(wif, EventTypeEnum.EDS_WORKFLOW, EventStatusEnum.BLOCKING_ERROR, e.getMessage());
 					throw e;
 				} else if(kafkaConsumerPropertiesCFG.getTemporaryExceptions().contains(e.getClass().getName())) {
 					log.error("Temporary exception - exiting...");
 				} else {
 					counter++;
 					if(counter==kafkaConsumerPropertiesCFG.getNRetry()) {
-						sendStatusMessage(wif, EventTypeEnum.EDS_PROCESSOR, EventStatusEnum.BLOCKING_ERROR, e.getMessage());
+						sendStatusMessage(wif, EventTypeEnum.EDS_WORKFLOW, EventStatusEnum.BLOCKING_ERROR, e.getMessage());
 						throw e;
 					}
 				}
