@@ -37,16 +37,6 @@ public final class Constants {
 	public static final class Profile {
 		
 		/**
-		 * Test Profile - Sync Flow 
-		 */
-		public static final String TEST_SYNC = "test-sync";
-		
-		/**
-		 * Test Profile - Async Flow 
-		 */
-		public static final String TEST_ASYNC = "test-async";
-
-		/**
 		 * Test profile
 		 */
 		public static final String TEST = "test";
