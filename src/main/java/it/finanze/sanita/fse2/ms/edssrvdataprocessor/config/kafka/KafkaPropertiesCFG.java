@@ -65,9 +65,5 @@ public class KafkaPropertiesCFG implements Serializable {
 	@Value("${kafka.enablessl}")
 	private boolean enableSSL;
 
-	/**
-	 * Crypto.
-	 */
-	@Value("${kafka.crypto}")
-	private String crypto;
+ 
 }
