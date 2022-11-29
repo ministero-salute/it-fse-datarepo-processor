@@ -133,7 +133,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 	void processPublishDocumentAlreadyExistsTest() throws OperationException {
 		String topic = kafkaTopicConfig.getIngestorPublishHighPriorityTopic();
 		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.PUBLISH, false, false, false);
-
+		
 		ResourceExistResDTO getMock = new ResourceExistResDTO();
 		getMock.setExist(false);
 		given(restTemplate.getForEntity(anyString(), eq(ResourceExistResDTO.class)))
@@ -153,22 +153,6 @@ class ProcessOperationAsyncTest extends AbstractTest {
 			 kafkaService.highPriorityListenerPublishIngestor(consumerRecord, headers)
 		);
 	}
-	
-	
-	@Test
-	@DisplayName("Update - Success test")
-	void processUpdateTest() throws OperationException {
-		String topic = kafkaTopicConfig.getIngestorGenericTopic(); 
-		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.UPDATE, false, false, false); 
-
-		ResponseEntity<ResponseDTO> response = new ResponseEntity<>(null, HttpStatus.OK);
-		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(ResponseDTO.class))).thenReturn(response);
-		
-		assertDoesNotThrow(() ->
-				kafkaService.genericListenerPublishIngestor(consumerRecord, headers)
-			);
-	}
-
 
 	@Test
 	@DisplayName("Replace - Success test")
@@ -193,45 +177,6 @@ class ProcessOperationAsyncTest extends AbstractTest {
 				kafkaService.genericListenerPublishIngestor(consumerRecord, headers)
 		);
 	}
-
-	@Test
-	@DisplayName("Delete - Success test")
-	void processDeleteTest() throws OperationException {
-		String topic = kafkaTopicConfig.getIngestorGenericTopic();
-		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.DELETE, false, false, false);
-
-		ResponseEntity<ResponseDTO> response = new ResponseEntity<>(null, HttpStatus.OK);
-		when(restTemplate.exchange(anyString(), eq(HttpMethod.DELETE), eq(null), eq(ResponseDTO.class))).thenReturn(response);
-
-		assertDoesNotThrow(() ->
-				kafkaService.genericListenerPublishIngestor(consumerRecord, headers)
-		);
-	}
-
-	
-	@Test
-	@DisplayName("Document not found test")
-	void processDocumentNotFoundTest() throws OperationException {
-		String topicPub = kafkaTopicConfig.getIngestorPublishHighPriorityTopic();
-		String topicGen = kafkaTopicConfig.getIngestorGenericTopic();
-		ConsumerRecord<String, String> consumerRecord1 = this.kafkaInit(topicPub, ProcessorOperationEnum.PUBLISH, true, false, false);
-		ConsumerRecord<String, String> consumerRecord2 = this.kafkaInit(topicGen, ProcessorOperationEnum.REPLACE, true, false, false);
-		ConsumerRecord<String, String> consumerRecord3 = this.kafkaInit(topicGen, ProcessorOperationEnum.UPDATE, true, false, false);
-		ConsumerRecord<String, String> consumerRecord4 = this.kafkaInit(topicGen, ProcessorOperationEnum.DELETE, true, false, false);
-		assertThrows(DocumentNotFoundException.class, () ->
-				kafkaService.highPriorityListenerPublishIngestor(consumerRecord1, headers)
-		);
-		assertThrows(DocumentNotFoundException.class, () ->
-				kafkaService.genericListenerPublishIngestor(consumerRecord2, headers)
-		);
-		assertThrows(DocumentNotFoundException.class, () ->
-				kafkaService.genericListenerPublishIngestor(consumerRecord3, headers)
-		);
-		assertThrows(DocumentNotFoundException.class, () ->
-				kafkaService.genericListenerPublishIngestor(consumerRecord4, headers)
-		);
-	}
- 
 
 	@Test
 	@DisplayName("Publish - CheckExist - Rest template exception test")
@@ -376,106 +321,6 @@ class ProcessOperationAsyncTest extends AbstractTest {
 
 		assertThrows(BusinessException.class, () ->
 				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, headers)
-		);
-	}
-
-	@Test
-	@DisplayName("Delete - Rest template exception test")
-	void processDeleteRestTemplateExceptionTest() throws OperationException {
-		String topic = kafkaTopicConfig.getIngestorGenericTopic();
-		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.DELETE, false, false, false);
-
-		when(restTemplate.exchange(anyString(), eq(HttpMethod.DELETE), eq(null), eq(ResponseDTO.class)))
-				.thenThrow(new BusinessException(""));
-		assertThrows(BusinessException.class, () ->
-				kafkaService.genericListenerPublishIngestor(consumerRecord, headers)
-		);
-	}
-
-	@Test
-	@DisplayName("Delete - Connection refused test")
-	void processDeleteConnectionRefusedTest() throws OperationException {
-		String topic = kafkaTopicConfig.getIngestorPublishHighPriorityTopic();
-		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.DELETE, false, false, false);
-
-		when(restTemplate.exchange(anyString(), eq(HttpMethod.DELETE), eq(null), eq(ResponseDTO.class)))
-				.thenThrow(new ResourceAccessException(""));
-		assertThrows(BusinessException.class, () ->
-				kafkaService.genericListenerPublishIngestor(consumerRecord, headers)
-		);
-	}
-
-	@Test
-	@DisplayName("Delete - Bad response")
-	void processDeleteBadResponseTest() throws OperationException {
-		String topic = kafkaTopicConfig.getIngestorPublishHighPriorityTopic();
-		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.DELETE, false, false, false);
-
-		when(restTemplate.exchange(anyString(), eq(HttpMethod.DELETE), eq(null), eq(ResponseDTO.class)))
-				.thenReturn(new ResponseEntity<>(null, HttpStatus.BAD_REQUEST));
-
-		assertThrows(BusinessException.class, () ->
-				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, headers)
-		);
-	}
-
-	@Test
-	@DisplayName("Update - FHIR - Rest template exception test")
-	void processUpdateFHIRRestTemplateExceptionTest() throws OperationException {
-		String topic = kafkaTopicConfig.getIngestorGenericTopic();
-		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.UPDATE, false, false, false);
-
-		ValidationResultDTO validatedMock = ValidationResultDTO
-				.builder()
-				.isValid(true)
-				.build();
-		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(ValidationResultDTO.class))).thenReturn(new ResponseEntity<>(validatedMock, HttpStatus.OK));
-
-		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(ResponseDTO.class)))
-				.thenThrow(new BusinessException(""));
-
-		assertThrows(BusinessException.class, () ->
-				kafkaService.genericListenerPublishIngestor(consumerRecord, headers)
-		);
-	}
-
-	@Test
-	@DisplayName("Update - FHIR - Connection refused test")
-	void processUpdateFHIRConnectionRefusedTest() throws OperationException {
-		String topic = kafkaTopicConfig.getIngestorGenericTopic();
-		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.UPDATE, false, false, false);
-
-		ValidationResultDTO validatedMock = ValidationResultDTO
-				.builder()
-				.isValid(true)
-				.build();
-		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(ValidationResultDTO.class))).thenReturn(new ResponseEntity<>(validatedMock, HttpStatus.OK));
-
-		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(ResponseDTO.class)))
-				.thenThrow(new ResourceAccessException(""));
-
-		assertThrows(BusinessException.class, () ->
-				kafkaService.genericListenerPublishIngestor(consumerRecord, headers)
-		);
-	}
-
-	@Test
-	@DisplayName("Update - FHIR - Bad response")
-	void processUpdateFHIRBadResponseTest() throws OperationException {
-		String topic = kafkaTopicConfig.getIngestorGenericTopic();
-		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.UPDATE, false, false, false);
-
-		ValidationResultDTO validatedMock = ValidationResultDTO
-				.builder()
-				.isValid(true)
-				.build();
-		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(ValidationResultDTO.class))).thenReturn(new ResponseEntity<>(validatedMock, HttpStatus.OK));
-
-		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(ResponseDTO.class)))
-				.thenReturn(new ResponseEntity<>(null, HttpStatus.BAD_REQUEST));
-
-		assertThrows(BusinessException.class, () ->
-				kafkaService.genericListenerPublishIngestor(consumerRecord, headers)
 		);
 	}
 
