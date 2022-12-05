@@ -10,26 +10,7 @@ package it.finanze.sanita.fse2.ms.edssrvdataprocessor.config;
  */
 public final class Constants {
 
-	/**
-	 *	Path scan.
-	 */
-	public static final class ComponentScan {
-		
-		/**
-		 * Configuration mongo path.
-		 */
-		public static final String CONFIG_MONGO = "it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.mongo";
-
-		public static final String REPOSITORY = "it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository";
-		public static final String UTILITY = "it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility";
-
-		/**
-		 * This method is intentionally left blank 
-		 */
-		private ComponentScan() {}
-
-	}
- 
+	 
 	/** 
 	 * Contains the constants for the launch profile of the SpringBoot application. 
 	 * 

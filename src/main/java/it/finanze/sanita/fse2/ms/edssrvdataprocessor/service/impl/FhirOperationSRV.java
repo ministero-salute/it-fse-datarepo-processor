@@ -21,7 +21,7 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ResultLogEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.BusinessException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentAlreadyExistsException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.logging.LoggerHelper;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.ITransactionRepo;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.mongo.ITransactionRepo;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.IFhirOperationSRV;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.KafkaAbstractSRV;
 import lombok.extern.slf4j.Slf4j;

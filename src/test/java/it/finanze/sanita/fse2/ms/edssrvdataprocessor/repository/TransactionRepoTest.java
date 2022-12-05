@@ -3,11 +3,8 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository;
 
-import brave.Tracer;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnum;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.TransactionStatusETY;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -15,20 +12,17 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.ComponentScans;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
-import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants.ComponentScan.*;
-import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import brave.Tracer;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnum;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.TransactionStatusETY;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.mongo.ITransactionRepo;
 
 @DataMongoTest
-@ComponentScans( value = {
-    @ComponentScan(CONFIG_MONGO),
-    @ComponentScan(REPOSITORY),
-    @ComponentScan(UTILITY)
-})
 @ActiveProfiles(Constants.Profile.TEST)
 @TestInstance(PER_CLASS)
 class TransactionRepoTest {

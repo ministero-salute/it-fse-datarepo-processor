@@ -35,38 +35,12 @@ import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
 @Validated
 public interface ITransactionsCTL {
 
-    @GetMapping(
-        value = API_TRANSACTIONS_PATH,
-        produces = { APPLICATION_JSON_VALUE }
-    )
-    @Operation(
-        summary = "Restituisce transazioni processate in base al timestamp",
-        description = "Restituisce tutte le transazioni correttamente processate in base al timestamp"
-    )
+    @GetMapping(value = API_TRANSACTIONS_PATH, produces = { APPLICATION_JSON_VALUE })
+    @Operation(summary = "Restituisce transazioni processate in base al timestamp",description = "Restituisce tutte le transazioni correttamente processate in base al timestamp")
     @ApiResponses(value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Documenti restituite correttamente",
-            content = @Content(
-                mediaType = APPLICATION_JSON_VALUE,
-                schema = @Schema(implementation = GetTxPageResDTO.class)
-            )
-        ),
-        @ApiResponse(
-            responseCode = "400",
-            description = "I parametri forniti non sono validi",
-            content = @Content(
-                mediaType = APPLICATION_PROBLEM_JSON_VALUE,
-                schema = @Schema(implementation = ErrorResponseDTO.class))
-        ),
-        @ApiResponse(
-            responseCode = "500",
-            description = "Errore interno del server",
-            content = @Content(
-                mediaType = APPLICATION_PROBLEM_JSON_VALUE,
-                schema = @Schema(implementation = ErrorResponseDTO.class))
-        ),
-    })
+    		@ApiResponse(responseCode = "200",description = "Documenti restituite correttamente",content = @Content(mediaType = APPLICATION_JSON_VALUE,schema = @Schema(implementation = GetTxPageResDTO.class))),
+    		@ApiResponse(responseCode = "400",description = "I parametri forniti non sono validi",content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE,schema = @Schema(implementation = ErrorResponseDTO.class))),
+    		@ApiResponse(responseCode = "500",description = "Errore interno del server",content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE,schema = @Schema(implementation = ErrorResponseDTO.class)))})
     GetTxPageResDTO getTransactions(
         @RequestParam(API_QP_TIMESTAMP)
         @Parameter(description = "Identificatore arco-temporale")
@@ -83,38 +57,12 @@ public interface ITransactionsCTL {
         int limit
     ) throws OperationException, OutOfRangeException;
 
-    @DeleteMapping(
-        value = API_TRANSACTIONS_PATH,
-        produces = { APPLICATION_JSON_VALUE }
-    )
-    @Operation(
-        summary = "Cancella transazioni processate in base al timestamp",
-        description = "Restituisce il numero di transazioni cancellate in base al timestamp"
-    )
+    @DeleteMapping(value = API_TRANSACTIONS_PATH,produces = { APPLICATION_JSON_VALUE })
+    @Operation(summary = "Cancella transazioni processate in base al timestamp",description = "Restituisce il numero di transazioni cancellate in base al timestamp")
     @ApiResponses(value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Documenti cancellati correttamente",
-            content = @Content(
-                mediaType = APPLICATION_JSON_VALUE,
-                schema = @Schema(implementation = DeleteTxResDTO.class)
-            )
-        ),
-        @ApiResponse(
-            responseCode = "400",
-            description = "I parametri forniti non sono validi",
-            content = @Content(
-                mediaType = APPLICATION_PROBLEM_JSON_VALUE,
-                schema = @Schema(implementation = ErrorResponseDTO.class))
-        ),
-        @ApiResponse(
-            responseCode = "500",
-            description = "Errore interno del server",
-            content = @Content(
-                mediaType = APPLICATION_PROBLEM_JSON_VALUE,
-                schema = @Schema(implementation = ErrorResponseDTO.class))
-        ),
-    })
+        @ApiResponse(responseCode = "200",description = "Documenti cancellati correttamente",content = @Content(mediaType = APPLICATION_JSON_VALUE,schema = @Schema(implementation = DeleteTxResDTO.class))),
+        @ApiResponse(responseCode = "400",description = "I parametri forniti non sono validi",content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE,schema = @Schema(implementation = ErrorResponseDTO.class))),
+        @ApiResponse(responseCode = "500",description = "Errore interno del server",content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE,schema = @Schema(implementation = ErrorResponseDTO.class)))})
     DeleteTxResDTO deleteTransactions(
         @RequestParam(API_QP_TIMESTAMP)
         @Parameter(description = "Identificatore arco-temporale")

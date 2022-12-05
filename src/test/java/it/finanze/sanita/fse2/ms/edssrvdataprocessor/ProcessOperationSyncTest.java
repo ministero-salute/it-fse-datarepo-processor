@@ -3,9 +3,6 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor;
 
-import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants.ComponentScan.CONFIG_MONGO;
-import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants.ComponentScan.REPOSITORY;
-import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants.ComponentScan.UTILITY;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -19,8 +16,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.ComponentScans;
 import org.springframework.http.MediaType;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
@@ -33,12 +28,9 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import brave.Tracer;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.base.TestProducer;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.IEdsDataQualityClient;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.IEdsQueryClient;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.kafka.KafkaPropertiesCFG;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.kafka.KafkaTopicCFG;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.controller.impl.DocumentCTL;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.DispatchActionDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.DocumentReferenceDTO;
@@ -47,17 +39,10 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnu
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.BusinessException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.ConnectionRefusedException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.mongo.impl.DocumentRepo;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.IFhirOperationSRV;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.impl.KafkaSRV;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.impl.OrchestratorSRV;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility.ProfileUtility;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ComponentScans( value = {
-	@ComponentScan(CONFIG_MONGO),
-	@ComponentScan(REPOSITORY),
-	@ComponentScan(UTILITY)
-})
 @ActiveProfiles(Constants.Profile.TEST)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext
@@ -92,26 +77,9 @@ class ProcessOperationSyncTest {
     @MockBean
     private RestTemplate restTemplate; 
     
-    @Autowired
-    private IFhirOperationSRV fhirOperationSRV;
-    
     @MockBean
     private OrchestratorSRV orchestratorSRV; 
 
-    @Autowired
-    private KafkaSRV kafkaService;
-
-    private TestProducer testProducer;
-
-    @Autowired
-    private KafkaPropertiesCFG kafkaPropCFG;
-
-    @Autowired
-    private KafkaTopicCFG kafkaTopicConfig;
-    
-    
-    // Test Data 
-    private String TEST_MONGO_ID = "testMongoId"; 
     private String TEST_IDENTIFIER = "testIdentifier"; 
     private ProcessorOperationEnum TEST_OPERATION_UPDATE = ProcessorOperationEnum.UPDATE; 
     private ProcessorOperationEnum TEST_OPERATION_DELETE = ProcessorOperationEnum.DELETE; 

@@ -27,34 +27,28 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * The implementation of the Srv Query Client 
- *
  */
 @Slf4j
 @Component
 public class EdsQueryClient implements IEdsQueryClient {
 
     /**
-     * Serial version UID
-     */
-    private static final long serialVersionUID = 5665880440554069040L;
-
-    /**
      * Rest Template 
      */
     @Autowired
-    private transient RestTemplate restTemplate;
+    private RestTemplate restTemplate;
 
     /*
      * Microservices URL Config 
      */
     @Autowired
-    private transient MicroservicesURLCFG microservicesURLCFG;
+    private MicroservicesURLCFG microservicesURLCFG;
  
     @Override
     public ResourceExistResDTO fhirCheckExist(final String masterIdentifier) throws DocumentAlreadyExistsException {
     	log.debug("[EDS QUERY] Calling EDS check exist ep - START");
     	ResponseEntity<ResourceExistResDTO> response = null;
-    	String url = buildRequestPath(masterIdentifier, ProcessorOperationEnum.READ);
+    	String url = microservicesURLCFG.getEdsQueryHost() + "/v1/document/check-exist/" + masterIdentifier;
 
     	try {
     		response = restTemplate.getForEntity(url, ResourceExistResDTO.class);
@@ -62,35 +56,26 @@ public class EdsQueryClient implements IEdsQueryClient {
     	} catch(ResourceAccessException cex) {
     		log.error("Connect error while call eds query check exist ep :" + cex);
     		throw new ConnectionRefusedException(microservicesURLCFG.getEdsQueryHost(), Constants.Logs.ERROR_CONNECTION_REFUSED);
-    	} catch(Exception ex) {
-    		log.error("Generic error while call eds query check exist ep :" + ex);
-    		throw new BusinessException("Generic error while call eds query check exist ep :" + ex);
-    	}
+    	}  
     	return response.getBody();
     }
 
 
     @Override
     public void fhirDelete(String masterIdentifier) {
-        log.info("[EDS QUERY] Calling EDS delete ep - START");
+    	log.info("[EDS QUERY] Calling EDS delete ep - START");
 
-        ResponseEntity<ResponseDTO> response = null;
-        String url = this.buildRequestPath(masterIdentifier, ProcessorOperationEnum.DELETE);
+    	ResponseEntity<ResponseDTO> response = null;
+    	String url = microservicesURLCFG.getEdsQueryHost() + "/v1/document/delete/" + masterIdentifier;
 
-        try {
-            response = restTemplate.exchange(url, HttpMethod.DELETE, null, ResponseDTO.class);
-            log.info(Constants.Logs.SRV_QUERY_RESPONSE, response.getStatusCode());
-        } catch(ResourceAccessException cex) {
-            log.error("Connect error while call eds query delete ep :" + cex);
-            throw new ConnectionRefusedException(microservicesURLCFG.getEdsQueryHost(),Constants.Logs.ERROR_CONNECTION_REFUSED);
-        } catch(Exception ex) {
-            log.error("Generic error while call eds query delete ep :" + ex);
-            throw new BusinessException("Generic error while call eds query delete ep :" + ex);
-        }
+    	try {
+    		response = restTemplate.exchange(url, HttpMethod.DELETE, null, ResponseDTO.class);
+    		log.info(Constants.Logs.SRV_QUERY_RESPONSE, response.getStatusCode());
+    	} catch(ResourceAccessException cex) {
+    		log.error("Connect error while call eds query delete ep :" + cex);
+    		throw new ConnectionRefusedException(microservicesURLCFG.getEdsQueryHost(),Constants.Logs.ERROR_CONNECTION_REFUSED);
+    	} 
 
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            throw new BusinessException("Failed to delete resource on FHIR server");
-        }
     }
 
     @Override
@@ -110,15 +95,15 @@ public class EdsQueryClient implements IEdsQueryClient {
 
         switch (processorOperationEnum) {
             case PUBLISH:
-                url = buildRequestPath(masterIdentifier, ProcessorOperationEnum.PUBLISH);
+                url = microservicesURLCFG.getEdsQueryHost() + "/v1/document/create";
                 operationMethod = HttpMethod.POST;
                 break;
             case REPLACE:
-                url = buildRequestPath(masterIdentifier, ProcessorOperationEnum.REPLACE);
+                url = microservicesURLCFG.getEdsQueryHost() + "/v1/document/replace";
                 operationMethod = HttpMethod.PUT;
                 break;
             case UPDATE:
-                url = buildRequestPath(masterIdentifier, ProcessorOperationEnum.UPDATE);
+                url = microservicesURLCFG.getEdsQueryHost() + "/v1/document/metadata/" + masterIdentifier;
                 operationMethod = HttpMethod.PUT;
                 break;
             default:
@@ -137,36 +122,5 @@ public class EdsQueryClient implements IEdsQueryClient {
         }
  
     }
-
-    /**
-     * Build request path based on incoming operation value
-     * @param masterIdentifier  The master identifier of the bundle 
-     * @param processorOperationEnum  An enum representing the operation 
-     * @return String  The request path 
-     */
-    private String buildRequestPath(String masterIdentifier, ProcessorOperationEnum processorOperationEnum) {
-        log.info("[EDS QUERY] Build req path {} QUERY ep - START", processorOperationEnum.getName());
-        switch (processorOperationEnum) {
-            case PUBLISH:
-                return  microservicesURLCFG.getEdsQueryHost() +
-                        "/v1/document/create";
-            case DELETE:
-                return  microservicesURLCFG.getEdsQueryHost() +
-                        "/v1/document/delete/" +
-                        masterIdentifier;
-            case UPDATE:
-                return  microservicesURLCFG.getEdsQueryHost() +
-                        "/v1/document/metadata/" +
-                        masterIdentifier;
-            case REPLACE:
-                return  microservicesURLCFG.getEdsQueryHost() +
-                        "/v1/document/replace";
-            case READ:
-                return  microservicesURLCFG.getEdsQueryHost() +
-                        "/v1/document/check-exist/" +
-                        masterIdentifier;
-            default:
-                throw new UnsupportedOperationException("Unsupported operation");
-        }
-    }
+    
 }

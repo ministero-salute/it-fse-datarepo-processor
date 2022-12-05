@@ -3,9 +3,6 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor;
 
-import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants.ComponentScan.CONFIG_MONGO;
-import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants.ComponentScan.REPOSITORY;
-import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants.ComponentScan.UTILITY;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -25,8 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.ComponentScans;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -56,11 +51,6 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.impl.KafkaSRV;
 
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@ComponentScans( value = {
-	@ComponentScan(CONFIG_MONGO),
-	@ComponentScan(REPOSITORY),
-	@ComponentScan(UTILITY)
-})
 @ActiveProfiles(Constants.Profile.TEST)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext
