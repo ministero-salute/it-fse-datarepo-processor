@@ -31,7 +31,7 @@ import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.error.E
  */
 @ControllerAdvice
 @Slf4j
-public class ExceptionCTL extends ResponseEntityExceptionHandler {
+public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
 
     /**
      * Tracker log.

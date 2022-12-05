@@ -5,8 +5,8 @@ package it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.impl;
 
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OutOfRangeException;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.ITransactionRepo;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.TransactionStatusETY;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.mongo.ITransactionRepo;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.ITransactionsSVR;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility.RoutesUtilit
 
 @Service
 @Slf4j
-public class TransactionsSVR implements ITransactionsSVR {
+public class TransactionsSRV implements ITransactionsSVR {
 
     @Autowired
     private ITransactionRepo repository;
