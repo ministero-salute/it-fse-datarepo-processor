@@ -28,7 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * FHIR Operation Service Implementation 
- * 
  */
 @Service
 @Slf4j
