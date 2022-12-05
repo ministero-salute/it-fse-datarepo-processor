@@ -6,8 +6,9 @@ package it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.mongo.impl;
 import com.mongodb.MongoException;
 import com.mongodb.client.result.DeleteResult;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.ITransactionRepo;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.TransactionStatusETY;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.mongo.ITransactionRepo;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;

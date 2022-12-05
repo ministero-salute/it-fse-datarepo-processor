@@ -12,7 +12,6 @@ import org.springframework.util.StringUtils;
 
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.kafka.KafkaConsumerPropertiesCFG;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.kafka.KafkaPropertiesCFG;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.DispatchActionDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.EventStatusEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.EventTypeEnum;
@@ -32,11 +31,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class KafkaSRV extends KafkaAbstractSRV implements IKafkaSRV {
-
-	/**
-	 * Serial version uid.
-	 */
-	private static final long serialVersionUID = 987723954716001270L;
 
 	/**
 	 * Kafka Consumer Proeprties 

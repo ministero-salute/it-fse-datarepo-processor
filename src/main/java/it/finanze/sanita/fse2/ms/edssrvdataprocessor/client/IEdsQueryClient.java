@@ -7,13 +7,11 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.ResourceExistR
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentAlreadyExistsException;
 
-import java.io.Serializable;
-
 /**
  * Interface of Eds client.
- * 
  */
-public interface IEdsQueryClient extends Serializable {
+public interface IEdsQueryClient {
+	
     /**
      * EDS SRV Query - check existence of identifier
      * 

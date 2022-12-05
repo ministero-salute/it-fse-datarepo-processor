@@ -21,14 +21,6 @@ import javax.validation.constraints.Size;
 @Data
 public class ErrorResponseDTO implements AbstractDTO {
 
-
-
-	/**
-	 * Serial version UID 
-	 */
-	private static final long serialVersionUID = 3533528093076044614L;
-
-	
 	/**
 	 * Trace id log.
 	 */

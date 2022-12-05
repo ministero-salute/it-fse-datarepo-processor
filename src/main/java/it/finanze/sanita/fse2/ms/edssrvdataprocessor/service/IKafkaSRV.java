@@ -3,19 +3,18 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.service;
 
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentNotFoundException;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.EmptyIdentifierException;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.messaging.MessageHeaders;
 
-import java.io.Serializable;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentNotFoundException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.EmptyIdentifierException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
  
 /**
  * Kafka Service Interface 
  *
  */
-public interface IKafkaSRV extends Serializable {
+public interface IKafkaSRV {
 	/**
 	 * Kafka listener for Publish Ingestor communications in low priority
 	 * 

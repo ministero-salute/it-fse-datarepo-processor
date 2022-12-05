@@ -9,8 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 
- * FHIR Normalized DTO 
+ * Validation result DTO 
  */
 @Data
 @Builder

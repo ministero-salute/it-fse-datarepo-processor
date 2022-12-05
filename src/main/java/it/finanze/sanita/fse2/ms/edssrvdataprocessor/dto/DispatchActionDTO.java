@@ -10,13 +10,13 @@ import lombok.NoArgsConstructor;
 
 /**
  * Dispatch Action DTO 
- *
  */
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class DispatchActionDTO {
+	
     /**
      * Mongo id passed on kafka topic, defined if async operation (PUBLISH/REPLACE) (TBD: UPDATE/DELETE)
      */

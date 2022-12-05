@@ -26,7 +26,6 @@ import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility.RoutesUtilit
 
 /**
  * Ingestion Controller.
- * 
  */
 @Tag(name = API_PROCESSOR_TAG)
 @Validated

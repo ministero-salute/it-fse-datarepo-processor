@@ -7,13 +7,10 @@ package it.finanze.sanita.fse2.ms.edssrvdataprocessor.client;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.FhirOperationDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.ValidationResultDTO;
 
-import java.io.Serializable;
-
 /**
  * Interface of Eds client.
- * 
  */
-public interface IEdsDataQualityClient extends Serializable {
+public interface IEdsDataQualityClient {
 	
     /**
      * Send input to data quality srv to be validated

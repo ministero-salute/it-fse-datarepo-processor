@@ -22,7 +22,6 @@ import static org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
 
 /**
  * Used to build an error response from a given DTO 
- *
  */
 @Data
 @Builder

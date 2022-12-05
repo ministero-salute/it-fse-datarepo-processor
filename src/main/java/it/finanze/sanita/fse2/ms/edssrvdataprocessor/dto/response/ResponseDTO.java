@@ -10,21 +10,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 
- *
- *         Base response.
+ * Base response.
  */
 @Getter
 @Setter
 public class ResponseDTO implements AbstractDTO {
-
-
-
-	/**
-	 * Serial version UID 
-	 */
-	private static final long serialVersionUID = 5166650508311130280L; 
-	
 
 	/**
 	 * Trace id log.
@@ -41,6 +31,7 @@ public class ResponseDTO implements AbstractDTO {
 	private boolean esito;
 	
 	private String message;
+	
 	/**
 	 * Instantiates a new response DTO.
 	 */

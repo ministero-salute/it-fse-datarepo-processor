@@ -9,8 +9,6 @@ import brave.Tracer;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.LogTraceInfoDTO; 
 
 /**
- * 
- *
  *	Abstract controller.
  */
 public abstract class AbstractCTL {

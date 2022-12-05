@@ -6,18 +6,11 @@ package it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response;
 import lombok.Data;
 
 /**
- *
- *
  *	DTO used to return check exist result.
  */
 @Data
 public class ResourceExistResDTO extends ResponseDTO {
 
-
-	/**
-	 * Serial version uid.
-	 */
-	private static final long serialVersionUID = -1550025571939901939L;
 
 	/**
 	 * True if the document exists 
