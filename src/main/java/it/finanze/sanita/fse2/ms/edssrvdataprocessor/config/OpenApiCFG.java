@@ -25,7 +25,6 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.CustomSwaggerCFG;
 
 /**
  * Custom Swagger Config 
- *
  */
 @Configuration
 @SuppressWarnings("all")
@@ -42,7 +41,7 @@ public class OpenApiCFG {
 	 */
 	public OpenApiCFG() {
 	}
-	
+
 	@Bean
 	public OpenApiCustomiser openApiCustomiser() {
 
@@ -79,44 +78,29 @@ public class OpenApiCFG {
 
 
 			openApi.getPaths().values().stream().filter(item -> item.getPost() != null).forEach(item -> {
-
 				final Schema<MediaType> schema = item.getPost().getRequestBody().getContent().get(org.springframework.http.MediaType.APPLICATION_JSON_VALUE).getSchema();
-
 				schema.additionalProperties(false); 
-				
-
 			});
 
 			openApi.getPaths().values().stream().filter(item -> item.getPut() != null).forEach(item -> {
-
 				final Schema<MediaType> schema = item.getPut().getRequestBody().getContent().get(org.springframework.http.MediaType.APPLICATION_JSON_VALUE).getSchema();
-
 				schema.additionalProperties(false);
-		
-				
-
 			}); 
-			
-
-
-
-
-
 		};
 	}
 
 	private void disableAdditionalPropertiesToMultipart(Content content) {
-        if (content.containsKey(MULTIPART_FORM_DATA_VALUE)) {
-            content.get(MULTIPART_FORM_DATA_VALUE).getSchema().setAdditionalProperties(false);
-        }
-    }
+		if (content.containsKey(MULTIPART_FORM_DATA_VALUE)) {
+			content.get(MULTIPART_FORM_DATA_VALUE).getSchema().setAdditionalProperties(false);
+		}
+	}
 
 	private void setAdditionalProperties(Schema<?> schema) {
 		if (schema == null) return;
 		schema.setAdditionalProperties(false);
 		handleSchema(schema);
 	}
-	
+
 	private void handleSchema(Schema<?> schema) {
 		getProperties(schema).forEach(this::handleArraySchema);
 		handleArraySchema(schema);
@@ -134,8 +118,8 @@ public class OpenApiCFG {
 	}
 
 	private <T> T getSchema(Schema<?> schema, Class<T> clazz) {
-	    try { return clazz.cast(schema); }
-	    catch(ClassCastException e) { return null; }
+		try { return clazz.cast(schema); }
+		catch(ClassCastException e) { return null; }
 	}
 
 }
