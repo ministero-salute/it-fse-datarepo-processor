@@ -21,6 +21,7 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnu
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ResultLogEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.BusinessException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentAlreadyExistsException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.UnknownException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.logging.LoggerHelper;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.mongo.ITransactionRepo;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.IFhirOperationSRV;
@@ -69,6 +70,8 @@ public class FhirOperationSRV extends KafkaAbstractSRV implements IFhirOperation
     			log.error("Documento già esistente sul server fhir : " + fhirOperationDTO.getMasterIdentifier());
     			throw new DocumentAlreadyExistsException("Documento già esistente"); 
     		}
+    	} catch(UnknownException unEx) {
+    		throw unEx;
     	} catch(DocumentAlreadyExistsException daEx) {
     		throw daEx;
     	} catch(ResourceAccessException cex) {

@@ -22,6 +22,8 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnu
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.BusinessException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.ConnectionRefusedException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentAlreadyExistsException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.UnknownException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility.ProfileUtility;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility.StringUtility;
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,6 +45,9 @@ public class EdsQueryClient implements IEdsQueryClient {
      */
     @Autowired
     private MicroservicesURLCFG microservicesURLCFG;
+    
+    @Autowired
+    private ProfileUtility profileUtility;
  
     @Override
     public ResourceExistResDTO fhirCheckExist(final String masterIdentifier) throws DocumentAlreadyExistsException {
@@ -112,6 +117,13 @@ public class EdsQueryClient implements IEdsQueryClient {
 
         try {
         	ResponseEntity<ResponseDTO> response = restTemplate.exchange(url, operationMethod, entity, ResponseDTO.class);
+        	
+        	if(response.getBody()!=null) {
+        		if(profileUtility.isDevProfile() && "Eccezione di test".equals(response.getBody().getMessage())) {
+        			throw new UnknownException("Eccezione di test");
+        		}
+        	}
+        	
             log.info(Constants.Logs.SRV_QUERY_RESPONSE, response.getStatusCode());
         } catch(ResourceAccessException cex) {
             log.error("Connect error while call eds query publish ep :" + cex);
