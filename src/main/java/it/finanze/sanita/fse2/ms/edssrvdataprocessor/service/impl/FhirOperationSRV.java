@@ -69,6 +69,8 @@ public class FhirOperationSRV extends KafkaAbstractSRV implements IFhirOperation
     			log.error("Documento già esistente sul server fhir : " + fhirOperationDTO.getMasterIdentifier());
     			throw new DocumentAlreadyExistsException("Documento già esistente"); 
     		}
+    	} catch(DocumentAlreadyExistsException daEx) {
+    		throw daEx;
     	} catch(ResourceAccessException cex) {
     		log.error("Connect error while call eds query check exist ep :" + cex);
     		throw cex;
