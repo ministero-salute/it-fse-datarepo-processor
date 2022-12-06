@@ -17,6 +17,7 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.DispatchActionDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.EventStatusEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.EventTypeEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnum;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.BlockingException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentNotFoundException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.EmptyIdentifierException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
@@ -106,7 +107,7 @@ public class KafkaSRV extends KafkaAbstractSRV implements IKafkaSRV {
 					counter++;
 					if(counter==kafkaConsumerPropertiesCFG.getNRetry()) {
 						sendStatusMessage(wif, EventTypeEnum.EDS_WORKFLOW, EventStatusEnum.BLOCKING_ERROR, e.getMessage());
-						throw e;
+						throw new BlockingException("Numero di retry massimo raggiunto :" , e);
 					}
 				}
 			}
