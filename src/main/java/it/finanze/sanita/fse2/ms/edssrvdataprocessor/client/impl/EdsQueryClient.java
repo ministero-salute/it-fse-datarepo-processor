@@ -55,7 +55,7 @@ public class EdsQueryClient implements IEdsQueryClient {
     		log.info(Constants.Logs.SRV_QUERY_RESPONSE, response.getStatusCode());
     	} catch(ResourceAccessException cex) {
     		log.error("Connect error while call eds query check exist ep :" + cex);
-    		throw new ConnectionRefusedException(microservicesURLCFG.getEdsQueryHost(), Constants.Logs.ERROR_CONNECTION_REFUSED);
+    		throw cex;
     	}  
     	return response.getBody();
     }

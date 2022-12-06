@@ -9,6 +9,7 @@ import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.IEdsDataQualityClient;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.IEdsQueryClient;
@@ -68,6 +69,9 @@ public class FhirOperationSRV extends KafkaAbstractSRV implements IFhirOperation
     			log.error("Documento già esistente sul server fhir : " + fhirOperationDTO.getMasterIdentifier());
     			throw new DocumentAlreadyExistsException("Documento già esistente"); 
     		}
+    	} catch(ResourceAccessException cex) {
+    		log.error("Connect error while call eds query check exist ep :" + cex);
+    		throw cex;
     	} catch (Exception ex) {
     		log.error("Error: failed to publish bundle", ex);
     		throw new BusinessException("Error: failed to publish bundle", ex);

@@ -3,6 +3,7 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.impl;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -98,8 +99,9 @@ public class KafkaSRV extends KafkaAbstractSRV implements IKafkaSRV {
 					log.error("Dead letter exception - exiting...");
 					sendStatusMessage(wif, EventTypeEnum.EDS_WORKFLOW, EventStatusEnum.BLOCKING_ERROR, e.getMessage());
 					throw e;
-				} else if(kafkaConsumerPropertiesCFG.getTemporaryExceptions().contains(e.getClass().getName())) {
+				} else if(kafkaConsumerPropertiesCFG.getTemporaryExceptions().contains(ExceptionUtils.getRootCause(e).getClass().getCanonicalName())) {
 					log.error("Temporary exception - exiting...");
+					sendStatusMessage(wif, EventTypeEnum.EDS_WORKFLOW, EventStatusEnum.NON_BLOCKING_ERROR, e.getMessage());
 				} else {
 					counter++;
 					if(counter==kafkaConsumerPropertiesCFG.getNRetry()) {

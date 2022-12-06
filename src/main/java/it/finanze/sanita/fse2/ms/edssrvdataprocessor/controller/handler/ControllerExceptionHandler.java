@@ -47,7 +47,6 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ConnectionRefusedException.class)
     protected ResponseEntity<ErrorResponseDTO> handleConnectionRefusedException(ConnectionRefusedException ex) {
         // Log me
-        log.warn(Constants.Logs.ERROR_CONNECTION_REFUSED);
         log.error(Constants.Logs.ERROR_CONNECTION_REFUSED, ex);
         // Create error DTO
         ErrorResponseDTO out = createConnectionRefusedError(getLogTraceInfo(), ex);
