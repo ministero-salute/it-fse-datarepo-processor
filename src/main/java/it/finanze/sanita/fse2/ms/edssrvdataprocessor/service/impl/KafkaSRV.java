@@ -103,6 +103,7 @@ public class KafkaSRV extends KafkaAbstractSRV implements IKafkaSRV {
 				} else if(kafkaConsumerPropertiesCFG.getTemporaryExceptions().contains(ExceptionUtils.getRootCause(e).getClass().getCanonicalName())) {
 					log.error("Temporary exception - exiting...");
 					sendStatusMessage(wif, EventTypeEnum.EDS_WORKFLOW, EventStatusEnum.NON_BLOCKING_ERROR, e.getMessage());
+					throw e;
 				} else {
 					counter++;
 					if(counter==kafkaConsumerPropertiesCFG.getNRetry()) {
