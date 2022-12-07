@@ -3,18 +3,17 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums;
 
+import lombok.Getter;
+
 public enum EventTypeEnum {
 
 	EDS_WORKFLOW("EDS_WORKFLOW");
 
+	@Getter
 	private final String name;
 
 	EventTypeEnum(String inName) {
 		name = inName;
-	}
-
-	public String getName() {
-		return name;
 	}
 
 }

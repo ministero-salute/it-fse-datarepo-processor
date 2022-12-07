@@ -117,9 +117,9 @@ public class EdsQueryClient implements IEdsQueryClient {
 
         try {
         	ResponseEntity<ResponseDTO> response = restTemplate.exchange(url, operationMethod, entity, ResponseDTO.class);
-        	
-        	if(response.getBody()!=null) {
-        		if(profileUtility.isDevProfile() && "Eccezione di test".equals(response.getBody().getMessage())) {
+        	ResponseDTO responseBody = response.getBody();
+        	if(responseBody != null) {
+        		if(profileUtility.isDevProfile() && "Eccezione di test".equals(responseBody.getMessage())) {
         			throw new UnknownException("Eccezione di test");
         		}
         	}

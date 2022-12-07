@@ -3,27 +3,26 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.impl;
 
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OutOfRangeException;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.TransactionStatusETY;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.mongo.ITransactionRepo;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.ITransactionsSVR;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants.Logs.ERR_VAL_PAGE_NOT_EXISTS;
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility.RoutesUtility.API_QP_PAGE;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants.Logs.ERR_VAL_PAGE_NOT_EXISTS;
-import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility.RoutesUtility.API_QP_PAGE;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OutOfRangeException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.TransactionStatusETY;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.mongo.ITransactionRepo;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.ITransactionsSVR;
 
 @Service
-@Slf4j
 public class TransactionsSRV implements ITransactionsSVR {
 
     @Autowired

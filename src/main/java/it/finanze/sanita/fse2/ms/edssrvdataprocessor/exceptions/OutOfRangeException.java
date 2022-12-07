@@ -3,12 +3,14 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions;
 
+import lombok.Getter;
 
 /**
  * Represent an invalid index upon a sortable, indexable data
  */
 public class OutOfRangeException extends Exception {
 
+    @Getter
     private final String field;
 
     /**
@@ -19,9 +21,5 @@ public class OutOfRangeException extends Exception {
     public OutOfRangeException(final String msg, final String field) {
         super(msg);
         this.field = field;
-    }
-
-    public String getField() {
-        return field;
     }
 }

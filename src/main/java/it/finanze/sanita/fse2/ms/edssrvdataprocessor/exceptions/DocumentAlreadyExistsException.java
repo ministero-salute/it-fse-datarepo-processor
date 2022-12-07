@@ -20,23 +20,4 @@ public class DocumentAlreadyExistsException  extends RuntimeException {
 		super(msg);
 	}
 
-	/**
-	 * Complete constructor.
-	 * 
-	 * @param msg Message to be shown.
-	 * @param e   Exception to be shown.
-	 */
-	public DocumentAlreadyExistsException(final String msg, final Exception e) {
-		super(msg, e);
-	}
-
-	/**
-	 * Exception constructor.
-	 * 
-	 * @param e Exception to be shown.
-	 */
-	public DocumentAlreadyExistsException(final Exception e) {
-		super(e);
-	}
-
 }

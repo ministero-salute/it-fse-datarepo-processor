@@ -3,17 +3,13 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.base;
 
-import java.util.concurrent.Future;
-
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.MockProducer;
-import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.bson.Document;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.kafka.KafkaPropertiesCFG;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.DocumentReferenceETY;
@@ -25,12 +21,9 @@ public abstract class AbstractTest {
     @Autowired
     public DocumentRepo documentRepo;
 
-    @Autowired
-    private KafkaPropertiesCFG kafkaPropCFG;
-
-    private TestProducer testProducer;
     protected AbstractTest() {}
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     protected ConsumerRecord<String, String> kafkaInit(
             String topic,
             ProcessorOperationEnum operation,
@@ -65,7 +58,7 @@ public abstract class AbstractTest {
 
         MockProducer mockProducer = new MockProducer<>(true, new StringSerializer(), new StringSerializer());
         TestProducer testProducer = new TestProducer(mockProducer);
-        Future<RecordMetadata> recordMetadataFuture = testProducer.send(
+        testProducer.send(
                 topic,
                 operation.getName(),
                 message

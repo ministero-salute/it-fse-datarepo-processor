@@ -4,11 +4,13 @@
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  *	DTO used to return check exist result.
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class ResourceExistResDTO extends ResponseDTO {
 
 

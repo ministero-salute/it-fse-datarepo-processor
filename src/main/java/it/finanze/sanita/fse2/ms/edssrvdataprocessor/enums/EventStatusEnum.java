@@ -3,20 +3,19 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums;
 
+import lombok.Getter;
+
 public enum EventStatusEnum {
 
 	BLOCKING_ERROR("BLOCKING_ERROR"),
 	NON_BLOCKING_ERROR("NON_BLOCKING_ERROR"),
 	BLOCKING_ERROR_MAX_RETRY("BLOCKING_ERROR_MAX_RETRY");
 
+	@Getter
 	private final String name;
 
 	EventStatusEnum(String inName) {
 		name = inName;
-	}
-
-	public String getName() {
-		return name;
 	}
 
 }

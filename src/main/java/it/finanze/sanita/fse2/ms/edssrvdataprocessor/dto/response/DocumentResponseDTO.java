@@ -4,11 +4,13 @@
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * A DTO representing the result of the process operation 
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class DocumentResponseDTO extends ResponseDTO { 
 
 	

@@ -13,8 +13,6 @@ public class DocumentNotFoundException extends Exception {
 	 * Serial version UID 
 	 */
 	private static final long serialVersionUID = -588291874057815740L;
-
-	
 	
 	/**
      * Complete constructor.
