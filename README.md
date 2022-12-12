@@ -35,29 +35,7 @@
 
 ---
 
-_it-fse-datarepo-processor_ duty description
-- duty description item
-- duty description item
-- duty description item with ✨Magic ✨
-
-## Features
-- Features1
-- Features2
-- Features3
-- ....
-- Featuresn
-
-#### Feature1
-TODO --> Feature1 description
-
-#### Feature2
-TODO --> Feature2 description
-
-#### Feature3
-TODO --> Feature3 description
-
-#### Featuren
-TODO --> Featuren description
+Il microservizio in oggetto ha la responsabilità di finalizzare la pubblicazione su EDS: recupera il Bundle FHIR, effettua la deduplicazione, richiama it-fse-datarepo-data-quality per procedere con la validazione e finalizza l'operazione sul Server FHIR.
 
 ## Repos
 - [ministero-salute-git-repo-url] - Repos Git Ministero della Salute
