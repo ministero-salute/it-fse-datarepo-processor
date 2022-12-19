@@ -5,7 +5,7 @@ package it.finanze.sanita.fse2.ms.edssrvdataprocessor.service;
 
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.DispatchActionDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnum;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentNotFoundException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.NoRecordFoundException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
 
 /**
@@ -18,9 +18,9 @@ public interface IOrchestratorSRV {
      * 
      * @param operationEnum  The enum of the operation to execute 
      * @param dispatchActionDTO  A DTO representing the document to process  
-     * @throws DocumentNotFoundException  An exception thrown when the document is not found on MongoDB 
+     * @throws NoRecordFoundException  An exception thrown when the document is not found on MongoDB 
      */
-    void dispatchAction(ProcessorOperationEnum operationEnum, DispatchActionDTO dispatchActionDTO) throws DocumentNotFoundException, OperationException;
+    void dispatchAction(ProcessorOperationEnum operationEnum, DispatchActionDTO dispatchActionDTO) throws NoRecordFoundException, OperationException;
 
     String getWorkflowInstanceId(String id) throws OperationException;
 }

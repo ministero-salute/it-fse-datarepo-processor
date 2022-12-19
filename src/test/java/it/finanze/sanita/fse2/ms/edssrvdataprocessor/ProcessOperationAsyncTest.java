@@ -44,7 +44,7 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnu
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.BlockingException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.BusinessException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentAlreadyExistsException;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentNotFoundException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.NoRecordFoundException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.EmptyIdentifierException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.mongo.impl.DocumentRepo;
@@ -137,7 +137,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 	
 	@Test
 	@DisplayName("Publish - Empty Message test")
-	void processPublishEmptyMessageTest() throws OperationException, DocumentNotFoundException {
+	void processPublishEmptyMessageTest() throws OperationException, NoRecordFoundException {
 		String topic = kafkaTopicConfig.getIngestorPublishHighPriorityTopic();
 		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.PUBLISH, false, false, true);
 		assertThrows(EmptyIdentifierException.class, () ->
@@ -147,7 +147,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 
 	@Test
 	@DisplayName("Replace - Success test")
-	void processReplaceTest() throws OperationException, DocumentNotFoundException {
+	void processReplaceTest() throws OperationException, NoRecordFoundException {
 		String topic = kafkaTopicConfig.getIngestorGenericTopic();
 		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.REPLACE, false, false, false);
 

@@ -14,7 +14,7 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.DispatchActionDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.FhirOperationDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.BusinessException;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentNotFoundException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.NoRecordFoundException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.DocumentReferenceETY;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.mongo.IDocumentRepo;
@@ -43,7 +43,7 @@ public class OrchestratorSRV implements IOrchestratorSRV {
     private IDocumentRepo documentRepo;
 
     @Override
-    public void dispatchAction(ProcessorOperationEnum operationEnum, DispatchActionDTO dispatchActionDTO) throws DocumentNotFoundException, OperationException {
+    public void dispatchAction(ProcessorOperationEnum operationEnum, DispatchActionDTO dispatchActionDTO) throws NoRecordFoundException, OperationException {
         log.info("[EDS] Dispatching action from type received: {}", operationEnum.getName());
         FhirOperationDTO fhirOperationDTO;
         switch (operationEnum) {
@@ -73,11 +73,11 @@ public class OrchestratorSRV implements IOrchestratorSRV {
      * @param mongoId  The Mongo ID of the document 
      * @return FhirOperationDTO  A DTO representing the retrieved document 
      */
-    private FhirOperationDTO extractFhirData(String mongoId) throws DocumentNotFoundException, OperationException {
+    private FhirOperationDTO extractFhirData(String mongoId) throws NoRecordFoundException, OperationException {
         DocumentReferenceETY documentReferenceETY = documentRepo.findById(mongoId);
 
         if (documentReferenceETY == null) {
-            throw new DocumentNotFoundException(Constants.Logs.ERROR_DOCUMENT_NOT_FOUND);
+            throw new NoRecordFoundException(Constants.Logs.ERROR_DOCUMENT_NOT_FOUND);
         }
 
         if (!StringUtils.hasText(documentReferenceETY.getIdentifier())) {

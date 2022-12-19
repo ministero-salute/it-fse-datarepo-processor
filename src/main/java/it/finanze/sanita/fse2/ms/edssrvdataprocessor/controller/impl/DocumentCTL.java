@@ -11,7 +11,7 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.controller.IDocumentCTL;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.DispatchActionDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.DocumentReferenceDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.DocumentResponseDTO;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentNotFoundException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.NoRecordFoundException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.impl.OrchestratorSRV;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,7 @@ public class DocumentCTL extends AbstractCTL implements IDocumentCTL {
 	 */
 	@Override
 	public DocumentResponseDTO processOperation(DocumentReferenceDTO document)
-		throws DocumentNotFoundException, OperationException {
+		throws NoRecordFoundException, OperationException {
 		log.info("Called POST /ingest"); 
 		log.info("Received masterIdentifier: " + document.getIdentifier());
 		

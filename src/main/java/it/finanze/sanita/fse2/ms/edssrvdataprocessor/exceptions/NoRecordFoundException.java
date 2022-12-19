@@ -7,7 +7,7 @@ package it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions;
  * Document Not Found Exception 
  *
  */
-public class DocumentNotFoundException extends Exception {
+public class NoRecordFoundException extends Exception {
 
 	/**
 	 * Serial version UID 
@@ -20,7 +20,7 @@ public class DocumentNotFoundException extends Exception {
      * @param msg	Message to be shown.
      *              It should describe what the operation was trying to accomplish.
      */
-    public DocumentNotFoundException(final String msg) {
+    public NoRecordFoundException(final String msg) {
         super(msg);
         
     }
