@@ -22,6 +22,7 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ResultLogEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.BusinessException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentAlreadyExistsException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.logging.LoggerHelper;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.mongo.IDocumentRepo;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.mongo.ITransactionRepo;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.IFhirOperationSRV;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.KafkaAbstractSRV;
@@ -52,6 +53,9 @@ public class FhirOperationSRV extends KafkaAbstractSRV implements IFhirOperation
     @Autowired
     private LoggerHelper kafkaLogger;
     
+    @Autowired
+    private IDocumentRepo documentRepo;
+    
     @Override
     public void publish(final FhirOperationDTO fhirOperationDTO) {
     	log.info("[EDS] Publication - START");
@@ -65,6 +69,7 @@ public class FhirOperationSRV extends KafkaAbstractSRV implements IFhirOperation
     			}
     			queryClient.fhirPublication(fhirOperationDTO.getMasterIdentifier(), fhirOperationDTO.getJsonString(), ProcessorOperationEnum.PUBLISH);
     			transactionRepo.insert(from(fhirOperationDTO.getWorkflowInstanceId(), ProcessorOperationEnum.PUBLISH));
+    			documentRepo.deleteById(fhirOperationDTO.getWorkflowInstanceId(),ProcessorOperationEnum.PUBLISH);
     		} else {
     			log.error("Documento già esistente sul server fhir : " + fhirOperationDTO.getMasterIdentifier());
     			throw new DocumentAlreadyExistsException("Documento già esistente"); 
@@ -113,6 +118,7 @@ public class FhirOperationSRV extends KafkaAbstractSRV implements IFhirOperation
 			}
 			queryClient.fhirPublication(fhirOperationDTO.getMasterIdentifier(), fhirOperationDTO.getJsonString(), ProcessorOperationEnum.REPLACE);
 			transactionRepo.insert(from(fhirOperationDTO.getWorkflowInstanceId(), ProcessorOperationEnum.REPLACE));
+			documentRepo.deleteById(fhirOperationDTO.getWorkflowInstanceId(),ProcessorOperationEnum.REPLACE);
         } catch (Exception e) {
             throw new BusinessException("Error: failed to replace bundle");
         }

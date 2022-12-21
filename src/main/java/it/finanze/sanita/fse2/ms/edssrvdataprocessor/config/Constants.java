@@ -138,12 +138,12 @@ public final class Constants {
 	public static final class Collections {
 
 		/**
-		 * Schema collection name
+		 * Ingestion staging collection.
 		 */
-		public static final String DOCUMENT_REFERENCE = "ingestion-staging";
+		public static final String INGESTION_STAGING = "ingestion-staging";
 
 		/**
-		 * Successful transaction data
+		 * Transaction status collection.
 		 */
 		public static final String TRANSACTION_STATUS = "transaction-status";
 

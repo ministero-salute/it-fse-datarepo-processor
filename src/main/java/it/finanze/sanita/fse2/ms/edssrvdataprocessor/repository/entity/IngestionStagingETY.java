@@ -14,10 +14,10 @@ import org.springframework.data.mongodb.core.mapping.Field;
 /**
  * Document Reference Entity 
  */
-@Document(collection = "#{@referenceBean}")
+@Document(collection = "#{@ingestionStagingBean}")
 @Data
 @NoArgsConstructor
-public class DocumentReferenceETY {
+public class IngestionStagingETY {
 
 	public static final String FIELD_ID = "_id";
 	public static final String FIELD_IDENTIFIER = "identifier";

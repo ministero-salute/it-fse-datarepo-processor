@@ -3,8 +3,9 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.mongo;
 
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.DocumentReferenceETY;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.IngestionStagingETY;
 
 /**
  * Documents Repo Interface
@@ -18,7 +19,7 @@ public interface IDocumentRepo {
 	 * @return DocumentReferenceETY  The inserted Entity 
 	 * @throws OperationException  A generic MongoDB Exception 
 	 */
-	DocumentReferenceETY insert(DocumentReferenceETY ety) throws OperationException;
+	IngestionStagingETY insert(IngestionStagingETY ety) throws OperationException;
 	
 	/**
 	 * Returns a document from the staging database given its identifier. 
@@ -26,6 +27,15 @@ public interface IDocumentRepo {
 	 * @param id  The Mongo ID of the document 
 	 * @return DocumentReferenceETY  The entity having the given id 
 	 */
-	DocumentReferenceETY findById(String id) throws OperationException;
+	IngestionStagingETY findById(String id) throws OperationException;
+	
+	/**
+	 * Returns a boolean if the record is deleted. 
+	 * 
+	 * @param wii  		 The WII of the document
+	 * @param eventType  The event type of operation 
+	 * @return boolean 
+	 */
+	boolean deleteById(String wii, ProcessorOperationEnum operation) throws OperationException;
 
 }

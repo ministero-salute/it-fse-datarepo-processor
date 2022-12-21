@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.DocumentReferenceETY;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.IngestionStagingETY;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.mongo.impl.DocumentRepo;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -31,14 +31,14 @@ public abstract class AbstractTest {
             boolean encError,
             boolean encEmptyMessage
     ) throws OperationException {
-        DocumentReferenceETY ety = new DocumentReferenceETY();
+        IngestionStagingETY ety = new IngestionStagingETY();
         ety.setIdentifier(TestConstants.TEST_IDENTIFIER);
         ety.setOperation(operation);
         if (operation != ProcessorOperationEnum.DELETE) {
             ety.setDocument(Document.parse(TestConstants.TEST_JSON_STRING));
         }
 
-        DocumentReferenceETY insertedEty = documentRepo.insert(ety);
+        IngestionStagingETY insertedEty = documentRepo.insert(ety);
         String mongoId = insertedEty.getId();
 
         // Send message to Kafka with ID TEST_IDENTIFIER

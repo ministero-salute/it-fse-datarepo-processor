@@ -16,7 +16,7 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnu
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.BusinessException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.NoRecordFoundException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.DocumentReferenceETY;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.IngestionStagingETY;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.mongo.IDocumentRepo;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.IFhirOperationSRV;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.IOrchestratorSRV;
@@ -74,7 +74,7 @@ public class OrchestratorSRV implements IOrchestratorSRV {
      * @return FhirOperationDTO  A DTO representing the retrieved document 
      */
     private FhirOperationDTO extractFhirData(String mongoId) throws NoRecordFoundException, OperationException {
-        DocumentReferenceETY documentReferenceETY = documentRepo.findById(mongoId);
+        IngestionStagingETY documentReferenceETY = documentRepo.findById(mongoId);
 
         if (documentReferenceETY == null) {
             throw new NoRecordFoundException(Constants.Logs.ERROR_DOCUMENT_NOT_FOUND);
@@ -93,7 +93,7 @@ public class OrchestratorSRV implements IOrchestratorSRV {
     } 
 
     public String getWorkflowInstanceId(String id) throws OperationException {
-        Optional<DocumentReferenceETY> entity = Optional.ofNullable(documentRepo.findById(id));
+        Optional<IngestionStagingETY> entity = Optional.ofNullable(documentRepo.findById(id));
         return entity.isPresent() ? entity.get().getWorkflowInstanceId() : Constants.App.MISSING_WORKFLOW_PLACEHOLDER;
     }
 

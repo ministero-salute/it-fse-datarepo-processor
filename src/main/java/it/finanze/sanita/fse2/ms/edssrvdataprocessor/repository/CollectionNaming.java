@@ -17,13 +17,14 @@ public class CollectionNaming {
     @Autowired
     private ProfileUtility profileUtility;
 
-    @Bean("referenceBean")
+    @Bean("ingestionStagingBean")
     public String getDocumentReference() {
-        return profileUtility.isTestProfile() ? TEST_PREFIX + DOCUMENT_REFERENCE : DOCUMENT_REFERENCE;
+        return profileUtility.isTestProfile() ? TEST_PREFIX + INGESTION_STAGING : INGESTION_STAGING;
     }
 
     @Bean("transactionBean")
     public String getTransactionStatus() {
         return profileUtility.isTestProfile() ? TEST_PREFIX + TRANSACTION_STATUS : TRANSACTION_STATUS;
     }
+    
 }
