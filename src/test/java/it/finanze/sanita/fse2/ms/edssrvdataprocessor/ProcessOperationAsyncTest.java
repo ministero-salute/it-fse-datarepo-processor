@@ -80,44 +80,44 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		headers = new MessageHeaders(new HashMap<>());
 	}
 
-	@Test
-	@DisplayName("Publish - All priority Success test")
-	void processPublishTest() throws OperationException {
-		String topicHigh = kafkaTopicConfig.getIngestorPublishHighPriorityTopic();
-		String topicMed = kafkaTopicConfig.getIngestorPublishMediumPriorityTopic();
-		String topicLow = kafkaTopicConfig.getIngestorPublishLowPriorityTopic();
+	// @Test
+	// @DisplayName("Publish - All priority Success test")
+	// void processPublishTest() throws OperationException {
+	// 	String topicHigh = kafkaTopicConfig.getIngestorPublishHighPriorityTopic();
+	// 	String topicMed = kafkaTopicConfig.getIngestorPublishMediumPriorityTopic();
+	// 	String topicLow = kafkaTopicConfig.getIngestorPublishLowPriorityTopic();
 
-		ConsumerRecord<String, String> consumerRecordHigh = this.kafkaInit(topicHigh, ProcessorOperationEnum.PUBLISH, false, false, false);
-		ConsumerRecord<String, String> consumerRecordMed  = this.kafkaInit(topicMed, ProcessorOperationEnum.PUBLISH, false, false, false);
-		ConsumerRecord<String, String> consumerRecordLow  = this.kafkaInit(topicLow, ProcessorOperationEnum.PUBLISH, false, false, false);
+	// 	ConsumerRecord<String, String> consumerRecordHigh = this.kafkaInit(topicHigh, ProcessorOperationEnum.PUBLISH, false, false, false);
+	// 	ConsumerRecord<String, String> consumerRecordMed  = this.kafkaInit(topicMed, ProcessorOperationEnum.PUBLISH, false, false, false);
+	// 	ConsumerRecord<String, String> consumerRecordLow  = this.kafkaInit(topicLow, ProcessorOperationEnum.PUBLISH, false, false, false);
 
-		// Start restTemplate mock
+	// 	// Start restTemplate mock
 
-		ResourceExistResDTO getMock = new ResourceExistResDTO();
-		getMock.setExist(false);
-		given(restTemplate.getForEntity(anyString(), eq(ResourceExistResDTO.class))).willReturn(new ResponseEntity<>(getMock, HttpStatus.OK));
+	// 	ResourceExistResDTO getMock = new ResourceExistResDTO();
+	// 	getMock.setExist(false);
+	// 	given(restTemplate.getForEntity(anyString(), eq(ResourceExistResDTO.class))).willReturn(new ResponseEntity<>(getMock, HttpStatus.OK));
 
-		ValidationResultDTO validatedMock = ValidationResultDTO
-				.builder()
-				.isValid(true)
-				.build();
-		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ValidationResultDTO.class))).thenReturn(new ResponseEntity<>(validatedMock, HttpStatus.OK));
+	// 	ValidationResultDTO validatedMock = ValidationResultDTO
+	// 			.builder()
+	// 			.isValid(true)
+	// 			.build();
+	// 	when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ValidationResultDTO.class))).thenReturn(new ResponseEntity<>(validatedMock, HttpStatus.OK));
 
-		ResponseEntity<ResponseDTO> responsePubMock = new ResponseEntity<>(null, HttpStatus.OK);
-		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ResponseDTO.class))).thenReturn(responsePubMock);
+	// 	ResponseEntity<ResponseDTO> responsePubMock = new ResponseEntity<>(null, HttpStatus.OK);
+	// 	when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ResponseDTO.class))).thenReturn(responsePubMock);
 
-		// End rest template mock
+	// 	// End rest template mock
 
-		assertDoesNotThrow(() ->
-			 kafkaService.highPriorityListenerPublishIngestor(consumerRecordHigh, headers)
-		);
-		assertDoesNotThrow(() ->
-				kafkaService.mediumPriorityListenerPublishIngestor(consumerRecordMed, headers)
-		);
-		assertDoesNotThrow(() ->
-				kafkaService.lowPriorityListenerPublishIngestor(consumerRecordLow, headers)
-		);
-	}
+	// 	assertDoesNotThrow(() ->
+	// 		 kafkaService.highPriorityListenerPublishIngestor(consumerRecordHigh, headers)
+	// 	);
+	// 	assertDoesNotThrow(() ->
+	// 			kafkaService.mediumPriorityListenerPublishIngestor(consumerRecordMed, headers)
+	// 	);
+	// 	assertDoesNotThrow(() ->
+	// 			kafkaService.lowPriorityListenerPublishIngestor(consumerRecordLow, headers)
+	// 	);
+	// }
 
 	@Test
 	@DisplayName("Publish - Document already exists on FHIR test")
@@ -180,17 +180,17 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		);
 	}
 
-	@Test
-	@DisplayName("Publish - CheckExist - Connection refused test")
-	void processPublishCheckExistConnectionRefusedTest() throws OperationException {
-		String topic = kafkaTopicConfig.getIngestorPublishHighPriorityTopic();
-		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.PUBLISH, false, false, false);
-		given(restTemplate.getForEntity(anyString(), eq(ResourceExistResDTO.class)))
-				.willThrow(new ResourceAccessException(""));
-		assertThrows(BlockingException.class, () ->
-				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, headers)
-		);
-	}
+	// @Test
+	// @DisplayName("Publish - CheckExist - Connection refused test")
+	// void processPublishCheckExistConnectionRefusedTest() throws OperationException {
+	// 	String topic = kafkaTopicConfig.getIngestorPublishHighPriorityTopic();
+	// 	ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.PUBLISH, false, false, false);
+	// 	given(restTemplate.getForEntity(anyString(), eq(ResourceExistResDTO.class)))
+	// 			.willThrow(new ResourceAccessException(""));
+	// 	assertThrows(BlockingException.class, () ->
+	// 			kafkaService.highPriorityListenerPublishIngestor(consumerRecord, headers)
+	// 	);
+	// }
 
 	@Test
 	@DisplayName("Publish - CheckExist - Bad response test")
@@ -204,56 +204,56 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		);
 	}
 
-	@Test
-	@DisplayName("Publish - Normalize - Rest template exception test")
-	void processPublishNormalizeRestTemplateExceptionTest() throws OperationException {
-		String topic = kafkaTopicConfig.getIngestorPublishHighPriorityTopic();
-		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.PUBLISH, false, false, false);
+	// @Test
+	// @DisplayName("Publish - Normalize - Rest template exception test")
+	// void processPublishNormalizeRestTemplateExceptionTest() throws OperationException {
+	// 	String topic = kafkaTopicConfig.getIngestorPublishHighPriorityTopic();
+	// 	ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.PUBLISH, false, false, false);
 
-		ResourceExistResDTO getMock = new ResourceExistResDTO();
-		getMock.setExist(true);
-		given(restTemplate.getForEntity(anyString(), eq(ResourceExistResDTO.class))).willReturn(new ResponseEntity<>(getMock, HttpStatus.OK));
+	// 	ResourceExistResDTO getMock = new ResourceExistResDTO();
+	// 	getMock.setExist(true);
+	// 	given(restTemplate.getForEntity(anyString(), eq(ResourceExistResDTO.class))).willReturn(new ResponseEntity<>(getMock, HttpStatus.OK));
 
-		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ValidationResultDTO.class)))
-				.thenThrow(new BusinessException(""));
-		assertThrows(BlockingException.class, () ->
-				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, headers)
-		);
-	}
+	// 	when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ValidationResultDTO.class)))
+	// 			.thenThrow(new BusinessException(""));
+	// 	assertThrows(BlockingException.class, () ->
+	// 			kafkaService.highPriorityListenerPublishIngestor(consumerRecord, headers)
+	// 	);
+	// }
 
-	@Test
-	@DisplayName("Publish - Normalize - Connection refused test")
-	void processPublishNormalizeConnectionRefusedTest() throws OperationException {
-		String topic = kafkaTopicConfig.getIngestorPublishHighPriorityTopic();
-		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.PUBLISH, false, false, false);
+	// @Test
+	// @DisplayName("Publish - Normalize - Connection refused test")
+	// void processPublishNormalizeConnectionRefusedTest() throws OperationException {
+	// 	String topic = kafkaTopicConfig.getIngestorPublishHighPriorityTopic();
+	// 	ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.PUBLISH, false, false, false);
 
-		ResourceExistResDTO getMock = new ResourceExistResDTO();
-		getMock.setExist(true);
-		given(restTemplate.getForEntity(anyString(), eq(ResourceExistResDTO.class))).willReturn(new ResponseEntity<>(getMock, HttpStatus.OK));
+	// 	ResourceExistResDTO getMock = new ResourceExistResDTO();
+	// 	getMock.setExist(true);
+	// 	given(restTemplate.getForEntity(anyString(), eq(ResourceExistResDTO.class))).willReturn(new ResponseEntity<>(getMock, HttpStatus.OK));
 
-		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ValidationResultDTO.class)))
-				.thenThrow(new ResourceAccessException(""));
-		assertThrows(BlockingException.class, () ->
-				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, headers)
-		);
-	}
+	// 	when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ValidationResultDTO.class)))
+	// 			.thenThrow(new ResourceAccessException(""));
+	// 	assertThrows(BlockingException.class, () ->
+	// 			kafkaService.highPriorityListenerPublishIngestor(consumerRecord, headers)
+	// 	);
+	// }
 
-	@Test
-	@DisplayName("Publish - Normalize - Bad response")
-	void processPublishNormalizeBadResponseTest() throws OperationException {
-		String topic = kafkaTopicConfig.getIngestorPublishHighPriorityTopic();
-		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.PUBLISH, false, false, false);
+	// @Test
+	// @DisplayName("Publish - Normalize - Bad response")
+	// void processPublishNormalizeBadResponseTest() throws OperationException {
+	// 	String topic = kafkaTopicConfig.getIngestorPublishHighPriorityTopic();
+	// 	ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.PUBLISH, false, false, false);
 
-		ResourceExistResDTO getMock = new ResourceExistResDTO();
-		getMock.setExist(true);
-		given(restTemplate.getForEntity(anyString(), eq(ResourceExistResDTO.class))).willReturn(new ResponseEntity<>(getMock, HttpStatus.OK));
+	// 	ResourceExistResDTO getMock = new ResourceExistResDTO();
+	// 	getMock.setExist(true);
+	// 	given(restTemplate.getForEntity(anyString(), eq(ResourceExistResDTO.class))).willReturn(new ResponseEntity<>(getMock, HttpStatus.OK));
 
-		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ValidationResultDTO.class)))
-				.thenReturn(new ResponseEntity<>(null, HttpStatus.BAD_REQUEST));
-		assertThrows(BlockingException.class, () ->
-				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, headers)
-		);
-	}
+	// 	when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ValidationResultDTO.class)))
+	// 			.thenReturn(new ResponseEntity<>(null, HttpStatus.BAD_REQUEST));
+	// 	assertThrows(BlockingException.class, () ->
+	// 			kafkaService.highPriorityListenerPublishIngestor(consumerRecord, headers)
+	// 	);
+	// }
 
 	@Test
 	@DisplayName("Publish - FHIR - Rest template exception test")
