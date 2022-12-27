@@ -13,6 +13,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
@@ -24,22 +25,26 @@ import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility.StringUtilit
 @Service
 @Slf4j
 public abstract class KafkaAbstractSRV {
+	
 	/**
 	 * Transactional producer.
 	 */
 	@Autowired
 	@Qualifier("txkafkatemplate")
-	protected transient KafkaTemplate<String, String> txKafkaTemplate;
+	protected KafkaTemplate<String, String> txKafkaTemplate;
 
 	/**
 	 * Not transactional producer.
 	 */
 	@Autowired
 	@Qualifier("notxkafkatemplate")
-	protected transient KafkaTemplate<String, String> notxKafkaTemplate;
+	protected KafkaTemplate<String, String> notxKafkaTemplate;
 
 	@Autowired
-	protected transient KafkaTopicCFG kafkaTopicCFG;
+	protected KafkaTopicCFG kafkaTopicCFG;
+	
+	@Value("${spring.application.name}")
+	private String msName;
 
 	public void sendStatusMessage(
 		String workflowInstanceId,
@@ -53,6 +58,7 @@ public abstract class KafkaAbstractSRV {
 				eventDate(new Date()).
 				eventStatus(eventStatus).
 				message(message).
+				microserviceName(msName).
 				build();
 			String json = toJSONJackson(statusManagerMessage);
 			sendMessage(kafkaTopicCFG.getStatusManagerTopic(), workflowInstanceId, json, true);
