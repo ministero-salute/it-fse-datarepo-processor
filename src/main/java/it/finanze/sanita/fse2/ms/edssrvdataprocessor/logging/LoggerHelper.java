@@ -39,7 +39,7 @@ public class LoggerHelper {
 	/* 
 	 * Implements structured logs, at all logging levels
 	 */
-	public void trace(String message, ILogEnum operation, ResultLogEnum result, Date startDateOperation) {
+	public void trace(String workflowInstanceId, String message, ILogEnum operation, ResultLogEnum result, Date startDateOperation) {
 		
 		LogDTO logDTO = LogDTO.builder().
 				message(message).
@@ -48,6 +48,7 @@ public class LoggerHelper {
 				op_timestamp_start(dateFormat.format(startDateOperation)).
 				op_timestamp_end(dateFormat.format(new Date())).
 				microservice_name(msName).
+				workflow_instance_id(workflowInstanceId).
 				build();
 
 		final String logMessage = StringUtility.toJSON(logDTO);
@@ -58,7 +59,7 @@ public class LoggerHelper {
 		}
 	}
 
-	public void debug(String message,  ILogEnum operation, ResultLogEnum result, Date startDateOperation) {
+	public void debug(String workflowInstanceId, String message,  ILogEnum operation, ResultLogEnum result, Date startDateOperation) {
 
 		LogDTO logDTO = LogDTO.builder().
 				message(message).
@@ -67,6 +68,7 @@ public class LoggerHelper {
 				op_timestamp_start(dateFormat.format(startDateOperation)).
 				op_timestamp_end(dateFormat.format(new Date())).
 				microservice_name(msName).
+				workflow_instance_id(workflowInstanceId).
 				build();
 		
 		final String logMessage = StringUtility.toJSON(logDTO);
@@ -76,7 +78,7 @@ public class LoggerHelper {
 		}
 	} 
 	 
-	public void info(String message, ILogEnum operation, ResultLogEnum result, Date startDateOperation) {
+	public void info(String workflowInstanceId, String message, ILogEnum operation, ResultLogEnum result, Date startDateOperation) {
 
 		LogDTO logDTO = LogDTO.builder().
 				message(message).
@@ -85,6 +87,7 @@ public class LoggerHelper {
 				op_timestamp_start(dateFormat.format(startDateOperation)).
 				op_timestamp_end(dateFormat.format(new Date())).
 				microservice_name(msName).
+				workflow_instance_id(workflowInstanceId).
 				build();
 		
 		final String logMessage = StringUtility.toJSON(logDTO);
@@ -95,7 +98,7 @@ public class LoggerHelper {
 		}
 	} 
 	
-	public void warn(String message, ILogEnum operation, ResultLogEnum result, Date startDateOperation) {
+	public void warn(String workflowInstanceId, String message, ILogEnum operation, ResultLogEnum result, Date startDateOperation) {
 
 		LogDTO logDTO = LogDTO.builder().
 				message(message).
@@ -104,6 +107,7 @@ public class LoggerHelper {
 				op_timestamp_start(dateFormat.format(startDateOperation)).
 				op_timestamp_end(dateFormat.format(new Date())).
 				microservice_name(msName).
+				workflow_instance_id(workflowInstanceId).
 				build();
 		
 		final String logMessage = StringUtility.toJSON(logDTO);
@@ -114,7 +118,7 @@ public class LoggerHelper {
  
 	} 
 	
-	public void error(String message, ILogEnum operation, ResultLogEnum result, Date startDateOperation,ILogEnum error) {
+	public void error(String workflowInstanceId, String message, ILogEnum operation, ResultLogEnum result, Date startDateOperation,ILogEnum error) {
 		
 		LogDTO logDTO = LogDTO.builder().
 				message(message).
@@ -125,6 +129,7 @@ public class LoggerHelper {
 				op_error(error.getCode()).
 				op_error_description(error.getDescription()).
 				microservice_name(msName).
+				workflow_instance_id(workflowInstanceId).
 				build();
 		
 		final String logMessage = StringUtility.toJSON(logDTO);

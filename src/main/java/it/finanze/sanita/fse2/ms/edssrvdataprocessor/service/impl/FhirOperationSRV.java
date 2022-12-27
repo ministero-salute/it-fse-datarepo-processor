@@ -65,7 +65,7 @@ public class FhirOperationSRV extends KafkaAbstractSRV implements IFhirOperation
     			Date startDate = new Date();
     			ValidationResultDTO validatedData = dataQualityClient.validateBundleNormativeR4(fhirOperationDTO);
     			if(!validatedData.isValid()) {
-    				kafkaLogger.info(validatedData.getMessage(), OperationLogEnum.VALIDATE_NORMATIVE_R4, ResultLogEnum.KO, startDate);
+    				kafkaLogger.info(fhirOperationDTO.getWorkflowInstanceId(),validatedData.getMessage(), OperationLogEnum.VALIDATE_NORMATIVE_R4, ResultLogEnum.KO, startDate);
     			}
     			queryClient.fhirPublication(fhirOperationDTO.getMasterIdentifier(), fhirOperationDTO.getJsonString(), ProcessorOperationEnum.PUBLISH);
     			transactionRepo.insert(from(fhirOperationDTO.getWorkflowInstanceId(), ProcessorOperationEnum.PUBLISH));
@@ -114,7 +114,7 @@ public class FhirOperationSRV extends KafkaAbstractSRV implements IFhirOperation
         	Date startDate = new Date();
         	ValidationResultDTO validatedData = dataQualityClient.validateBundleNormativeR4(fhirOperationDTO);
 			if(!validatedData.isValid()) {
-				kafkaLogger.info(validatedData.getMessage(), OperationLogEnum.VALIDATE_NORMATIVE_R4, ResultLogEnum.KO, startDate);
+				kafkaLogger.info(fhirOperationDTO.getWorkflowInstanceId(), validatedData.getMessage(), OperationLogEnum.VALIDATE_NORMATIVE_R4, ResultLogEnum.KO, startDate);
 			}
 			queryClient.fhirPublication(fhirOperationDTO.getMasterIdentifier(), fhirOperationDTO.getJsonString(), ProcessorOperationEnum.REPLACE);
 			transactionRepo.insert(from(fhirOperationDTO.getWorkflowInstanceId(), ProcessorOperationEnum.REPLACE));

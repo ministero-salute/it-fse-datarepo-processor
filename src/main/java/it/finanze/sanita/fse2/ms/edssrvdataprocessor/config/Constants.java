@@ -48,6 +48,10 @@ public final class Constants {
 	 */
 	public static final class App {
 		public static final String MISSING_WORKFLOW_PLACEHOLDER = "UNKNOWN_WORKFLOW_ID";
+		
+		public static final String LOG_TYPE_KPI = "kpi-structured-log";
+		
+		public static final String LOG_TYPE_CONTROL = "control-structured-log";
 
 		/** 
 		 * This method is intentionally left blank. 

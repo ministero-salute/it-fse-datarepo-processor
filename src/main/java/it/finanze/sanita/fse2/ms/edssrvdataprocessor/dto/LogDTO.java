@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 public class LogDTO {
 
-	final String log_type = "eds-structured-log";
+	final String log_type = "control-structured-log";
 	
 	private String message;
 	
@@ -27,5 +27,7 @@ public class LogDTO {
 	private String op_error_description;
 
 	private String microservice_name;
+	
+	private String workflow_instance_id;
 	 
 }
