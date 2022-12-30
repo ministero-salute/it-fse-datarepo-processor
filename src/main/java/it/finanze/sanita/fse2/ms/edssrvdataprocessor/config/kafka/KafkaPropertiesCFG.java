@@ -8,12 +8,14 @@ import org.springframework.stereotype.Component;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  *	Kafka properties configuration.
  */
 @Data
 @Component
-public class KafkaPropertiesCFG {
+public class KafkaPropertiesCFG implements Serializable {
 
 	/**
 	 *  Boostrap server.

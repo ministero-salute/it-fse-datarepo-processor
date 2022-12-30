@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.context.ActiveProfiles;
 
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants;
@@ -25,6 +26,7 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.mongo.IDocumentR
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(Constants.Profile.TEST)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@EmbeddedKafka
 class DocumentRepoTest {
 
 	@Autowired
@@ -55,13 +57,13 @@ class DocumentRepoTest {
 	
 	@Test
 	void testDelete() throws OperationException {
-		assertEquals(count(), 2L);
+		assertEquals(2L, count());
 		assertTrue(documentRepo.deleteById(wii, ProcessorOperationEnum.PUBLISH));
 		List<IngestionStagingETY> list = findOperation();
-		assertEquals(list.size(), 1);
-		assertEquals(list.get(0).getOperation(), ProcessorOperationEnum.REPLACE);
+		assertEquals(1, list.size());
+		assertEquals(ProcessorOperationEnum.REPLACE, list.get(0).getOperation());
 		assertTrue(documentRepo.deleteById(wii, ProcessorOperationEnum.REPLACE));
-		assertEquals(count(), 0);
+		assertEquals(0, count());
 	}
 	
 	private long count() {

@@ -38,13 +38,13 @@ public class KafkaSRV extends KafkaAbstractSRV implements IKafkaSRV {
 	 * Kafka Consumer Proeprties 
 	 */
 	@Autowired
-	private transient KafkaConsumerPropertiesCFG kafkaConsumerPropertiesCFG;
+	private KafkaConsumerPropertiesCFG kafkaConsumerPropertiesCFG;
 
 	/**
 	 * Orchestrator Service 
 	 */
 	@Autowired
-	private transient IOrchestratorSRV orchestratorSRV;
+	private IOrchestratorSRV orchestratorSRV;
  
 	
 	@Override

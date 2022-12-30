@@ -7,6 +7,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.MockProducer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.bson.Document;
+import org.checkerframework.checker.units.qual.A;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -14,6 +16,10 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnu
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.IngestionStagingETY;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.mongo.impl.DocumentRepo;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.boot.web.context.WebServerApplicationContext;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class AbstractTest {
@@ -21,7 +27,18 @@ public abstract class AbstractTest {
     @Autowired
     public DocumentRepo documentRepo;
 
+    @SpyBean
+    protected MongoTemplate mongoTemplate;
+
+    @Autowired
+    ServletWebServerApplicationContext webServerAppCtxt;
+
     protected AbstractTest() {}
+
+    @BeforeEach
+    void clearDB() {
+        mongoTemplate.dropCollection(IngestionStagingETY.class);
+    }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected ConsumerRecord<String, String> kafkaInit(
@@ -71,5 +88,9 @@ public abstract class AbstractTest {
                 operation.getName(),
                 message
         );
+    }
+
+    public String getBaseUrl() {
+        return "http://localhost:" + webServerAppCtxt.getWebServer().getPort() + webServerAppCtxt.getServletContext().getContextPath();
     }
 }

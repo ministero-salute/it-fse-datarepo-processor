@@ -3,37 +3,16 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.mockito.BDDMockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
-import org.springframework.http.MediaType;
-import org.springframework.kafka.test.context.EmbeddedKafka;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.web.client.RestTemplate;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import brave.Tracer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.base.AbstractTest;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.IEdsDataQualityClient;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.IEdsQueryClient;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.controller.impl.DocumentCTL;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.DispatchActionDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.DocumentReferenceDTO;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.ResponseDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.PriorityTypeEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.BusinessException;
@@ -41,14 +20,41 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.ConnectionRefuse
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.mongo.impl.DocumentRepo;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.impl.OrchestratorSRV;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility.ProfileUtility;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.mockito.BDDMockito;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.test.context.EmbeddedKafka;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestTemplate;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(Constants.Profile.TEST)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext
 @AutoConfigureMockMvc
-@EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "port=9092" })
-class ProcessOperationSyncTest {
+@EmbeddedKafka
+class ProcessOperationSyncTest extends AbstractTest {
     
 	@Autowired
     ServletWebServerApplicationContext webServerAppCtxt;
@@ -59,10 +65,10 @@ class ProcessOperationSyncTest {
     @Autowired
     MockMvc mvc;
 
-    @MockBean
+    @SpyBean
     private IEdsQueryClient queryClient;
 
-    @MockBean
+    @SpyBean
     private IEdsDataQualityClient dataQualityClient;
 
     @Autowired
@@ -77,7 +83,7 @@ class ProcessOperationSyncTest {
     @MockBean
     private RestTemplate restTemplate; 
     
-    @MockBean
+    @SpyBean
     private OrchestratorSRV orchestratorSRV; 
 
     private String TEST_IDENTIFIER = "testIdentifier"; 
@@ -102,7 +108,7 @@ class ProcessOperationSyncTest {
     	BDDMockito.doNothing().when(queryClient).fhirPublication(anyString(), anyString(), any(ProcessorOperationEnum.class)); 
 		 		
 	    MockHttpServletRequestBuilder builder =
-	            MockMvcRequestBuilders.post("http://localhost:9089/v1/process").content(objectMapper.writeValueAsString(document)); 
+	            MockMvcRequestBuilders.post(getBaseUrl() + "/v1/process").content(objectMapper.writeValueAsString(document));
 	    
 	    mvc.perform(builder
 	            .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -118,12 +124,17 @@ class ProcessOperationSyncTest {
     	document.setIdentifier(TEST_IDENTIFIER); 
     	document.setOperation(TEST_OPERATION_DELETE); 
     	document.setJsonString(TEST_JSON_STRING); 
-    	document.setPriorityTypeEnum(TEST_PRIORITY_TYPE_ENUM); 
-    	   	
-		BDDMockito.doNothing().when(queryClient).fhirDelete(anyString()); 
-		 		
+    	document.setPriorityTypeEnum(TEST_PRIORITY_TYPE_ENUM);
+
+		ResponseDTO responseDTO = new ResponseDTO();
+		responseDTO.setEsito(true);
+
+
+		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.eq(HttpMethod.DELETE), Mockito.isNull(), Mockito.eq(ResponseDTO.class)))
+				.thenReturn(new ResponseEntity<>(responseDTO, HttpStatus.OK));
+
 	    MockHttpServletRequestBuilder builder =
-	            MockMvcRequestBuilders.post("http://localhost:9089/v1/process").content(objectMapper.writeValueAsString(document)); 
+	            MockMvcRequestBuilders.post(getBaseUrl() + "/v1/process").content(objectMapper.writeValueAsString(document));
 	    
 	    mvc.perform(builder
 	            .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -140,13 +151,13 @@ class ProcessOperationSyncTest {
     	document.setIdentifier(TEST_IDENTIFIER); 
     	document.setOperation(TEST_OPERATION_DELETE); 
     	document.setJsonString(TEST_JSON_STRING); 
-    	document.setPriorityTypeEnum(TEST_PRIORITY_TYPE_ENUM); 
-    	   	
-		BDDMockito.doThrow(BusinessException.class).when(orchestratorSRV)
-				.dispatchAction(any(ProcessorOperationEnum.class), any(DispatchActionDTO.class)); 
+    	document.setPriorityTypeEnum(TEST_PRIORITY_TYPE_ENUM);
+
+		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.eq(HttpMethod.DELETE), Mockito.isNull(), Mockito.eq(ResponseDTO.class)))
+				.thenThrow(BusinessException.class);
 		 		
 	    MockHttpServletRequestBuilder builder =
-	            MockMvcRequestBuilders.post("http://localhost:9089/v1/process").content(objectMapper.writeValueAsString(document)); 
+	            MockMvcRequestBuilders.post(getBaseUrl() + "/v1/process").content(objectMapper.writeValueAsString(document));
 	    
 	    mvc.perform(builder
 	            .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -168,7 +179,7 @@ class ProcessOperationSyncTest {
 				.dispatchAction(any(ProcessorOperationEnum.class), any(DispatchActionDTO.class)); 
 		 		
 	    MockHttpServletRequestBuilder builder =
-	            MockMvcRequestBuilders.post("http://localhost:9089/v1/process").content(objectMapper.writeValueAsString(document)); 
+	            MockMvcRequestBuilders.post(getBaseUrl() + "/v1/process").content(objectMapper.writeValueAsString(document));
 	    
 	    mvc.perform(builder
 	            .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -184,13 +195,13 @@ class ProcessOperationSyncTest {
     	document.setIdentifier(TEST_IDENTIFIER); 
     	document.setOperation(TEST_OPERATION_DELETE); 
     	document.setJsonString(TEST_JSON_STRING); 
-    	document.setPriorityTypeEnum(TEST_PRIORITY_TYPE_ENUM); 
-    	   	
-		BDDMockito.doThrow(ConnectionRefusedException.class).when(orchestratorSRV)
-				.dispatchAction(any(ProcessorOperationEnum.class), any(DispatchActionDTO.class)); 
+    	document.setPriorityTypeEnum(TEST_PRIORITY_TYPE_ENUM);
+
+		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.eq(HttpMethod.DELETE), Mockito.isNull(), Mockito.eq(ResponseDTO.class)))
+				.thenThrow(ResourceAccessException.class);
 		 		
 	    MockHttpServletRequestBuilder builder =
-	            MockMvcRequestBuilders.post("http://localhost:9089/v1/process").content(objectMapper.writeValueAsString(document)); 
+	            MockMvcRequestBuilders.post(getBaseUrl() + "/v1/process").content(objectMapper.writeValueAsString(document));
 	    
 	    mvc.perform(builder
 	            .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -212,11 +223,10 @@ class ProcessOperationSyncTest {
 				.dispatchAction(any(ProcessorOperationEnum.class), any(DispatchActionDTO.class));
 
 		MockHttpServletRequestBuilder builder =
-				MockMvcRequestBuilders.post("http://localhost:9089/v1/process").content(objectMapper.writeValueAsString(document));
+				MockMvcRequestBuilders.post(getBaseUrl() + "/v1/process").content(objectMapper.writeValueAsString(document));
 
 		mvc.perform(builder
 						.contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().is5xxServerError());
 	}
-
 }

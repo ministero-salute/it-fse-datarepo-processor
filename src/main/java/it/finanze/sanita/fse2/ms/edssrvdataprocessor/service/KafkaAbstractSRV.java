@@ -29,17 +29,17 @@ public abstract class KafkaAbstractSRV {
 	 */
 	@Autowired
 	@Qualifier("txkafkatemplate")
-	protected transient KafkaTemplate<String, String> txKafkaTemplate;
+	protected KafkaTemplate<String, String> txKafkaTemplate;
 
 	/**
 	 * Not transactional producer.
 	 */
 	@Autowired
 	@Qualifier("notxkafkatemplate")
-	protected transient KafkaTemplate<String, String> notxKafkaTemplate;
+	protected KafkaTemplate<String, String> notxKafkaTemplate;
 
 	@Autowired
-	protected transient KafkaTopicCFG kafkaTopicCFG;
+	protected KafkaTopicCFG kafkaTopicCFG;
 
 	public void sendStatusMessage(
 		String workflowInstanceId,
