@@ -10,7 +10,12 @@ import lombok.Getter;
  */
 public class OutOfRangeException extends Exception {
 
-    @Getter
+    /**
+	 * Serial version uid.
+	 */
+	private static final long serialVersionUID = -5820918042882231637L;
+	
+	@Getter
     private final String field;
 
     /**

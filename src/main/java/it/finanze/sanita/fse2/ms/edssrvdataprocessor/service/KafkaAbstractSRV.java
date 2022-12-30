@@ -13,6 +13,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility.StringUtilit
 @Service
 @Slf4j
 public abstract class KafkaAbstractSRV {
+	
 	/**
 	 * Transactional producer.
 	 */
@@ -40,6 +42,9 @@ public abstract class KafkaAbstractSRV {
 
 	@Autowired
 	protected KafkaTopicCFG kafkaTopicCFG;
+	
+	@Value("${spring.application.name}")
+	private String msName;
 
 	public void sendStatusMessage(
 		String workflowInstanceId,
@@ -53,6 +58,7 @@ public abstract class KafkaAbstractSRV {
 				eventDate(new Date()).
 				eventStatus(eventStatus).
 				message(message).
+				microserviceName(msName).
 				build();
 			String json = toJSONJackson(statusManagerMessage);
 			sendMessage(kafkaTopicCFG.getStatusManagerTopic(), workflowInstanceId, json, true);

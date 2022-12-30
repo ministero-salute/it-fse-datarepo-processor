@@ -21,5 +21,7 @@ public class KafkaStatusManagerDTO {
 	private EventStatusEnum eventStatus;
 	
 	private String message;
+	
+	private String microserviceName;
 }
  
