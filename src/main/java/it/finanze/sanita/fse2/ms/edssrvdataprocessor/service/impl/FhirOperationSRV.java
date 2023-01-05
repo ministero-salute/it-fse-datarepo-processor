@@ -21,6 +21,7 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnu
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ResultLogEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.BusinessException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentAlreadyExistsException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.UATMockException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.logging.LoggerHelper;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.mongo.IDocumentRepo;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.mongo.ITransactionRepo;
@@ -70,11 +71,14 @@ public class FhirOperationSRV extends KafkaAbstractSRV implements IFhirOperation
     			queryClient.fhirPublication(fhirOperationDTO.getMasterIdentifier(), fhirOperationDTO.getJsonString(), ProcessorOperationEnum.PUBLISH);
     			transactionRepo.insert(from(fhirOperationDTO.getWorkflowInstanceId(), ProcessorOperationEnum.PUBLISH));
     			documentRepo.deleteById(fhirOperationDTO.getWorkflowInstanceId(),ProcessorOperationEnum.PUBLISH);
+    			if (fhirOperationDTO.getMasterIdentifier().contains("UAT_GTW_ID")) {
+    				throw new UATMockException();
+    			}
     		} else {
     			log.error("Documento già esistente sul server fhir : " + fhirOperationDTO.getMasterIdentifier());
     			throw new DocumentAlreadyExistsException("Documento già esistente"); 
     		}
-    	} catch(DocumentAlreadyExistsException daEx) {
+    	} catch(DocumentAlreadyExistsException | UATMockException daEx) {
     		throw daEx;
     	} catch(ResourceAccessException cex) {
     		log.error("Connect error while call eds query check exist ep :" + cex);
@@ -119,7 +123,12 @@ public class FhirOperationSRV extends KafkaAbstractSRV implements IFhirOperation
 			queryClient.fhirPublication(fhirOperationDTO.getMasterIdentifier(), fhirOperationDTO.getJsonString(), ProcessorOperationEnum.REPLACE);
 			transactionRepo.insert(from(fhirOperationDTO.getWorkflowInstanceId(), ProcessorOperationEnum.REPLACE));
 			documentRepo.deleteById(fhirOperationDTO.getWorkflowInstanceId(),ProcessorOperationEnum.REPLACE);
-        } catch (Exception e) {
+			if (fhirOperationDTO.getMasterIdentifier().contains("UAT_GTW_ID")) {
+				throw new UATMockException();
+			}
+        } catch(UATMockException daEx) {
+    		throw daEx;
+    	} catch (Exception e) {
             throw new BusinessException("Error: failed to replace bundle");
         }
     }
