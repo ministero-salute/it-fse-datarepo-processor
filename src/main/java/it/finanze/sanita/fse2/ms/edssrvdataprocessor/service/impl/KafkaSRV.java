@@ -21,6 +21,7 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.BlockingExceptio
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.NoRecordFoundException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.EmptyIdentifierException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.UATMockException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.IKafkaSRV;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.IOrchestratorSRV;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.KafkaAbstractSRV;
@@ -94,6 +95,8 @@ public class KafkaSRV extends KafkaAbstractSRV implements IKafkaSRV {
 					log.warn(Constants.Logs.ERROR_EMPTY_IDENTIFIER + " | key: {}", cr.key());
 					throw new EmptyIdentifierException("Error: empty message on topic " + cr.topic()); 
 				}
+			} catch (UATMockException e) {
+				sendStatusMessage(wif, EventTypeEnum.EDS_WORKFLOW, EventStatusEnum.SUCCESS, null);
 			} catch (Exception e) {
 				HelperUtility.deadLetterHelper(e);
 				if(kafkaConsumerPropertiesCFG.getDeadLetterExceptions().contains(e.getClass().getName())) {
