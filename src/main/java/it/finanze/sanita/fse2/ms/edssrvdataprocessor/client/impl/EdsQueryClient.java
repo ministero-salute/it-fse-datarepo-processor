@@ -112,13 +112,16 @@ public class EdsQueryClient implements IEdsQueryClient {
 
         try {
         	ResponseEntity<ResponseDTO> response = restTemplate.exchange(url, operationMethod, entity, ResponseDTO.class);
-            log.info(Constants.Logs.SRV_QUERY_RESPONSE, response.getStatusCode());
+            if (!response.getBody().isEsito()) {
+                throw new BusinessException(response.getBody().getMessage());
+            }
+        	log.info(Constants.Logs.SRV_QUERY_RESPONSE, response.getStatusCode());
         } catch(ResourceAccessException cex) {
             log.error("Connect error while call eds query publish ep :" + cex);
             throw new ConnectionRefusedException(microservicesURLCFG.getEdsQueryHost(),Constants.Logs.ERROR_CONNECTION_REFUSED);
         } catch(Exception ex) {
             log.error("Generic error while call eds query publish ep :" + ex);
-            throw new BusinessException("Generic error while call eds query publish ep :" + ex);
+            throw new BusinessException(ex);
         }
  
     }
