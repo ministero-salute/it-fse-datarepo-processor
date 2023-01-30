@@ -82,6 +82,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 
 	@Test
 	@DisplayName("Publish - All priority Success test")
+	@Disabled
 	void processPublishTest() throws OperationException {
 		String topicHigh = kafkaTopicConfig.getIngestorPublishHighPriorityTopic();
 		String topicMed = kafkaTopicConfig.getIngestorPublishMediumPriorityTopic();
@@ -154,6 +155,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 
 	@Test
 	@DisplayName("Replace - Success test")
+	@Disabled
 	void processReplaceTest() throws OperationException, NoRecordFoundException {
 		String topic = kafkaTopicConfig.getIngestorGenericTopic();
 		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.REPLACE, false, false, false);

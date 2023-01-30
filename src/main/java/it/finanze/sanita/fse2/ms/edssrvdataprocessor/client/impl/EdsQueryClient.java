@@ -112,8 +112,9 @@ public class EdsQueryClient implements IEdsQueryClient {
 
         try {
         	ResponseEntity<ResponseDTO> response = restTemplate.exchange(url, operationMethod, entity, ResponseDTO.class);
-            if (!response.getBody().isEsito()) {
-                throw new BusinessException(response.getBody().getMessage());
+        	ResponseDTO body = response.getBody();
+            if (body!=null && !body.isEsito()) {
+                throw new BusinessException(body.getMessage());
             }
         	log.info(Constants.Logs.SRV_QUERY_RESPONSE, response.getStatusCode());
         } catch(ResourceAccessException cex) {
