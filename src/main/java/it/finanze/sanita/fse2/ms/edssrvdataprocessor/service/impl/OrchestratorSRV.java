@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.AccreditationSimulationCFG;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.DispatchActionDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.FhirOperationDTO;
@@ -45,6 +46,9 @@ public class OrchestratorSRV implements IOrchestratorSRV {
     
     @Autowired
     private IAccreditamentoSimulationSRV accreditamentoSimulationSRV;
+    
+    @Autowired
+    private AccreditationSimulationCFG accreditamentoSimulationCFG;
 
     @Override
     public void dispatchAction(ProcessorOperationEnum operationEnum, DispatchActionDTO dispatchActionDTO) throws NoRecordFoundException, OperationException {
@@ -53,7 +57,10 @@ public class OrchestratorSRV implements IOrchestratorSRV {
         switch (operationEnum) {
             case PUBLISH:
                 fhirOperationDTO = extractFhirData(dispatchActionDTO.getMongoId());
-                accreditamentoSimulationSRV.runSimulation(fhirOperationDTO.getMasterIdentifier());
+                if(accreditamentoSimulationCFG.isEnableCheck()) {
+                	accreditamentoSimulationSRV.runSimulation(fhirOperationDTO.getMasterIdentifier());
+                }
+                
                 fhirOperationSRV.publish(fhirOperationDTO);
                 break;
             case UPDATE:
