@@ -8,6 +8,15 @@ public class BlockingException extends RuntimeException {
 	private static final long serialVersionUID = 2940592148957767936L;
 
 	/**
+	 * Message constructor.
+	 * 
+	 * @param msg	Message to be shown.
+	 */
+	public BlockingException(final String msg) {
+		super(msg);
+	}
+	
+	/**
 	 * Complete constructor.
 	 * 
 	 * @param msg Message to be shown.

@@ -22,6 +22,7 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.NoRecordFoundExc
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.EmptyIdentifierException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.UATMockException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.IAccreditamentoSimulationSRV;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.IKafkaSRV;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.IOrchestratorSRV;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.KafkaAbstractSRV;
@@ -46,6 +47,9 @@ public class KafkaSRV extends KafkaAbstractSRV implements IKafkaSRV {
 	 */
 	@Autowired
 	private IOrchestratorSRV orchestratorSRV;
+	
+	@Autowired
+	private IAccreditamentoSimulationSRV accreditamentoSimulationSRV;
  
 	
 	@Override

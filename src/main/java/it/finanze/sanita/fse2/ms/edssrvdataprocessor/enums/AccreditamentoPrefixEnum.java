@@ -8,7 +8,7 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum AccreditamentoPrefixEnum {
 
-	CRASH_TIMEOUT("CRASH_EDS_WORKFLOW");
+	CRASH_WF_EDS("CRASH_WF_EDS");
 	
 	private String prefix;
 	 

@@ -18,6 +18,7 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.NoRecordFoundExc
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.IngestionStagingETY;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.mongo.IDocumentRepo;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.IAccreditamentoSimulationSRV;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.IFhirOperationSRV;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.IOrchestratorSRV;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +42,9 @@ public class OrchestratorSRV implements IOrchestratorSRV {
 	 */
     @Autowired
     private IDocumentRepo documentRepo;
+    
+    @Autowired
+    private IAccreditamentoSimulationSRV accreditamentoSimulationSRV;
 
     @Override
     public void dispatchAction(ProcessorOperationEnum operationEnum, DispatchActionDTO dispatchActionDTO) throws NoRecordFoundException, OperationException {
@@ -49,6 +53,7 @@ public class OrchestratorSRV implements IOrchestratorSRV {
         switch (operationEnum) {
             case PUBLISH:
                 fhirOperationDTO = extractFhirData(dispatchActionDTO.getMongoId());
+                accreditamentoSimulationSRV.runSimulation(fhirOperationDTO.getMasterIdentifier());
                 fhirOperationSRV.publish(fhirOperationDTO);
                 break;
             case UPDATE:

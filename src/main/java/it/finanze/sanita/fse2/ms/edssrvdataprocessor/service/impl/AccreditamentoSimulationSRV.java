@@ -19,8 +19,8 @@ public class AccreditamentoSimulationSRV implements IAccreditamentoSimulationSRV
 		AccreditamentoPrefixEnum prefixEnum = AccreditamentoPrefixEnum.getStartWith(idDocumento);
 		if(prefixEnum!=null) {
 			switch (prefixEnum) {
-			case CRASH_INI:
-				simulateCrashIni();
+			case CRASH_WF_EDS:
+				simulateCrashEdsWorkflow();
 				break;
 			default:
 				break;
@@ -30,7 +30,7 @@ public class AccreditamentoSimulationSRV implements IAccreditamentoSimulationSRV
 	}
  
 
-	private void simulateCrashIni() {
+	private void simulateCrashEdsWorkflow() {
 		log.info("Crash eds workflow exception");
 		throw new BlockingException("Crash eds workflow exception");
 	}
