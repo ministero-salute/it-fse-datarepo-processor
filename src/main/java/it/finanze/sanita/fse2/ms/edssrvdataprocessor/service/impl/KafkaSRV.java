@@ -3,26 +3,33 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.impl;
 
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.base.MultiClientCallback;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.kafka.KafkaConsumerPropertiesCFG;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.DispatchActionDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.EventStatusEnum;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.EventTypeEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnum;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.*;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.BlockingException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.NoRecordFoundException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.UATMockException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.IKafkaSRV;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.IOrchestratorSRV;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.KafkaAbstractSRV;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility.HelperUtility;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
+
+import java.util.Objects;
+import java.util.Optional;
+
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants.App.MISSING_WORKFLOW_PLACEHOLDER;
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.EventStatusEnum.*;
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.EventTypeEnum.DESERIALIZE;
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.EventTypeEnum.EDS_WORKFLOW;
 
 /**
  * Kafka management service.
@@ -46,73 +53,107 @@ public class KafkaSRV extends KafkaAbstractSRV implements IKafkaSRV {
 	
 	@Override
 	@KafkaListener(topics = "#{'${kafka.ingestor-publish.topic.low-priority}'}", clientIdPrefix = "#{'${kafka.consumer.client-id.low}'}", containerFactory = "kafkaListenerDeadLetterContainerFactory", autoStartup = "${event.topic.auto.start}", groupId = "#{'${kafka.consumer.group-id-publish}'}")
-	public void lowPriorityListenerPublishIngestor(ConsumerRecord<String, String> cr, @Header(KafkaHeaders.DELIVERY_ATTEMPT) int delivery) throws NoRecordFoundException, EmptyIdentifierException, OperationException {
-		genericListener(cr);
+	public void lowPriorityListenerPublishIngestor(ConsumerRecord<String, String> cr, @Header(KafkaHeaders.DELIVERY_ATTEMPT) int delivery) throws Exception {
+		loop(cr, this::dispatchAction, delivery);
 	}
 
 	@Override
 	@KafkaListener(topics = "#{'${kafka.ingestor-publish.topic.medium-priority}'}", clientIdPrefix = "#{'${kafka.consumer.client-id.medium}'}", containerFactory = "kafkaListenerDeadLetterContainerFactory", autoStartup = "${event.topic.auto.start}", groupId = "#{'${kafka.consumer.group-id-publish}'}")
-	public void mediumPriorityListenerPublishIngestor(ConsumerRecord<String, String> cr, @Header(KafkaHeaders.DELIVERY_ATTEMPT) int delivery) throws NoRecordFoundException, EmptyIdentifierException, OperationException {
-		genericListener(cr);
+	public void mediumPriorityListenerPublishIngestor(ConsumerRecord<String, String> cr, @Header(KafkaHeaders.DELIVERY_ATTEMPT) int delivery) throws Exception {
+		loop(cr, this::dispatchAction, delivery);
 	}
 
 	@Override
 	@KafkaListener(topics = "#{'${kafka.ingestor-publish.topic.high-priority}'}", clientIdPrefix = "#{'${kafka.consumer.client-id.high}'}", containerFactory = "kafkaListenerDeadLetterContainerFactory", autoStartup = "${event.topic.auto.start}", groupId = "#{'${kafka.consumer.group-id-publish}'}")
-	public void highPriorityListenerPublishIngestor(ConsumerRecord<String, String> cr, @Header(KafkaHeaders.DELIVERY_ATTEMPT) int delivery) throws NoRecordFoundException, EmptyIdentifierException, OperationException {
-		genericListener(cr);
+	public void highPriorityListenerPublishIngestor(ConsumerRecord<String, String> cr, @Header(KafkaHeaders.DELIVERY_ATTEMPT) int delivery) throws Exception {
+		loop(cr, this::dispatchAction, delivery);
 	}
 
 	@Override
 	@KafkaListener(topics = "#{'${kafka.dataprocessor.generic.topic}'}", clientIdPrefix = "#{'${kafka.consumer.client-id.replace}'}", containerFactory = "kafkaListenerDeadLetterContainerFactory", autoStartup = "${event.topic.auto.start}", groupId = "#{'${kafka.consumer.group-id-publish}'}")
-	public void genericListenerPublishIngestor(ConsumerRecord<String, String> cr, @Header(KafkaHeaders.DELIVERY_ATTEMPT) int delivery) throws NoRecordFoundException, EmptyIdentifierException, OperationException {
-		genericListener(cr);
+	public void genericListenerPublishIngestor(ConsumerRecord<String, String> cr, @Header(KafkaHeaders.DELIVERY_ATTEMPT) int delivery) throws Exception {
+		loop(cr, this::dispatchAction, delivery);
 	}
 
-	private void genericListener(final ConsumerRecord<String, String> cr) throws NoRecordFoundException, EmptyIdentifierException, OperationException {
-		log.info("[EDS] Consuming ingestor Event - Message received from topic {} with key {}", cr.topic(), cr.key());
+	private void dispatchAction(String id, String action) throws OperationException, NoRecordFoundException {
+		DispatchActionDTO dispatchActionDTO = DispatchActionDTO.builder().mongoId(id).documentReferenceDTO(null).build();
+		orchestratorSRV.dispatchAction(ProcessorOperationEnum.valueOf(action), dispatchActionDTO);
+	}
 
-		boolean esito = false;
-		int counter = 0;
+	private void loop(ConsumerRecord<String, String> cr, MultiClientCallback<String> cb, int delivery) throws Exception {
 
-		String wif = Constants.App.MISSING_WORKFLOW_PLACEHOLDER;
+		// ====================
+		// Deserialize request
+		// ====================
+		// Retrieve request body
+		String id = cr.key();
+		String action = cr.value();
+		String wif = MISSING_WORKFLOW_PLACEHOLDER;
 
-		while(Boolean.FALSE.equals(esito) && counter<=kafkaConsumerPropertiesCFG.getNRetry()) {
+		boolean exit = false;
+		// Convert request
+		try {
+			// Require id and action not null
+			Objects.requireNonNull(id, "The id value cannot be null");
+			Objects.requireNonNull(action, "The action value cannot be null");
+			// Require id and action not empty
+			if(id.isEmpty()) throw new IllegalArgumentException("The id value cannot be empty");
+			if(action.isEmpty()) throw new IllegalArgumentException("The action value cannot be empty");
+			// Retrieve wif
+			wif = orchestratorSRV.getWorkflowInstanceId(id);
+			// Require wif not null and not empty
+			Objects.requireNonNull(wif, "The wif value cannot be null");
+			if(wif.isEmpty()) throw new IllegalArgumentException("The wif value cannot be empty");
+		} catch (Exception e) {
+			log.error("Unable to deserialize request with wif {}, id {} and action {} due to: {}", wif, id, action, e.getMessage());
+			sendStatusMessage(id, DESERIALIZE, BLOCKING_ERROR, action);
+			throw new BlockingException(e.getMessage());
+		}
+
+		// ====================
+		// Retry iterations
+		// ====================
+		Exception ex = new Exception("Errore generico durante l'invocazione del client di eds-workflow");
+		// Iterate
+		for (int i = 0; i <= kafkaConsumerPropertiesCFG.getNRetry() && !exit; ++i) {
 			try {
-				if (StringUtils.hasText(cr.value())) {
-					String mongoId = cr.value();
-					wif = orchestratorSRV.getWorkflowInstanceId(mongoId);
-					DispatchActionDTO dispatchActionDTO = DispatchActionDTO.builder()
-							.mongoId(mongoId)
-							.documentReferenceDTO(null)
-							.build();
-					orchestratorSRV.dispatchAction(ProcessorOperationEnum.valueOf(cr.key()), dispatchActionDTO);
-					esito = true;
-				} else {
-					log.warn(Constants.Logs.ERROR_EMPTY_IDENTIFIER + " | key: {}", cr.key());
-					throw new EmptyIdentifierException("Error: empty message on topic " + cr.topic()); 
-				}
+				// Execute request
+				cb.request(id, action);
+				// Quit flag
+				exit = true;
 			} catch (UATMockException e) {
-				sendStatusMessage(wif, EventTypeEnum.EDS_WORKFLOW, EventStatusEnum.SUCCESS, null);
+				sendStatusMessage(wif, EDS_WORKFLOW, SUCCESS, null);
+				// Quit flag
+				exit = true;
 			} catch (Exception e) {
-				HelperUtility.deadLetterHelper(e);
-				if(kafkaConsumerPropertiesCFG.getDeadLetterExceptions().contains(e.getClass().getName())) {
-					log.error("Dead letter exception - exiting...");
-					sendStatusMessage(wif, EventTypeEnum.EDS_WORKFLOW, EventStatusEnum.BLOCKING_ERROR, e.getMessage());
-					throw e;
-				} else if(kafkaConsumerPropertiesCFG.getTemporaryExceptions().contains(ExceptionUtils.getRootCause(e).getClass().getCanonicalName())) {
-					log.error("Temporary exception - exiting...");
-					sendStatusMessage(wif, EventTypeEnum.EDS_WORKFLOW, EventStatusEnum.NON_BLOCKING_ERROR, e.getMessage());
-					throw e;
-				} else {
-					counter++;
-					if(counter==kafkaConsumerPropertiesCFG.getNRetry()) {
-						sendStatusMessage(wif, EventTypeEnum.EDS_WORKFLOW, EventStatusEnum.BLOCKING_ERROR_MAX_RETRY, e.getMessage());
-						throw new BlockingException("Numero di retry massimo raggiunto :" , e);
+				// Assign
+				ex = e;
+				// Display help
+				kafkaConsumerPropertiesCFG.deadLetterHelper(e);
+				// Try to identify the exception type
+				Optional<EventStatusEnum> type = kafkaConsumerPropertiesCFG.asExceptionType(e);
+				// If we found it, we are good to make an action, otherwise, let's retry
+				if(type.isPresent()) {
+					// Get type [BLOCKING or NON_BLOCKING_ERROR]
+					EventStatusEnum status = type.get();
+					// Send to kafka
+					if (delivery <= KafkaConsumerPropertiesCFG.MAX_ATTEMPT) {
+						// Send to kafka
+						sendStatusMessage(wif, EDS_WORKFLOW, status, e.getMessage());
 					}
+					// We are going re-process it
+					throw e;
 				}
 			}
-
 		}
+
+		// We didn't exit properly from the loop,
+		// We reached the max amount of retries
+		if(!exit) {
+			sendStatusMessage(wif, EDS_WORKFLOW, BLOCKING_ERROR_MAX_RETRY, "Massimo numero di retry raggiunto: " + ex.getMessage());
+			throw new BlockingException(ex.getMessage());
+		}
+
 	}
 
 }

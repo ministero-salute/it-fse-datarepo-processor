@@ -7,7 +7,8 @@ import lombok.Getter;
 
 public enum EventTypeEnum {
 
-	EDS_WORKFLOW("EDS_WORKFLOW");
+	EDS_WORKFLOW("EDS_WORKFLOW"),
+	DESERIALIZE("DESERIALIZE");
 
 	@Getter
 	private final String name;
