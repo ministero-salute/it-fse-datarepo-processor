@@ -95,6 +95,7 @@ public class KafkaConsumerCFG {
 
 		ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
 		factory.setConsumerFactory(consumerFactory());
+		factory.getContainerProperties().setDeliveryAttemptHeader(true);
 		
 		// Definizione nome topic deadLetter
 		log.info("TOPIC: " + kafkaTopicCFG.getIngestorPublishDeadLetterTopic());
@@ -147,12 +148,10 @@ public class KafkaConsumerCFG {
 	
 	/**
 	 * Default Container factory.
-	 * 
-	 * @param kafkaTemplate	templete
 	 * @return KafkaListenerContainerFactory factory
 	 */
 	@Bean
-	public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactory(final @Qualifier("notxkafkatemplate") KafkaTemplate<String, String> kafkaTemplate) {
+	public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactory() {
 		ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
 		factory.setConsumerFactory(consumerFactory());
 		return factory;

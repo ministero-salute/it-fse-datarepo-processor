@@ -3,36 +3,6 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
-
-import java.util.HashMap;
-import java.util.List;
-
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.IngestionStagingETY;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.junit.jupiter.api.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.kafka.test.context.EmbeddedKafka;
-import org.springframework.messaging.MessageHeaders;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.client.RestTemplate;
-
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.base.AbstractTest;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.kafka.KafkaTopicCFG;
@@ -41,14 +11,36 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.ResourceExistR
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.ResponseDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.ValidationResultDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnum;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.BlockingException;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.BusinessException;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentAlreadyExistsException;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.NoRecordFoundException;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.EmptyIdentifierException;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.*;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.IngestionStagingETY;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.mongo.impl.DocumentRepo;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.impl.KafkaSRV;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.test.context.EmbeddedKafka;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -72,13 +64,6 @@ class ProcessOperationAsyncTest extends AbstractTest {
     
     @Autowired
     private KafkaTopicCFG kafkaTopicConfig;
-
-	private MessageHeaders headers;
-
-	@BeforeAll
-	void init() {
-		headers = new MessageHeaders(new HashMap<>());
-	}
 
 	@Test
 	@DisplayName("Publish - All priority Success test")
@@ -108,18 +93,18 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		// End rest template mock
 
 		assertDoesNotThrow(() ->
-			 kafkaService.highPriorityListenerPublishIngestor(consumerRecordHigh, headers)
+			 kafkaService.highPriorityListenerPublishIngestor(consumerRecordHigh, 0)
 		);
 
 		ConsumerRecord<String, String> consumerRecordMed  = this.kafkaInit(topicMed, ProcessorOperationEnum.PUBLISH, false, false, false);
 
 		assertDoesNotThrow(() ->
-				kafkaService.mediumPriorityListenerPublishIngestor(consumerRecordMed, headers)
+				kafkaService.mediumPriorityListenerPublishIngestor(consumerRecordMed, 0)
 		);
 
 		ConsumerRecord<String, String> consumerRecordLow  = this.kafkaInit(topicLow, ProcessorOperationEnum.PUBLISH, false, false, false);
 		assertDoesNotThrow(() ->
-				kafkaService.lowPriorityListenerPublishIngestor(consumerRecordLow, headers)
+				kafkaService.lowPriorityListenerPublishIngestor(consumerRecordLow, 0)
 		);
 
 		List<IngestionStagingETY> stagingDocuments = mongoTemplate.findAll(IngestionStagingETY.class);
@@ -139,24 +124,24 @@ class ProcessOperationAsyncTest extends AbstractTest {
 				.willAnswer(invocation -> new DocumentAlreadyExistsException(""));
 
 		assertThrows(BusinessException.class, () ->
-			 kafkaService.highPriorityListenerPublishIngestor(consumerRecord, headers)
+			 kafkaService.highPriorityListenerPublishIngestor(consumerRecord, 0)
 		);
 	}
 	
 	@Test
 	@DisplayName("Publish - Empty Message test")
-	void processPublishEmptyMessageTest() throws OperationException, NoRecordFoundException {
+	void processPublishEmptyMessageTest() throws OperationException {
 		String topic = kafkaTopicConfig.getIngestorPublishHighPriorityTopic();
 		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.PUBLISH, false, false, true);
 		assertThrows(EmptyIdentifierException.class, () ->
-			 kafkaService.highPriorityListenerPublishIngestor(consumerRecord, headers)
+			 kafkaService.highPriorityListenerPublishIngestor(consumerRecord, 0)
 		);
 	}
 
 	@Test
 	@DisplayName("Replace - Success test")
 	@Disabled
-	void processReplaceTest() throws OperationException, NoRecordFoundException {
+	void processReplaceTest() throws OperationException {
 		String topic = kafkaTopicConfig.getIngestorGenericTopic();
 		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.REPLACE, false, false, false);
 
@@ -174,7 +159,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		// End rest template mock
 
 		assertDoesNotThrow(() ->
-				kafkaService.genericListenerPublishIngestor(consumerRecord, headers)
+				kafkaService.genericListenerPublishIngestor(consumerRecord, 0)
 		);
 	}
 
@@ -185,7 +170,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.PUBLISH, false, false, false);
 		given(restTemplate.getForEntity(anyString(), eq(ResourceExistResDTO.class))).willThrow(new BusinessException(""));
 		assertThrows(BusinessException.class, () ->
-				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, headers)
+				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, 0)
 		);
 	}
 
@@ -197,7 +182,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		given(restTemplate.getForEntity(anyString(), eq(ResourceExistResDTO.class)))
 				.willThrow(new ResourceAccessException(""));
 		assertThrows(ResourceAccessException.class, () ->
-				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, headers)
+				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, 0)
 		);
 	}
 
@@ -209,7 +194,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		given(restTemplate.getForEntity(anyString(), eq(ResourceExistResDTO.class)))
 				.willReturn(new ResponseEntity<>(null, HttpStatus.BAD_REQUEST));
 		assertThrows(BusinessException.class, () ->
-				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, headers)
+				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, 0)
 		);
 	}
 
@@ -223,7 +208,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		getMock.setExist(true);
 		given(restTemplate.getForEntity(anyString(), eq(ResourceExistResDTO.class))).willReturn(new ResponseEntity<>(getMock, HttpStatus.OK));
 		assertThrows(DocumentAlreadyExistsException.class, () ->
-				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, headers)
+				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, 0)
 		);
 	}
 
@@ -240,7 +225,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ValidationResultDTO.class)))
 				.thenThrow(new ResourceAccessException(""));
 		assertThrows(BusinessException.class, () ->
-				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, headers)
+				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, 0)
 		);
 	}
 
@@ -257,7 +242,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ValidationResultDTO.class)))
 				.thenReturn(new ResponseEntity<>(null, HttpStatus.BAD_REQUEST));
 		assertThrows(BusinessException.class, () ->
-				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, headers)
+				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, 0)
 		);
 	}
 
@@ -277,7 +262,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 				.thenThrow(new BusinessException(""));
 
 		assertThrows(BusinessException.class, () ->
-				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, headers)
+				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, 0)
 		);
 	}
 
@@ -297,7 +282,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 				.thenThrow(new ResourceAccessException(""));
 
 		assertThrows(BusinessException.class, () ->
-				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, headers)
+				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, 0)
 		);
 	}
 
@@ -317,7 +302,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 				.thenReturn(new ResponseEntity<>(null, HttpStatus.BAD_REQUEST));
 
 		assertThrows(BusinessException.class, () ->
-				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, headers)
+				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, 0)
 		);
 	}
 
@@ -337,7 +322,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 				.thenThrow(new BusinessException(""));
 
 		assertThrows(BusinessException.class, () ->
-				kafkaService.genericListenerPublishIngestor(consumerRecord, headers)
+				kafkaService.genericListenerPublishIngestor(consumerRecord, 0)
 		);
 	}
 
@@ -357,7 +342,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 				.thenThrow(new ResourceAccessException(""));
 
 		assertThrows(BusinessException.class, () ->
-				kafkaService.genericListenerPublishIngestor(consumerRecord, headers)
+				kafkaService.genericListenerPublishIngestor(consumerRecord, 0)
 		);
 	}
 
@@ -377,7 +362,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 				.thenReturn(new ResponseEntity<>(null, HttpStatus.BAD_REQUEST));
 
 		assertThrows(BusinessException.class, () ->
-				kafkaService.genericListenerPublishIngestor(consumerRecord, headers)
+				kafkaService.genericListenerPublishIngestor(consumerRecord, 0)
 		);
 	}
 }
