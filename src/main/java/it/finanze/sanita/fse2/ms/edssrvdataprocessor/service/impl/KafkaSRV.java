@@ -86,8 +86,8 @@ public class KafkaSRV extends KafkaAbstractSRV implements IKafkaSRV {
 		// Deserialize request
 		// ====================
 		// Retrieve request body
-		String id = cr.key();
-		String action = cr.value();
+		String id = cr.value();
+		String action = cr.key();
 		String wif = MISSING_WORKFLOW_PLACEHOLDER;
 
 		boolean exit = false;
