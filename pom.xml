@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>it.finanze.sanita.fse2</groupId>
 	<artifactId>datarepo-processor-ms</artifactId>
-	<version>0.2.0-RELEASE</version>
+	<version>0.3.0-RELEASE</version>
 	<name>datarepo-processor-ms</name>
 	<description>The Microservice for EDS Data Processor</description>
 	<properties>
