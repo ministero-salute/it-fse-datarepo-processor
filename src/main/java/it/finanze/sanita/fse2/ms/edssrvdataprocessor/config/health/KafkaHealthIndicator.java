@@ -1,6 +1,8 @@
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.health;
 
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.kafka.KafkaPropertiesCFG;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility.ProfileUtility;
+
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +16,23 @@ import java.util.Properties;
 public class KafkaHealthIndicator implements HealthIndicator {
 
 	@Autowired
+	private ProfileUtility profileUtility;
+	
+	@Autowired
     private KafkaPropertiesCFG kafkaCFG;
 
+	
     @Override
     public Health health() {
     	Properties configProperties = new Properties();
     	configProperties.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaCFG.getProducerBootstrapServers());
+    	if(!profileUtility.isDevProfile() && !profileUtility.isTestProfile()) {
+    		configProperties.put("security.protocol", kafkaCFG.getProtocol());
+    		configProperties.put("sasl.mechanism", kafkaCFG.getMechanism());
+    		configProperties.put("sasl.jaas.config", kafkaCFG.getConfigJaas());
+    		configProperties.put("ssl.truststore.location", kafkaCFG.getTrustoreLocation());  
+    		configProperties.put("ssl.truststore.password", String.valueOf(kafkaCFG.getTrustorePassword())); 
+		}
         try(AdminClient adminClient = AdminClient.create(configProperties)) {
             adminClient.listTopics().listings().get();
             return Health.up().build();
