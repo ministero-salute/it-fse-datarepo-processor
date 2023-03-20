@@ -8,14 +8,12 @@ import org.springframework.stereotype.Component;
 
 import lombok.Data;
 
-import java.io.Serializable;
-
 /**
  *	Kafka properties configuration.
  */
 @Data
 @Component
-public class KafkaPropertiesCFG implements Serializable {
+public class KafkaPropertiesCFG {
 
 	/**
 	 *  Boostrap server.
@@ -54,11 +52,5 @@ public class KafkaPropertiesCFG implements Serializable {
 	@Value("${kafka.properties.ssl.truststore.password}")
 	private transient char[] trustorePassword;
 	 
-	/**
-	 * Enable Ssl flag.
-	 */
-	@Value("${kafka.enablessl}")
-	private boolean enableSSL;
-
  
 }

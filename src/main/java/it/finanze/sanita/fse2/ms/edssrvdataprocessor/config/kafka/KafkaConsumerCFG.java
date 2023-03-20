@@ -20,6 +20,8 @@ import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
 import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.util.backoff.FixedBackOff;
 
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility.StringUtility;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,12 +64,23 @@ public class KafkaConsumerCFG {
 		props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, kafkaConsumerPropCFG.getAutoCommit());
 		props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, kafkaConsumerPropCFG.getAutoOffsetReset());
 		
-		//SSL
-		if (kafkaConsumerPropCFG.isEnableSsl()) { 
+		if(!StringUtility.isNullOrEmpty(kafkaConsumerPropCFG.getProtocol())) {
 			props.put("security.protocol", kafkaConsumerPropCFG.getProtocol());
+		}
+		
+		if(!StringUtility.isNullOrEmpty(kafkaConsumerPropCFG.getMechanism())) {
 			props.put("sasl.mechanism", kafkaConsumerPropCFG.getMechanism());
+		}
+		
+		if(!StringUtility.isNullOrEmpty(kafkaConsumerPropCFG.getConfigJaas())) {
 			props.put("sasl.jaas.config", kafkaConsumerPropCFG.getConfigJaas());
+		}
+		
+		if(!StringUtility.isNullOrEmpty(kafkaConsumerPropCFG.getTrustoreLocation())) {
 			props.put("ssl.truststore.location", kafkaConsumerPropCFG.getTrustoreLocation());
+		}
+		
+		if(!StringUtility.isNullOrEmpty(String.valueOf(kafkaConsumerPropCFG.getTrustorePassword()))) {
 			props.put("ssl.truststore.password", String.valueOf(kafkaConsumerPropCFG.getTrustorePassword()));
 		}
 		return props;

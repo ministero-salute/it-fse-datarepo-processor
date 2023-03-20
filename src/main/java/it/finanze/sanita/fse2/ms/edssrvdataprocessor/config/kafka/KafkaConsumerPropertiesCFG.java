@@ -108,12 +108,6 @@ public class KafkaConsumerPropertiesCFG implements Serializable {
 	private transient char[] trustorePassword;
 
 	/**
-	 * Flag enable ssl.
-	 */
-	@Value("${kafka.enablessl}")
-	private boolean enableSsl;
-	
-	/**
 	 * Kafka retry.
 	 */
 	@Value("${kafka.retry}")
