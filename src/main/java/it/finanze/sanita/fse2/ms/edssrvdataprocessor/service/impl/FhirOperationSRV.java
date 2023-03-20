@@ -13,6 +13,7 @@ import org.springframework.web.client.ResourceAccessException;
 
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.IEdsDataQualityClient;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.IEdsQueryClient;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.FhirAdvicesCFG;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.FhirOperationDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.ResourceExistResDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.ValidationResultDTO;
@@ -56,6 +57,9 @@ public class FhirOperationSRV extends KafkaAbstractSRV implements IFhirOperation
     
     @Autowired
     private IDocumentRepo documentRepo;
+    
+    @Autowired
+    private FhirAdvicesCFG advices;
     
     @Override
     public void publish(final FhirOperationDTO fhirOperationDTO) {

@@ -50,7 +50,8 @@ public abstract class KafkaAbstractSRV {
 		String workflowInstanceId,
 		EventTypeEnum eventType,
 		EventStatusEnum eventStatus,
-		String message
+		String message,
+		String extra
 	) {
 		try {
 			KafkaStatusManagerDTO statusManagerMessage = KafkaStatusManagerDTO.builder().
@@ -59,6 +60,7 @@ public abstract class KafkaAbstractSRV {
 				eventStatus(eventStatus).
 				message(message).
 				microserviceName(msName).
+				extra(extra).
 				build();
 			String json = toJSONJackson(statusManagerMessage);
 			sendMessage(kafkaTopicCFG.getStatusManagerTopic(), workflowInstanceId, json, true);

@@ -23,5 +23,7 @@ public class KafkaStatusManagerDTO {
 	private String message;
 	
 	private String microserviceName;
+	
+	private String extra;
 }
  
