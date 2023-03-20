@@ -122,7 +122,7 @@ public class EdsQueryClient implements IEdsQueryClient {
             throw new ConnectionRefusedException(microservicesURLCFG.getEdsQueryHost(),Constants.Logs.ERROR_CONNECTION_REFUSED);
         } catch(Exception ex) {
             log.error("Generic error while call eds query publish ep :" + ex);
-            throw new BusinessException(ex);
+            throw new BusinessException(ex.getMessage());
         }
  
     }

@@ -83,7 +83,11 @@ public class FhirOperationSRV extends KafkaAbstractSRV implements IFhirOperation
     	} catch(ResourceAccessException cex) {
     		log.error("Connect error while call eds query check exist ep :" + cex);
     		throw cex;
-    	} catch (Exception ex) {
+    	}
+    	catch(BusinessException e) {
+			throw e;
+		}
+    	catch (Exception ex) {
     		log.error("Error: failed to publish bundle", ex);
     		throw new BusinessException("Error: failed to publish bundle", ex);
     	}
