@@ -3,16 +3,15 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.kafka;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.EventStatusEnum;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.EventStatusEnum;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *	Kafka consumer properties configuration.
@@ -20,7 +19,7 @@ import lombok.Data;
 @Data
 @Component
 @Slf4j
-public class KafkaConsumerPropertiesCFG implements Serializable {
+public class KafkaConsumerPropertiesCFG {
 
 	public static final int MAX_ATTEMPT = 5;
     /**
