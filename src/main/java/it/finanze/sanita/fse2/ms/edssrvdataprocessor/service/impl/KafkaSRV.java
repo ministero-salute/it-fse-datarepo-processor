@@ -3,24 +3,6 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.impl;
 
-import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants.App.MISSING_WORKFLOW_PLACEHOLDER;
-import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.EventStatusEnum.BLOCKING_ERROR;
-import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.EventStatusEnum.BLOCKING_ERROR_MAX_RETRY;
-import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.EventStatusEnum.SUCCESS;
-import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.EventTypeEnum.DESERIALIZE;
-import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.EventTypeEnum.EDS_WORKFLOW;
-
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Function;
-
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.support.KafkaHeaders;
-import org.springframework.messaging.handler.annotation.Header;
-import org.springframework.stereotype.Service;
-
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.base.MultiClientCallback;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.FhirAdvicesCFG;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.kafka.KafkaConsumerPropertiesCFG;
@@ -35,6 +17,22 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.IKafkaSRV;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.IOrchestratorSRV;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.KafkaAbstractSRV;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.stereotype.Service;
+
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
+
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants.App.MISSING_WORKFLOW_PLACEHOLDER;
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.EventStatusEnum.BLOCKING_ERROR;
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.EventStatusEnum.BLOCKING_ERROR_MAX_RETRY;
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.EventTypeEnum.DESERIALIZE;
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.EventTypeEnum.EDS_WORKFLOW;
 
 /**
  * Kafka management service.
@@ -130,7 +128,7 @@ public class KafkaSRV extends KafkaAbstractSRV implements IKafkaSRV {
 				// Quit flag
 				exit = true;
 			} catch (UATMockException e) {
-				sendStatusMessage(wif, EDS_WORKFLOW, SUCCESS, null, null);
+				sendStatusMessage(wif, EDS_WORKFLOW, e.getStatus(), e.getMessage(), null);
 				// Quit flag
 				exit = true;
 			} catch (Exception e) {

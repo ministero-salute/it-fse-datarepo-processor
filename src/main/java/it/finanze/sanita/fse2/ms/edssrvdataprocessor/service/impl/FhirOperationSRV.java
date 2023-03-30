@@ -3,14 +3,6 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.impl;
 
-import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.TransactionStatusETY.from;
-
-import java.util.Date;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.ResourceAccessException;
-
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.IEdsDataQualityClient;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.IEdsQueryClient;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.FhirAdvicesCFG;
@@ -29,6 +21,15 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.mongo.ITransacti
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.IFhirOperationSRV;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.KafkaAbstractSRV;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
+
+import java.util.Date;
+
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.EventStatusEnum.BLOCKING_ERROR;
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.EventStatusEnum.SUCCESS;
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.TransactionStatusETY.from;
 
 /**
  * FHIR Operation Service Implementation 
@@ -62,35 +63,31 @@ public class FhirOperationSRV extends KafkaAbstractSRV implements IFhirOperation
     private FhirAdvicesCFG advices;
     
     @Override
-    public void publish(final FhirOperationDTO fhirOperationDTO) {
+    public void publish(final FhirOperationDTO dto) {
     	log.info("[EDS] Publication - START");
     	try {
-    		ResourceExistResDTO response = queryClient.fhirCheckExist(fhirOperationDTO.getMasterIdentifier());
+    		ResourceExistResDTO response = queryClient.fhirCheckExist(dto.getMasterIdentifier());
     		if(Boolean.FALSE.equals(response.isExist())){
     			Date startDate = new Date();
-    			ValidationResultDTO validatedData = dataQualityClient.validateBundleNormativeR4(fhirOperationDTO);
+    			ValidationResultDTO validatedData = dataQualityClient.validateBundleNormativeR4(dto);
     			if(!validatedData.isValid()) {
-    				kafkaLogger.info(fhirOperationDTO.getWorkflowInstanceId(),validatedData.getMessage(), OperationLogEnum.VALIDATE_NORMATIVE_R4, ResultLogEnum.KO, startDate);
-    			}
-    			queryClient.fhirPublication(fhirOperationDTO.getMasterIdentifier(), fhirOperationDTO.getJsonString(), ProcessorOperationEnum.PUBLISH);
-    			transactionRepo.insert(from(fhirOperationDTO.getWorkflowInstanceId(), ProcessorOperationEnum.PUBLISH));
-    			documentRepo.deleteById(fhirOperationDTO.getWorkflowInstanceId(),ProcessorOperationEnum.PUBLISH);
-    			if (fhirOperationDTO.getMasterIdentifier().contains("UAT_GTW_ID")) {
-    				throw new UATMockException();
-    			}
+    				kafkaLogger.info(dto.getWorkflowInstanceId(),validatedData.getMessage(), OperationLogEnum.VALIDATE_NORMATIVE_R4, ResultLogEnum.KO, startDate);
+					if(dto.isUATMock()) throw new UATMockException(BLOCKING_ERROR, validatedData.getMessage());
+				}
+    			queryClient.fhirPublication(dto.getMasterIdentifier(), dto.getJsonString(), ProcessorOperationEnum.PUBLISH);
+    			transactionRepo.insert(from(dto.getWorkflowInstanceId(), ProcessorOperationEnum.PUBLISH));
+    			documentRepo.deleteById(dto.getWorkflowInstanceId(),ProcessorOperationEnum.PUBLISH);
+    			if (dto.isUATMock()) throw new UATMockException(SUCCESS, validatedData.getMessage());
     		} else {
-    			log.error("Documento già esistente sul server fhir : " + fhirOperationDTO.getMasterIdentifier());
+    			log.error("Documento già esistente sul server fhir : " + dto.getMasterIdentifier());
     			throw new DocumentAlreadyExistsException("Documento già esistente"); 
     		}
-    	} catch(DocumentAlreadyExistsException | UATMockException daEx) {
+    	} catch(DocumentAlreadyExistsException | UATMockException | BusinessException daEx) {
     		throw daEx;
     	} catch(ResourceAccessException cex) {
     		log.error("Connect error while call eds query check exist ep :" + cex);
     		throw cex;
     	}
-    	catch(BusinessException e) {
-			throw e;
-		}
     	catch (Exception ex) {
     		log.error("Error: failed to publish bundle", ex);
     		throw new BusinessException("Error: failed to publish bundle", ex);
@@ -120,20 +117,19 @@ public class FhirOperationSRV extends KafkaAbstractSRV implements IFhirOperation
     }
 
     @Override
-    public void replace(FhirOperationDTO fhirOperationDTO) {
+    public void replace(FhirOperationDTO dto) {
         log.info("[EDS] Replace - START");
         try {
         	Date startDate = new Date();
-        	ValidationResultDTO validatedData = dataQualityClient.validateBundleNormativeR4(fhirOperationDTO);
+        	ValidationResultDTO validatedData = dataQualityClient.validateBundleNormativeR4(dto);
 			if(!validatedData.isValid()) {
-				kafkaLogger.info(fhirOperationDTO.getWorkflowInstanceId(), validatedData.getMessage(), OperationLogEnum.VALIDATE_NORMATIVE_R4, ResultLogEnum.KO, startDate);
+				kafkaLogger.info(dto.getWorkflowInstanceId(), validatedData.getMessage(), OperationLogEnum.VALIDATE_NORMATIVE_R4, ResultLogEnum.KO, startDate);
+				if(dto.isUATMock()) throw new UATMockException(BLOCKING_ERROR, validatedData.getMessage());
 			}
-			queryClient.fhirPublication(fhirOperationDTO.getMasterIdentifier(), fhirOperationDTO.getJsonString(), ProcessorOperationEnum.REPLACE);
-			transactionRepo.insert(from(fhirOperationDTO.getWorkflowInstanceId(), ProcessorOperationEnum.REPLACE));
-			documentRepo.deleteById(fhirOperationDTO.getWorkflowInstanceId(),ProcessorOperationEnum.REPLACE);
-			if (fhirOperationDTO.getMasterIdentifier().contains("UAT_GTW_ID")) {
-				throw new UATMockException();
-			}
+			queryClient.fhirPublication(dto.getMasterIdentifier(), dto.getJsonString(), ProcessorOperationEnum.REPLACE);
+			transactionRepo.insert(from(dto.getWorkflowInstanceId(), ProcessorOperationEnum.REPLACE));
+			documentRepo.deleteById(dto.getWorkflowInstanceId(),ProcessorOperationEnum.REPLACE);
+			if (dto.isUATMock()) throw new UATMockException(SUCCESS, validatedData.getMessage());
         } catch(UATMockException daEx) {
     		throw daEx;
     	} catch (Exception e) {
