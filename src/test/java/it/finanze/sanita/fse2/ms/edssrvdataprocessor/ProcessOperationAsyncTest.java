@@ -81,10 +81,8 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		getMock.setExist(false);
 		given(restTemplate.getForEntity(anyString(), eq(ResourceExistResDTO.class))).willReturn(new ResponseEntity<>(getMock, HttpStatus.OK));
 
-		ValidationResultDTO validatedMock = ValidationResultDTO
-				.builder()
-				.isValid(true)
-				.build();
+		ValidationResultDTO validatedMock = new ValidationResultDTO();
+		validatedMock.setValid(true);
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ValidationResultDTO.class))).thenReturn(new ResponseEntity<>(validatedMock, HttpStatus.OK));
 
 		ResponseEntity<ResponseDTO> responsePubMock = new ResponseEntity<>(null, HttpStatus.OK);
@@ -147,10 +145,8 @@ class ProcessOperationAsyncTest extends AbstractTest {
 
 		// Start rest template mock
 
-		ValidationResultDTO validatedMock = ValidationResultDTO
-				.builder()
-				.isValid(true)
-				.build();
+		ValidationResultDTO validatedMock = new ValidationResultDTO();
+		validatedMock.setValid(true);
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ValidationResultDTO.class))).thenReturn(new ResponseEntity<>(validatedMock, HttpStatus.OK));
 
 		ResponseEntity<ResponseDTO> responsePubMock = new ResponseEntity<>(null, HttpStatus.OK);
@@ -252,10 +248,8 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		String topic = kafkaTopicConfig.getIngestorPublishHighPriorityTopic();
 		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.PUBLISH, false, false, false);
 
-		ValidationResultDTO validatedMock = ValidationResultDTO
-				.builder()
-				.isValid(true)
-				.build();
+		ValidationResultDTO validatedMock = new ValidationResultDTO();
+		validatedMock.setValid(true);
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ValidationResultDTO.class))).thenReturn(new ResponseEntity<>(validatedMock, HttpStatus.OK));
 
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ResponseDTO.class)))
@@ -272,10 +266,8 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		String topic = kafkaTopicConfig.getIngestorPublishHighPriorityTopic();
 		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.PUBLISH, false, false, false);
 
-		ValidationResultDTO validatedMock = ValidationResultDTO
-				.builder()
-				.isValid(true)
-				.build();
+		ValidationResultDTO validatedMock = new ValidationResultDTO();
+		validatedMock.setValid(true);
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ValidationResultDTO.class))).thenReturn(new ResponseEntity<>(validatedMock, HttpStatus.OK));
 
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ResponseDTO.class)))
@@ -292,10 +284,8 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		String topic = kafkaTopicConfig.getIngestorPublishHighPriorityTopic();
 		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.PUBLISH, false, false, false);
 
-		ValidationResultDTO validatedMock = ValidationResultDTO
-				.builder()
-				.isValid(true)
-				.build();
+		ValidationResultDTO validatedMock = new ValidationResultDTO();
+		validatedMock.setValid(true);
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ValidationResultDTO.class))).thenReturn(new ResponseEntity<>(validatedMock, HttpStatus.OK));
 
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ResponseDTO.class)))
@@ -312,10 +302,8 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		String topic = kafkaTopicConfig.getIngestorGenericTopic();
 		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.REPLACE, false, false, false);
 
-		ValidationResultDTO validatedMock = ValidationResultDTO
-				.builder()
-				.isValid(true)
-				.build();
+		ValidationResultDTO validatedMock = new ValidationResultDTO();
+		validatedMock.setValid(true);
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(ValidationResultDTO.class))).thenReturn(new ResponseEntity<>(validatedMock, HttpStatus.OK));
 
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(ResponseDTO.class)))
@@ -332,10 +320,8 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		String topic = kafkaTopicConfig.getIngestorGenericTopic();
 		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.REPLACE, false, false, false);
 
-		ValidationResultDTO validatedMock = ValidationResultDTO
-				.builder()
-				.isValid(true)
-				.build();
+		ValidationResultDTO validatedMock = new ValidationResultDTO();
+		validatedMock.setValid(true);
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(ValidationResultDTO.class))).thenReturn(new ResponseEntity<>(validatedMock, HttpStatus.OK));
 
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(ResponseDTO.class)))
@@ -352,10 +338,8 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		String topic = kafkaTopicConfig.getIngestorGenericTopic();
 		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.REPLACE, false, false, false);
 
-		ValidationResultDTO validatedMock = ValidationResultDTO
-				.builder()
-				.isValid(true)
-				.build();
+		ValidationResultDTO validatedMock = new ValidationResultDTO();
+		validatedMock.setValid(true);
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(ValidationResultDTO.class))).thenReturn(new ResponseEntity<>(validatedMock, HttpStatus.OK));
 
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(ResponseDTO.class)))
