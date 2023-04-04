@@ -5,13 +5,10 @@ package it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.impl;
 
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.IEdsDataQualityClient;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.IEdsQueryClient;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.FhirAdvicesCFG;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.FhirOperationDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.ResourceExistResDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.ValidationResultDTO;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.OperationLogEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnum;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ResultLogEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.BusinessException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentAlreadyExistsException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.UATMockException;
@@ -29,6 +26,9 @@ import java.util.Date;
 
 import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.EventStatusEnum.BLOCKING_ERROR;
 import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.EventStatusEnum.SUCCESS;
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.OperationLogEnum.VALIDATE_NORMATIVE_R4;
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.OperationLogEnum.VALIDATE_RESOURCE_BUNDLE;
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ResultLogEnum.KO;
 import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.TransactionStatusETY.from;
 
 /**
@@ -39,7 +39,7 @@ import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.Tr
 public class FhirOperationSRV extends KafkaAbstractSRV implements IFhirOperationSRV {
 
 	/**
-	 * Srv Query Client 
+	 * Srv Query Client
 	 */
     @Autowired
     private IEdsQueryClient queryClient;
@@ -59,39 +59,35 @@ public class FhirOperationSRV extends KafkaAbstractSRV implements IFhirOperation
     @Autowired
     private IDocumentRepo documentRepo;
     
-    @Autowired
-    private FhirAdvicesCFG advices;
-    
     @Override
     public void publish(final FhirOperationDTO dto) {
-    	log.info("[EDS] Publication - START");
-    	try {
-    		ResourceExistResDTO response = queryClient.fhirCheckExist(dto.getMasterIdentifier());
-    		if(Boolean.FALSE.equals(response.isExist())){
-    			Date startDate = new Date();
-    			ValidationResultDTO validatedData = dataQualityClient.validateBundleNormativeR4(dto);
-    			if(!validatedData.isValid()) {
-    				kafkaLogger.info(dto.getWorkflowInstanceId(),validatedData.getMessage(), OperationLogEnum.VALIDATE_NORMATIVE_R4, ResultLogEnum.KO, startDate);
+		log.info("[EDS] Publication - START");
+		try {
+			ResourceExistResDTO response = queryClient.fhirCheckExist(dto.getMasterIdentifier());
+			if(Boolean.FALSE.equals(response.isExist())){
+				Date startDate = new Date();
+				ValidationResultDTO validatedData = dataQualityClient.validateBundleNormativeR4(dto);
+				if(!validatedData.isValid()) {
+					sendKafkaInfo(dto.getWorkflowInstanceId(), startDate, validatedData);
 					if(dto.isUATMock()) throw new UATMockException(BLOCKING_ERROR, validatedData.getMessage());
 				}
-    			queryClient.fhirPublication(dto.getMasterIdentifier(), dto.getJsonString(), ProcessorOperationEnum.PUBLISH);
-    			transactionRepo.insert(from(dto.getWorkflowInstanceId(), ProcessorOperationEnum.PUBLISH));
-    			documentRepo.deleteById(dto.getWorkflowInstanceId(),ProcessorOperationEnum.PUBLISH);
-    			if (dto.isUATMock()) throw new UATMockException(SUCCESS, validatedData.getMessage());
-    		} else {
-    			log.error("Documento già esistente sul server fhir : " + dto.getMasterIdentifier());
-    			throw new DocumentAlreadyExistsException("Documento già esistente"); 
-    		}
-    	} catch(DocumentAlreadyExistsException | UATMockException | BusinessException daEx) {
-    		throw daEx;
-    	} catch(ResourceAccessException cex) {
-    		log.error("Connect error while call eds query check exist ep :" + cex);
-    		throw cex;
-    	}
-    	catch (Exception ex) {
-    		log.error("Error: failed to publish bundle", ex);
-    		throw new BusinessException("Error: failed to publish bundle", ex);
-    	}
+				queryClient.fhirPublication(dto.getMasterIdentifier(), dto.getJsonString(), ProcessorOperationEnum.PUBLISH);
+				transactionRepo.insert(from(dto.getWorkflowInstanceId(), ProcessorOperationEnum.PUBLISH));
+				documentRepo.deleteById(dto.getWorkflowInstanceId(),ProcessorOperationEnum.PUBLISH);
+				if (dto.isUATMock()) throw new UATMockException(SUCCESS, validatedData.getMessage());
+			} else {
+				log.error("Documento già esistente sul server fhir : " + dto.getMasterIdentifier());
+				throw new DocumentAlreadyExistsException("Documento già esistente");
+			}
+		} catch(DocumentAlreadyExistsException | UATMockException | BusinessException daEx) {
+			throw daEx;
+		} catch(ResourceAccessException cex) {
+			log.error("Connect error while call eds query check exist ep :" + cex);
+			throw cex;
+		} catch (Exception ex) {
+			log.error("Error: failed to publish bundle", ex);
+			throw new BusinessException("Error: failed to publish bundle", ex);
+		}
     }
 
     @Override
@@ -120,10 +116,10 @@ public class FhirOperationSRV extends KafkaAbstractSRV implements IFhirOperation
     public void replace(FhirOperationDTO dto) {
         log.info("[EDS] Replace - START");
         try {
-        	Date startDate = new Date();
-        	ValidationResultDTO validatedData = dataQualityClient.validateBundleNormativeR4(dto);
+			Date startDate = new Date();
+			ValidationResultDTO validatedData = dataQualityClient.validateBundleNormativeR4(dto);
 			if(!validatedData.isValid()) {
-				kafkaLogger.info(dto.getWorkflowInstanceId(), validatedData.getMessage(), OperationLogEnum.VALIDATE_NORMATIVE_R4, ResultLogEnum.KO, startDate);
+				kafkaLogger.info(dto.getWorkflowInstanceId(), validatedData.getMessage(), VALIDATE_NORMATIVE_R4, KO, startDate);
 				if(dto.isUATMock()) throw new UATMockException(BLOCKING_ERROR, validatedData.getMessage());
 			}
 			queryClient.fhirPublication(dto.getMasterIdentifier(), dto.getJsonString(), ProcessorOperationEnum.REPLACE);
@@ -131,12 +127,19 @@ public class FhirOperationSRV extends KafkaAbstractSRV implements IFhirOperation
 			documentRepo.deleteById(dto.getWorkflowInstanceId(),ProcessorOperationEnum.REPLACE);
 			if (dto.isUATMock()) throw new UATMockException(SUCCESS, validatedData.getMessage());
         } catch(UATMockException daEx) {
-    		throw daEx;
-    	} catch (Exception e) {
+			throw daEx;
+		} catch (Exception e) {
             throw new BusinessException("Error: failed to replace bundle");
         }
     }
     
-    
+    private void sendKafkaInfo(String wif, Date timestamp, ValidationResultDTO res) {
+		if(!res.getNormativeR4Messages().isEmpty()) {
+			kafkaLogger.info(wif, res.getNormativeR4Messages().toString(), VALIDATE_NORMATIVE_R4, KO, timestamp);
+		}
+		if(!res.getNotTraversedResources().isEmpty()) {
+			kafkaLogger.info(wif, res.getNotTraversedResources().toString(), VALIDATE_RESOURCE_BUNDLE, KO, timestamp);
+		}
+	}
    
 }
