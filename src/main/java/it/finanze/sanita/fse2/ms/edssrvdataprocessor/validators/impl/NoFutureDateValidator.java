@@ -11,12 +11,16 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.validators.impl;
 
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.validators.NoFutureDate;
+import java.util.Date;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import java.util.Date;
 
+import org.springframework.stereotype.Component;
+
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.validators.NoFutureDate;
+
+@Component
 public class NoFutureDateValidator implements ConstraintValidator<NoFutureDate, Date> {
     /**
      * Initializes the validator in preparation for calls.
