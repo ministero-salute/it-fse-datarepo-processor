@@ -11,21 +11,18 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.MongoException;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.base.AbstractTest;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.DispatchActionDTO;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.DocumentReferenceDTO;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnum;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.ConnectionRefusedException;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.TransactionStatusETY;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.ITransactionsSVR;
-import org.junit.jupiter.api.DisplayName;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -40,21 +37,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAmount;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import com.mongodb.MongoException;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.base.AbstractTest;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnum;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.TransactionStatusETY;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.ITransactionsSVR;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(Constants.Profile.TEST)

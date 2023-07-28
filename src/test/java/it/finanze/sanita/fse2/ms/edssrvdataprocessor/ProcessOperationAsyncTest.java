@@ -129,7 +129,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		given(restTemplate.getForEntity(anyString(), eq(ResourceExistResDTO.class)))
 				.willAnswer(invocation -> new DocumentAlreadyExistsException(""));
 
-		assertThrows(BusinessException.class, () ->
+		assertThrows(BlockingException.class, () ->
 			 kafkaService.highPriorityListenerPublishIngestor(consumerRecord, 0)
 		);
 	}
@@ -139,7 +139,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 	void processPublishEmptyMessageTest() throws OperationException {
 		String topic = kafkaTopicConfig.getIngestorPublishHighPriorityTopic();
 		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.PUBLISH, false, false, true);
-		assertThrows(EmptyIdentifierException.class, () ->
+		assertThrows(BlockingException.class, () ->
 			 kafkaService.highPriorityListenerPublishIngestor(consumerRecord, 0)
 		);
 	}
@@ -173,7 +173,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		String topic = kafkaTopicConfig.getIngestorPublishHighPriorityTopic();
 		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.PUBLISH, false, false, false);
 		given(restTemplate.getForEntity(anyString(), eq(ResourceExistResDTO.class))).willThrow(new BusinessException(""));
-		assertThrows(BusinessException.class, () ->
+		assertThrows(BlockingException.class, () ->
 				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, 0)
 		);
 	}
@@ -185,7 +185,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.PUBLISH, false, false, false);
 		given(restTemplate.getForEntity(anyString(), eq(ResourceExistResDTO.class)))
 				.willThrow(new ResourceAccessException(""));
-		assertThrows(ResourceAccessException.class, () ->
+		assertThrows(BlockingException.class, () ->
 				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, 0)
 		);
 	}
@@ -197,7 +197,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		ConsumerRecord<String, String> consumerRecord = this.kafkaInit(topic, ProcessorOperationEnum.PUBLISH, false, false, false);
 		given(restTemplate.getForEntity(anyString(), eq(ResourceExistResDTO.class)))
 				.willReturn(new ResponseEntity<>(null, HttpStatus.BAD_REQUEST));
-		assertThrows(BusinessException.class, () ->
+		assertThrows(BlockingException.class, () ->
 				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, 0)
 		);
 	}
@@ -211,7 +211,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		ResourceExistResDTO getMock = new ResourceExistResDTO();
 		getMock.setExist(true);
 		given(restTemplate.getForEntity(anyString(), eq(ResourceExistResDTO.class))).willReturn(new ResponseEntity<>(getMock, HttpStatus.OK));
-		assertThrows(DocumentAlreadyExistsException.class, () ->
+		assertThrows(BlockingException.class, () ->
 				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, 0)
 		);
 	}
@@ -228,7 +228,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ValidationResultDTO.class)))
 				.thenThrow(new ResourceAccessException(""));
-		assertThrows(BusinessException.class, () ->
+		assertThrows(BlockingException.class, () ->
 				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, 0)
 		);
 	}
@@ -245,7 +245,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ValidationResultDTO.class)))
 				.thenReturn(new ResponseEntity<>(null, HttpStatus.BAD_REQUEST));
-		assertThrows(BusinessException.class, () ->
+		assertThrows(BlockingException.class, () ->
 				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, 0)
 		);
 	}
@@ -263,7 +263,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ResponseDTO.class)))
 				.thenThrow(new BusinessException(""));
 
-		assertThrows(BusinessException.class, () ->
+		assertThrows(BlockingException.class, () ->
 				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, 0)
 		);
 	}
@@ -281,7 +281,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ResponseDTO.class)))
 				.thenThrow(new ResourceAccessException(""));
 
-		assertThrows(BusinessException.class, () ->
+		assertThrows(BlockingException.class, () ->
 				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, 0)
 		);
 	}
@@ -299,7 +299,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ResponseDTO.class)))
 				.thenReturn(new ResponseEntity<>(null, HttpStatus.BAD_REQUEST));
 
-		assertThrows(BusinessException.class, () ->
+		assertThrows(BlockingException.class, () ->
 				kafkaService.highPriorityListenerPublishIngestor(consumerRecord, 0)
 		);
 	}
@@ -317,7 +317,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(ResponseDTO.class)))
 				.thenThrow(new BusinessException(""));
 
-		assertThrows(BusinessException.class, () ->
+		assertThrows(BlockingException.class, () ->
 				kafkaService.genericListenerPublishIngestor(consumerRecord, 0)
 		);
 	}
@@ -335,7 +335,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(ResponseDTO.class)))
 				.thenThrow(new ResourceAccessException(""));
 
-		assertThrows(BusinessException.class, () ->
+		assertThrows(BlockingException.class, () ->
 				kafkaService.genericListenerPublishIngestor(consumerRecord, 0)
 		);
 	}
@@ -353,7 +353,7 @@ class ProcessOperationAsyncTest extends AbstractTest {
 		when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(ResponseDTO.class)))
 				.thenReturn(new ResponseEntity<>(null, HttpStatus.BAD_REQUEST));
 
-		assertThrows(BusinessException.class, () ->
+		assertThrows(BlockingException.class, () ->
 				kafkaService.genericListenerPublishIngestor(consumerRecord, 0)
 		);
 	}
