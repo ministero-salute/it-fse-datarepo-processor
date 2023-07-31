@@ -34,6 +34,7 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ILogEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ResultLogEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.BusinessException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.DocumentAlreadyExistsException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.UATMockException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.logging.LoggerHelper;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.TransactionStatusETY;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.impl.FhirOperationSRV;
@@ -140,6 +141,26 @@ class FhirOperationSRVTest {
         // Assertions
         assertFalse(transactions.isEmpty());
         assertEquals(dto.getWorkflowInstanceId(), transactions.get(0).getWorkflowInstanceId());
+    }
+
+    @Test
+    void publishUatMockTest() {
+        // Data preparation
+        FhirOperationDTO dto = new FhirOperationDTO();
+        dto.setJsonString("json_test");
+        dto.setMasterIdentifier("UAT_GTW_ID_test");
+        dto.setWorkflowInstanceId("wif_test");
+        // Mock
+        ResourceExistResDTO resourceDto = new ResourceExistResDTO(new LogTraceInfoDTO(null, null), false);
+        ValidationResultDTO validationDto = new ValidationResultDTO();
+        validationDto.setValid(false);
+        validationDto.setNormativeR4Messages(Arrays.asList("error1", "error2"));
+        validationDto.setNotTraversedResources(Arrays.asList("error1","error2"));
+        when(query.fhirCheckExist(dto.getMasterIdentifier())).thenReturn(resourceDto);
+        when(dataQuality.validateBundleNormativeR4(dto)).thenReturn(validationDto);
+        // Perform publish and assert
+        assertThrows(UATMockException.class, () -> service.publish(dto));
+        verify(kafkaLogger, times(2)).info(any(), any(), any(ILogEnum.class), any(ResultLogEnum.class), any(Date.class));
     }
 
 }
