@@ -11,6 +11,7 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.MediaType;
 import org.springframework.kafka.test.context.EmbeddedKafka;
@@ -41,7 +43,10 @@ import com.mongodb.MongoException;
 
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.base.AbstractTest;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.controller.ITransactionsCTL;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.tx.DeleteTxResDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnum;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.TransactionStatusETY;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.ITransactionsSVR;
 
@@ -58,6 +63,12 @@ class TransactionControllerTest extends AbstractTest {
 
     @SpyBean
     private ITransactionsSVR service;
+
+    @Autowired
+    private ITransactionsCTL controller;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     @Test
     void getTransactionConstraintViolationException() throws Exception {
@@ -129,4 +140,18 @@ class TransactionControllerTest extends AbstractTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful());
     }
+
+    @Test
+    void deleteTransactionTest() throws OperationException {
+        // Data preparation
+        Date date = new Date();
+        TransactionStatusETY ety = TransactionStatusETY.from("wif", ProcessorOperationEnum.DELETE);
+        // Insert ety in db
+        mongoTemplate.insert(ety);
+        // Perform deleteTransactions method
+        DeleteTxResDTO response = controller.deleteTransactions(date);
+        // Assertion
+        assertEquals(1, response.getDeletedTransactions());
+    }
+    
 }
