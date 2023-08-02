@@ -1,5 +1,6 @@
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.impl.EdsQueryClient;
@@ -76,6 +78,14 @@ class EdsQueryClientTest {
             eq(ResponseDTO.class),
             any(ResponseDTO.class)
         );
+    }
+
+    @Test
+    void fireCheckExistExceptionTest() {
+        // Configure mock
+        when(restTemplate.getForEntity(anyString(), eq(ResourceExistResDTO.class))).thenThrow(ResourceAccessException.class);
+        // Assertion and perform fhirCheckExist
+        assertThrows(ResourceAccessException.class, () -> client.fhirCheckExist("masterIdentifier"));
     }
 
 }

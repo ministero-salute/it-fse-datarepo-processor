@@ -22,6 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.client.ResourceAccessException;
 
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.IEdsDataQualityClient;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.IEdsQueryClient;
@@ -161,6 +162,39 @@ class FhirOperationSRVTest {
         // Perform publish and assert
         assertThrows(UATMockException.class, () -> service.publish(dto));
         verify(kafkaLogger, times(2)).info(any(), any(), any(ILogEnum.class), any(ResultLogEnum.class), any(Date.class));
+    }
+
+    @Test
+    void replaceUatMockTest() {
+        // Data preparation
+        FhirOperationDTO dto = new FhirOperationDTO();
+        dto.setJsonString("json_test");
+        dto.setMasterIdentifier("UAT_GTW_ID_test");
+        dto.setWorkflowInstanceId("wif_test");
+        // Mock
+        ResourceExistResDTO resourceDto = new ResourceExistResDTO(new LogTraceInfoDTO(null, null), false);
+        ValidationResultDTO validationDto = new ValidationResultDTO();
+        validationDto.setValid(false);
+        validationDto.setNormativeR4Messages(Arrays.asList("error1", "error2"));
+        validationDto.setNotTraversedResources(Arrays.asList("error1","error2"));
+        when(query.fhirCheckExist(dto.getMasterIdentifier())).thenReturn(resourceDto);
+        when(dataQuality.validateBundleNormativeR4(dto)).thenReturn(validationDto);
+        // Perform publish and assert
+        assertThrows(UATMockException.class, () -> service.replace(dto));
+        verify(kafkaLogger, times(1)).info(any(), any(), any(ILogEnum.class), any(ResultLogEnum.class), any(Date.class));
+    }
+
+    @Test
+    void publishResourceAccessExceptionTest() {
+        // Data preparation
+        FhirOperationDTO dto = new FhirOperationDTO();
+        dto.setJsonString("json_test");
+        dto.setMasterIdentifier("id_test");
+        dto.setWorkflowInstanceId("wif_test");
+        // Mock
+        when(query.fhirCheckExist(dto.getMasterIdentifier())).thenThrow(ResourceAccessException.class);
+        // Perform publish and assert exception
+        assertThrows(ResourceAccessException.class, () -> service.publish(dto));
     }
 
 }

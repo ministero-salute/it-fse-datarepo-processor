@@ -65,7 +65,6 @@ class DocumentRepoTest {
 		
 	}
 	
-	
 	@Test
 	void testDelete() throws OperationException {
 		assertEquals(2L, count());
@@ -76,7 +75,7 @@ class DocumentRepoTest {
 		assertTrue(documentRepo.deleteById(wii, ProcessorOperationEnum.REPLACE));
 		assertEquals(0, count());
 	}
-	
+
 	private long count() {
 		Query query = new Query();
 		query.addCriteria(Criteria.where("workflow_instance_id").is(wii));
