@@ -11,13 +11,15 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.base.MockRequests.deleteTransactionsReq;
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.base.MockRequests.getTransactionsByStringReq;
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.base.MockRequests.getTransactionsReq;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -31,22 +33,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.http.MediaType;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.mongodb.MongoException;
 
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.base.AbstractTest;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.controller.ITransactionsCTL;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.tx.DeleteTxResDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnum;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.entity.TransactionStatusETY;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.ITransactionsSVR;
 
@@ -59,37 +55,27 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.ITransactionsSVR;
 class TransactionControllerTest extends AbstractTest {
 
     @Autowired
-    MockMvc mvc;
+    private MockMvc mvc;
 
     @SpyBean
     private ITransactionsSVR service;
-
-    @Autowired
-    private ITransactionsCTL controller;
 
     @Autowired
     private MongoTemplate mongoTemplate;
 
     @Test
     void getTransactionConstraintViolationException() throws Exception {
-        MockHttpServletRequestBuilder builder =
-                MockMvcRequestBuilders.get(getBaseUrl() + "/v1/transactions")
-                        .queryParam("timestamp", DateTimeFormatter.ISO_DATE_TIME.format(new Date().toInstant().plusSeconds(120).atOffset(ZoneOffset.UTC)));
-
-        mvc.perform(builder
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isBadRequest());
+        Date date = Date.from(Instant.now().plusSeconds(120));
+        mvc.perform(
+                getTransactionsReq(date, 1, 1)
+        ).andExpect(status().isBadRequest());
     }
 
     @Test
     void getTransactionArgumentMismatchException() throws Exception {
-        MockHttpServletRequestBuilder builder =
-                MockMvcRequestBuilders.get(getBaseUrl() + "/v1/transactions")
-                        .queryParam("timestamp", "generic string");
-
-        mvc.perform(builder
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isBadRequest());
+        mvc.perform(
+                getTransactionsByStringReq("wrong_argument", 1, 1)
+        ).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -97,15 +83,10 @@ class TransactionControllerTest extends AbstractTest {
 
         Mockito.doThrow(MongoException.class).when(mongoTemplate).count(any(Query.class), eq(TransactionStatusETY.class));
 
-        MockHttpServletRequestBuilder builder =
-                MockMvcRequestBuilders.get(getBaseUrl() + "/v1/transactions")
-                        .queryParam("timestamp", DateTimeFormatter.ISO_DATE_TIME.format(new Date().toInstant().minusSeconds(120).atOffset(ZoneOffset.UTC)))
-                        .queryParam("page", "2")
-                        .queryParam("limit", "1");
-
-        mvc.perform(builder
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isInternalServerError());
+        Date date = Date.from(Instant.now().minusSeconds(120));
+        mvc.perform(
+                getTransactionsReq(date, 2, 1)
+        ).andExpect(status().isInternalServerError());
     }
 
     @Test
@@ -130,28 +111,26 @@ class TransactionControllerTest extends AbstractTest {
         Mockito.doReturn(Long.valueOf("2")).when(mongoTemplate).count(any(Query.class), eq(TransactionStatusETY.class));
         Mockito.doReturn(list).when(mongoTemplate).find(any(Query.class), eq(TransactionStatusETY.class));
 
-        MockHttpServletRequestBuilder builder =
-                MockMvcRequestBuilders.get(getBaseUrl() + "/v1/transactions")
-                        .queryParam("timestamp", DateTimeFormatter.ISO_DATE_TIME.format(new Date().toInstant().minusSeconds(120).atOffset(ZoneOffset.UTC)))
-                        .queryParam("page", "1")
-                        .queryParam("limit", "10");
-
-        mvc.perform(builder
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().is2xxSuccessful());
+        Date date = Date.from(Instant.now().minusSeconds(120));
+        mvc.perform(
+                getTransactionsReq(date, 1, 10)
+        ).andExpect(status().is2xxSuccessful());
     }
 
     @Test
-    void deleteTransactionTest() throws OperationException {
+    void deleteTransactionTest() throws Exception {
         // Data preparation
         Date date = new Date();
         TransactionStatusETY ety = TransactionStatusETY.from("wif", ProcessorOperationEnum.DELETE);
         // Insert ety in db
         mongoTemplate.insert(ety);
-        // Perform deleteTransactions method
-        DeleteTxResDTO response = controller.deleteTransactions(date);
-        // Assertion
-        assertEquals(1, response.getDeletedTransactions());
+        // Perform delete
+        mvc.perform(
+                deleteTransactionsReq(date)
+        ).andExpectAll(
+                status().is2xxSuccessful(),
+                jsonPath("$.deletedTransactions").value(1)
+        );
     }
     
 }
