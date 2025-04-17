@@ -11,11 +11,15 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.validators;
 
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.validators.impl.NoFutureDateValidator;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import javax.validation.Constraint;
-import javax.validation.Payload;
-import java.lang.annotation.*;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.validators.impl.NoFutureDateValidator;
+import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
 
 @Documented
 @Constraint(validatedBy = NoFutureDateValidator.class)
@@ -23,6 +27,8 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface NoFutureDate {
     String message() default "The date is set in the future";
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 }

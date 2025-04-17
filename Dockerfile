@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:1.8
+FROM registry.access.redhat.com/ubi8/openjdk-21:1.21-1.1741652874
 
 WORKDIR /workspace/app
 

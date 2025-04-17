@@ -30,12 +30,12 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.mongodb.MongoException;
@@ -57,7 +57,7 @@ class TransactionControllerTest extends AbstractTest {
     @Autowired
     private MockMvc mvc;
 
-    @SpyBean
+    @MockitoSpyBean
     private ITransactionsSVR service;
 
     @Autowired
@@ -67,26 +67,24 @@ class TransactionControllerTest extends AbstractTest {
     void getTransactionConstraintViolationException() throws Exception {
         Date date = Date.from(Instant.now().plusSeconds(120));
         mvc.perform(
-                getTransactionsReq(date, 1, 1)
-        ).andExpect(status().isBadRequest());
+                getTransactionsReq(date, 1, 1)).andExpect(status().isBadRequest());
     }
 
     @Test
     void getTransactionArgumentMismatchException() throws Exception {
         mvc.perform(
-                getTransactionsByStringReq("wrong_argument", 1, 1)
-        ).andExpect(status().isBadRequest());
+                getTransactionsByStringReq("wrong_argument", 1, 1)).andExpect(status().isBadRequest());
     }
 
     @Test
     void getTransactionOperationException() throws Exception {
 
-        Mockito.doThrow(MongoException.class).when(mongoTemplate).count(any(Query.class), eq(TransactionStatusETY.class));
+        Mockito.doThrow(MongoException.class).when(mongoTemplate).count(any(Query.class),
+                eq(TransactionStatusETY.class));
 
         Date date = Date.from(Instant.now().minusSeconds(120));
         mvc.perform(
-                getTransactionsReq(date, 2, 1)
-        ).andExpect(status().isInternalServerError());
+                getTransactionsReq(date, 2, 1)).andExpect(status().isInternalServerError());
     }
 
     @Test
@@ -113,8 +111,7 @@ class TransactionControllerTest extends AbstractTest {
 
         Date date = Date.from(Instant.now().minusSeconds(120));
         mvc.perform(
-                getTransactionsReq(date, 1, 10)
-        ).andExpect(status().is2xxSuccessful());
+                getTransactionsReq(date, 1, 10)).andExpect(status().is2xxSuccessful());
     }
 
     @Test
@@ -126,11 +123,9 @@ class TransactionControllerTest extends AbstractTest {
         mongoTemplate.insert(ety);
         // Perform delete
         mvc.perform(
-                deleteTransactionsReq(date)
-        ).andExpectAll(
-                status().is2xxSuccessful(),
-                jsonPath("$.deletedTransactions").value(1)
-        );
+                deleteTransactionsReq(date)).andExpectAll(
+                        status().is2xxSuccessful(),
+                        jsonPath("$.deletedTransactions").value(1));
     }
-    
+
 }

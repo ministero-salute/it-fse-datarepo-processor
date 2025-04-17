@@ -11,12 +11,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.client.RestTemplate;
 
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.impl.EdsDataQualityClient;
@@ -28,11 +28,11 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.ConnectionRefuse
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(Constants.Profile.TEST)
 class EdsDataQualityClientTest {
-    
+
     @Autowired
     private EdsDataQualityClient edsDataQualityClient;
 
-    @MockBean
+    @MockitoBean
     private RestTemplate restTemplate;
 
     @Test
@@ -49,8 +49,9 @@ class EdsDataQualityClientTest {
         ResponseEntity<ValidationResultDTO> mockResponse = new ResponseEntity<>(expected, HttpStatus.OK);
 
         // Configure mock
-        when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ValidationResultDTO.class))).thenReturn(mockResponse);
-        
+        when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class),
+                eq(ValidationResultDTO.class))).thenReturn(mockResponse);
+
         // Perform the method to test
         ValidationResultDTO result = edsDataQualityClient.validateBundleNormativeR4(input);
 
@@ -68,8 +69,9 @@ class EdsDataQualityClientTest {
         input.setWorkflowInstanceId("wiif_test");
 
         // Configure mock
-        when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(ValidationResultDTO.class))).thenThrow(ConnectionRefusedException.class);
-        
+        when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class),
+                eq(ValidationResultDTO.class))).thenThrow(ConnectionRefusedException.class);
+
         // Assertion
         assertThrows(ConnectionRefusedException.class, () -> edsDataQualityClient.validateBundleNormativeR4(input));
     }

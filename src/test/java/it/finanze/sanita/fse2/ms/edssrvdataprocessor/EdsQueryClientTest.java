@@ -12,12 +12,12 @@ import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
@@ -31,11 +31,11 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnu
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(Constants.Profile.TEST)
 class EdsQueryClientTest {
-    
+
     @Autowired
     private EdsQueryClient client;
 
-    @MockBean
+    @MockitoBean
     private RestTemplate restTemplate;
 
     @Test
@@ -53,37 +53,35 @@ class EdsQueryClientTest {
 
     @Test
     void fhirPublicationTest() {
-         // Mock response entity
+        // Mock response entity
         ResponseDTO expected = new ResponseDTO(new LogTraceInfoDTO(null, null));
         ResponseEntity<ResponseDTO> mockResponse = new ResponseEntity<>(expected, HttpStatus.OK);
         expected.setEsito(true);
         expected.setMessage("Message");
         // Configure mock
-        when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(ResponseDTO.class))).thenReturn(mockResponse);
+        when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(ResponseDTO.class)))
+                .thenReturn(mockResponse);
         client.fhirPublication("id_test", "json_test", ProcessorOperationEnum.PUBLISH);
         client.fhirPublication("id_test", "json_test", ProcessorOperationEnum.REPLACE);
         client.fhirPublication("id_test", "json_test", ProcessorOperationEnum.UPDATE);
         // Assertions
         verify(restTemplate, times(1)).exchange(
-            any(),
-            eq(HttpMethod.POST),
-            any(HttpEntity.class),
-            eq(ResponseDTO.class),
-            any(ResponseDTO.class)
-        );
+                anyString(),
+                eq(HttpMethod.POST),
+                any(HttpEntity.class),
+                eq(ResponseDTO.class));
         verify(restTemplate, times(2)).exchange(
-            any(),
-            eq(HttpMethod.PUT),
-            any(HttpEntity.class),
-            eq(ResponseDTO.class),
-            any(ResponseDTO.class)
-        );
+                anyString(),
+                eq(HttpMethod.PUT),
+                any(HttpEntity.class),
+                eq(ResponseDTO.class));
     }
 
     @Test
     void fireCheckExistExceptionTest() {
         // Configure mock
-        when(restTemplate.getForEntity(anyString(), eq(ResourceExistResDTO.class))).thenThrow(ResourceAccessException.class);
+        when(restTemplate.getForEntity(anyString(), eq(ResourceExistResDTO.class)))
+                .thenThrow(ResourceAccessException.class);
         // Assertion and perform fhirCheckExist
         assertThrows(ResourceAccessException.class, () -> client.fhirCheckExist("masterIdentifier"));
     }

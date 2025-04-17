@@ -11,14 +11,16 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.controller.handler;
 
-import brave.Tracer;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.LogTraceInfoDTO;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.error.base.ErrorResponseDTO;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.ConnectionRefusedException;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OutOfRangeException;
-import lombok.extern.slf4j.Slf4j;
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.error.ErrorBuilderDTO.createArgumentMismatchError;
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.error.ErrorBuilderDTO.createConnectionRefusedError;
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.error.ErrorBuilderDTO.createConstraintError;
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.error.ErrorBuilderDTO.createGenericError;
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.error.ErrorBuilderDTO.createOperationError;
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.error.ErrorBuilderDTO.createOutOfRangeError;
+import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.error.ErrorBuilderDTO.createUnsupportedOperationError;
+
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -28,14 +30,18 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import javax.validation.ConstraintViolationException;
-
-import java.util.Date;
-
-import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.error.ErrorBuilderDTO.*;
+import io.micrometer.tracing.Tracer;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.LogTraceInfoDTO;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.error.base.ErrorResponseDTO;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.ConnectionRefusedException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
+import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OutOfRangeException;
+import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- *	Exceptions handler
+ * Exceptions handler
  */
 @ControllerAdvice
 @Slf4j
@@ -48,9 +54,10 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
     private Tracer tracer;
 
     /**
-     * Handles Connection Refused Exception 
-     * @param ex  Exception 
-     * @return ErrorResponseDTO  A DTO representing the error response 
+     * Handles Connection Refused Exception
+     * 
+     * @param ex Exception
+     * @return ErrorResponseDTO A DTO representing the error response
      */
     @ExceptionHandler(ConnectionRefusedException.class)
     protected ResponseEntity<ErrorResponseDTO> handleConnectionRefusedException(ConnectionRefusedException ex) {
@@ -63,16 +70,15 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
         headers.setContentType(MediaType.APPLICATION_PROBLEM_JSON);
         // Bye bye
         return new ResponseEntity<>(out, headers, out.getStatus());
-    } 
-    
-    
+    }
+
     /**
-     * Handles Generic Exception 
+     * Handles Generic Exception
      * 
-     * @param ex  Exception 
-     * @return ErrorResponseDTO  A DTO representing the error response 
+     * @param ex Exception
+     * @return ErrorResponseDTO A DTO representing the error response
      */
-    @ExceptionHandler(value = {Exception.class})
+    @ExceptionHandler(value = { Exception.class })
     protected ResponseEntity<ErrorResponseDTO> handleGenericException(Exception ex) {
         // Log me
         log.warn(Constants.Logs.ERROR_HANDLER_GENERIC_EXCEPTION);
@@ -87,13 +93,15 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Handles exceptions thrown by the inability to convert a certain value from a type X to a type Y.
+     * Handles exceptions thrown by the inability to convert a certain value from a
+     * type X to a type Y.
      * (e.g. {@link String} to {@link Date})
      *
      * @param ex exception
      */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    protected ResponseEntity<ErrorResponseDTO> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
+    protected ResponseEntity<ErrorResponseDTO> handleMethodArgumentTypeMismatchException(
+            MethodArgumentTypeMismatchException ex) {
         // Log me
         log.error("HANDLER MethodArgumentTypeMismatchException()", ex);
         // Create error DTO
@@ -108,8 +116,8 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      * Handle operation exception.
      *
-     * @param ex		exception
-     * @return ErrorResponseDTO  The Exception to be returned
+     * @param ex exception
+     * @return ErrorResponseDTO The Exception to be returned
      */
     @ExceptionHandler(OperationException.class)
     protected ResponseEntity<ErrorResponseDTO> handleOperationException(OperationException ex) {
@@ -143,7 +151,8 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Handles exceptions thrown by the validation check performed on the request submitted by the user.
+     * Handles exceptions thrown by the validation check performed on the request
+     * submitted by the user.
      *
      * @param ex exception
      */
@@ -161,10 +170,10 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Handles Unsupported Operation Exception 
+     * Handles Unsupported Operation Exception
      * 
-     * @param ex  Exception 
-     * @return ErrorResponseDTO  A DTO representing the error response 
+     * @param ex Exception
+     * @return ErrorResponseDTO A DTO representing the error response
      */
     @ExceptionHandler(UnsupportedOperationException.class)
     protected ResponseEntity<ErrorResponseDTO> handleUnsupportedOperationException(UnsupportedOperationException ex) {
@@ -182,6 +191,7 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
 
     /**
      * Generate a new {@link LogTraceInfoDTO} instance
+     * 
      * @return The new instance
      */
     private LogTraceInfoDTO getLogTraceInfo() {
@@ -190,8 +200,8 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
         // Verify if context is available
         if (tracer.currentSpan() != null) {
             out = new LogTraceInfoDTO(
-                tracer.currentSpan().context().spanIdString(),
-                tracer.currentSpan().context().traceIdString());
+                    tracer.currentSpan().context().spanId(),
+                    tracer.currentSpan().context().traceId());
         }
         // Return the log trace
         return out;

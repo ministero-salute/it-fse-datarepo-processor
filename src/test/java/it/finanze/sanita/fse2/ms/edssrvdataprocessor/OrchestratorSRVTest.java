@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.DispatchActionDTO;
@@ -33,17 +33,18 @@ class OrchestratorSRVTest {
     @Autowired
     private IOrchestratorSRV service;
 
-    @MockBean
+    @MockitoBean
     private IFhirOperationSRV fhirOperationSRV;
 
-    @MockBean
+    @MockitoBean
     private IDocumentRepo documentRepo;
-    
+
     @Test
     void dispatchActionPublishTest() throws NoRecordFoundException, OperationException {
         // Data preparation
         DispatchActionDTO actionDto = new DispatchActionDTO();
-        DocumentReferenceDTO referenceDto = new DocumentReferenceDTO("test", ProcessorOperationEnum.PUBLISH, "test", PriorityTypeEnum.HIGH);
+        DocumentReferenceDTO referenceDto = new DocumentReferenceDTO("test", ProcessorOperationEnum.PUBLISH, "test",
+                PriorityTypeEnum.HIGH);
         actionDto.setMongoId("test");
         actionDto.setDocumentReferenceDTO(referenceDto);
         // Mock

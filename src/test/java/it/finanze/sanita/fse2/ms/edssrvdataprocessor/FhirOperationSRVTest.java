@@ -19,9 +19,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.client.ResourceAccessException;
 
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.IEdsDataQualityClient;
@@ -43,17 +43,17 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.impl.FhirOperationS
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(Constants.Profile.TEST)
 class FhirOperationSRVTest {
-    
+
     @Autowired
     private FhirOperationSRV service;
 
-    @MockBean
+    @MockitoBean
     private LoggerHelper kafkaLogger;
 
-    @MockBean
+    @MockitoBean
     private IEdsDataQualityClient dataQuality;
 
-    @MockBean
+    @MockitoBean
     private IEdsQueryClient query;
 
     @Autowired
@@ -119,7 +119,8 @@ class FhirOperationSRVTest {
         when(dataQuality.validateBundleNormativeR4(dto)).thenReturn(validationDto);
         // Perform publish and assert
         assertThrows(BusinessException.class, () -> service.publish(dto));
-        verify(kafkaLogger, times(1)).info(anyString(), anyString(), any(ILogEnum.class), any(ResultLogEnum.class), any(Date.class));
+        verify(kafkaLogger, times(1)).info(anyString(), anyString(), any(ILogEnum.class), any(ResultLogEnum.class),
+                any(Date.class));
     }
 
     @Test
@@ -156,12 +157,13 @@ class FhirOperationSRVTest {
         ValidationResultDTO validationDto = new ValidationResultDTO();
         validationDto.setValid(false);
         validationDto.setNormativeR4Messages(Arrays.asList("error1", "error2"));
-        validationDto.setNotTraversedResources(Arrays.asList("error1","error2"));
+        validationDto.setNotTraversedResources(Arrays.asList("error1", "error2"));
         when(query.fhirCheckExist(dto.getMasterIdentifier())).thenReturn(resourceDto);
         when(dataQuality.validateBundleNormativeR4(dto)).thenReturn(validationDto);
         // Perform publish and assert
         assertThrows(UATMockException.class, () -> service.publish(dto));
-        verify(kafkaLogger, times(2)).info(any(), any(), any(ILogEnum.class), any(ResultLogEnum.class), any(Date.class));
+        verify(kafkaLogger, times(2)).info(any(), any(), any(ILogEnum.class), any(ResultLogEnum.class),
+                any(Date.class));
     }
 
     @Test
@@ -176,12 +178,13 @@ class FhirOperationSRVTest {
         ValidationResultDTO validationDto = new ValidationResultDTO();
         validationDto.setValid(false);
         validationDto.setNormativeR4Messages(Arrays.asList("error1", "error2"));
-        validationDto.setNotTraversedResources(Arrays.asList("error1","error2"));
+        validationDto.setNotTraversedResources(Arrays.asList("error1", "error2"));
         when(query.fhirCheckExist(dto.getMasterIdentifier())).thenReturn(resourceDto);
         when(dataQuality.validateBundleNormativeR4(dto)).thenReturn(validationDto);
         // Perform publish and assert
         assertThrows(UATMockException.class, () -> service.replace(dto));
-        verify(kafkaLogger, times(1)).info(any(), any(), any(ILogEnum.class), any(ResultLogEnum.class), any(Date.class));
+        verify(kafkaLogger, times(1)).info(any(), any(), any(ILogEnum.class), any(ResultLogEnum.class),
+                any(Date.class));
     }
 
     @Test

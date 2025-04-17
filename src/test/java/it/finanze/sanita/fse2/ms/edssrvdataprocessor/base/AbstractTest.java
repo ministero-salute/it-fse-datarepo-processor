@@ -18,9 +18,9 @@ import org.bson.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
@@ -29,31 +29,31 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.repository.mongo.impl.Docum
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class AbstractTest {
-	
+
     @Autowired
     public DocumentRepo documentRepo;
 
-    @SpyBean
+    @MockitoSpyBean
     protected MongoTemplate mongoTemplate;
 
     @Autowired
     ServletWebServerApplicationContext webServerAppCtxt;
 
-    protected AbstractTest() {}
+    protected AbstractTest() {
+    }
 
     @BeforeEach
     void clearDB() {
         mongoTemplate.dropCollection(IngestionStagingETY.class);
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     protected ConsumerRecord<String, String> kafkaInit(
             String topic,
             ProcessorOperationEnum operation,
             boolean encDocumentNotFound,
             boolean encError,
-            boolean encEmptyMessage
-    ) throws OperationException {
+            boolean encEmptyMessage) throws OperationException {
         IngestionStagingETY ety = new IngestionStagingETY();
         ety.setIdentifier(TestConstants.TEST_IDENTIFIER);
         ety.setOperation(operation);
@@ -84,19 +84,18 @@ public abstract class AbstractTest {
         testProducer.send(
                 topic,
                 operation.getName(),
-                message
-        );
+                message);
 
         return new ConsumerRecord<>(
                 topic,
                 1,
                 0,
                 operation.getName(),
-                message
-        );
+                message);
     }
 
     public String getBaseUrl() {
-        return "http://localhost:" + webServerAppCtxt.getWebServer().getPort() + webServerAppCtxt.getServletContext().getContextPath();
+        return "http://localhost:" + webServerAppCtxt.getWebServer().getPort()
+                + webServerAppCtxt.getServletContext().getContextPath();
     }
 }

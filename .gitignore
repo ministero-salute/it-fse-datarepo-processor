@@ -1,15 +1,84 @@
-/target/
-.settings/*
-.project
-.classpath
+# ========================
+# IDEs and Editors
+# ========================
+# IntelliJ IDEA
+/.idea
 *.iml
-.checkstyle
-.apt_generated/
-.apt_generated_test/
-bin/
-/**/WEB-INF/classes
-.factorypath
-.metadata
+*.iws
+
+# Eclipse
+/.project
+/.classpath
+/.settings/
+
+# VS Code
+/.vscode/
+
+# ========================
+# Build and dependencies
+# ========================
+# Maven
+/target/
+/release.properties
+pom.xml.tag
+pom.xml.next
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+
+# If you use the Maven wrapper, keep the wrapper scripts and jar:
+/!.mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.properties
+/mvnw
+/mvnw.cmd
+
+# Gradle (if you also build with Gradle)
+/.gradle/
+/build/
+
+# ========================
+# Java artifacts
+# ========================
+# Compiled class files
+*.class
+
+# JAR, WAR, EAR, ZIP, TAR.GZ, RAR
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# ========================
+# Logs and temporary files
+# ========================
+*.log
+*.tmp
 tmp/
-.idea
+*.swp
+*~ 
+
+# ========================
+# Spring Boot
+# ========================
+# Spring Boot DevTools restart folder
+/.restart
+
+# ========================
+# Coverage, reports, etc.
+# ========================
+/jacoco.exec
+/coverage/
+/site/
+/reports/
+/dependency-check-report.html
+
+# ========================
+# Operating system
+# ========================
+# macOS
 .DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db

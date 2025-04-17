@@ -11,9 +11,8 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response;
 
-import javax.validation.constraints.Size;
-
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.AbstractDTO;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,37 +23,36 @@ import lombok.Setter;
 @Setter
 public class ResponseDTO implements AbstractDTO {
 
-	/**
-	 * Trace id log.
-	 */
-	@Size(min = 0, max = 100)
-	private String traceID;
+    /**
+     * Trace id log.
+     */
+    @Size(min = 0, max = 100)
+    private String traceID;
 
-	/**
-	 * Span id log.
-	 */
-	@Size(min = 0, max = 100)
-	private String spanID;
+    /**
+     * Span id log.
+     */
+    @Size(min = 0, max = 100)
+    private String spanID;
 
-	private boolean esito;
-	
-	private String message;
-	
-	/**
-	 * Instantiates a new response DTO.
-	 */
-	public ResponseDTO() {
-	}
+    private boolean esito;
 
-	/**
-	 * Instantiates a new response DTO.
-	 *
-	 * @param traceInfo the trace info
-	 */
-	public ResponseDTO(final LogTraceInfoDTO traceInfo) {
-		traceID = traceInfo.getTraceID();
-		spanID = traceInfo.getSpanID();
-	} 
+    private String message;
 
-} 
+    /**
+     * Instantiates a new response DTO.
+     */
+    public ResponseDTO() {
+    }
 
+    /**
+     * Instantiates a new response DTO.
+     *
+     * @param traceInfo the trace info
+     */
+    public ResponseDTO(final LogTraceInfoDTO traceInfo) {
+        traceID = traceInfo.getTraceID();
+        spanID = traceInfo.getSpanID();
+    }
+
+}

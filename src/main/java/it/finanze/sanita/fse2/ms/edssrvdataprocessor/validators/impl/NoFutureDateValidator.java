@@ -13,12 +13,11 @@ package it.finanze.sanita.fse2.ms.edssrvdataprocessor.validators.impl;
 
 import java.util.Date;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
-
 import org.springframework.stereotype.Component;
 
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.validators.NoFutureDate;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 @Component
 public class NoFutureDateValidator implements ConstraintValidator<NoFutureDate, Date> {
@@ -32,7 +31,8 @@ public class NoFutureDateValidator implements ConstraintValidator<NoFutureDate, 
      * <p>
      * The default implementation is a no-op.
      *
-     * @param constraintAnnotation annotation instance for a given constraint declaration
+     * @param constraintAnnotation annotation instance for a given constraint
+     *                             declaration
      */
     @Override
     public void initialize(NoFutureDate constraintAnnotation) {

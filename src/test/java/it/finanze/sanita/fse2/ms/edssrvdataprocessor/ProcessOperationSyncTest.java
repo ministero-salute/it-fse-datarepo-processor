@@ -23,19 +23,19 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
-import brave.Tracer;
+import io.micrometer.tracing.Tracer;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.base.AbstractTest;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.IEdsDataQualityClient;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.IEdsQueryClient;
@@ -54,130 +54,132 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility.ProfileUtility;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(Constants.Profile.TEST)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @EmbeddedKafka
 class ProcessOperationSyncTest extends AbstractTest {
-    
-	@Autowired
+
+    @Autowired
     ServletWebServerApplicationContext webServerAppCtxt;
 
-    @MockBean
+    @MockitoBean
     Tracer tracer;
 
     @Autowired
     MockMvc mvc;
 
-    @SpyBean
+    @MockitoSpyBean
     private IEdsQueryClient queryClient;
 
-    @SpyBean
+    @MockitoSpyBean
     private IEdsDataQualityClient dataQualityClient;
 
     @Autowired
     DocumentCTL documentCTL;
 
-    @MockBean
+    @MockitoBean
     ProfileUtility profileUtility;
 
     @Autowired
     DocumentRepo documentRepo;
-    
-    @MockBean
-    private RestTemplate restTemplate; 
-    
-    @SpyBean
-    private OrchestratorSRV orchestratorSRV; 
 
-    private String TEST_IDENTIFIER = "testIdentifier"; 
-    private ProcessorOperationEnum TEST_OPERATION_UPDATE = ProcessorOperationEnum.UPDATE; 
-    private ProcessorOperationEnum TEST_OPERATION_DELETE = ProcessorOperationEnum.DELETE; 
-    private String TEST_JSON_STRING = "{\"test\": \"testString\"}"; 
-    private PriorityTypeEnum TEST_PRIORITY_TYPE_ENUM = PriorityTypeEnum.HIGH;  
-    
-    
+    @MockitoBean
+    private RestTemplate restTemplate;
+
+    @MockitoSpyBean
+    private OrchestratorSRV orchestratorSRV;
+
+    private String TEST_IDENTIFIER = "testIdentifier";
+    private ProcessorOperationEnum TEST_OPERATION_UPDATE = ProcessorOperationEnum.UPDATE;
+    private ProcessorOperationEnum TEST_OPERATION_DELETE = ProcessorOperationEnum.DELETE;
+    private String TEST_JSON_STRING = "{\"test\": \"testString\"}";
+    private PriorityTypeEnum TEST_PRIORITY_TYPE_ENUM = PriorityTypeEnum.HIGH;
+
     @Test
-	@DisplayName("Update Sync - Success test")
+    @DisplayName("Update Sync - Success test")
     void processUpdateTest() throws Exception {
-		// Data preparation
-		DocumentReferenceDTO document = new DocumentReferenceDTO(TEST_IDENTIFIER, TEST_OPERATION_UPDATE, TEST_JSON_STRING, TEST_PRIORITY_TYPE_ENUM);
-		// Mock
-    	BDDMockito.doNothing().when(queryClient).fhirPublication(anyString(), anyString(), any(ProcessorOperationEnum.class)); 
-		// Perform
-	    mvc.perform(
-			postProcessReq(document)
-		).andExpect(status().is2xxSuccessful()); 
-    } 
-       
-    @Test
-	@DisplayName("Delete Sync - Success test")
-    void processDeleteTest() throws Exception {
-		// Data preparation
-    	DocumentReferenceDTO document = new DocumentReferenceDTO(TEST_IDENTIFIER, TEST_OPERATION_DELETE, TEST_JSON_STRING, TEST_PRIORITY_TYPE_ENUM);
-		// Mock
-		ResponseDTO responseDTO = new ResponseDTO();
-		responseDTO.setEsito(true);
-		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.eq(HttpMethod.DELETE), Mockito.isNull(), Mockito.eq(ResponseDTO.class)))
-				.thenReturn(new ResponseEntity<>(responseDTO, HttpStatus.OK));
-		// Perform
-	    mvc.perform(
-			postProcessReq(document)
-		).andExpect(status().is2xxSuccessful()); 
-    } 
-
-    
-    @Test
-	@DisplayName("Delete Sync - Exception test")
-    void processDeleteExceptionTest() throws Exception {
-		// Data preparation
-    	DocumentReferenceDTO document = new DocumentReferenceDTO(TEST_IDENTIFIER, TEST_OPERATION_DELETE, TEST_JSON_STRING, TEST_PRIORITY_TYPE_ENUM);
-		// Mock
-		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.eq(HttpMethod.DELETE), Mockito.isNull(), Mockito.eq(ResponseDTO.class)))
-				.thenThrow(BusinessException.class);
-		// Perform
-	    mvc.perform(
-			postProcessReq(document)
-		).andExpect(status().is5xxServerError());
-    }  
-    
-    @Test
-	@DisplayName("Delete Sync - Unsupported Operation Exception test")
-    void processDeleteUnsupportedOperationExceptionTest() throws Exception {
-    	// Data preparation
-    	DocumentReferenceDTO document = new DocumentReferenceDTO(TEST_IDENTIFIER, TEST_OPERATION_DELETE, TEST_JSON_STRING, TEST_PRIORITY_TYPE_ENUM);
-		// Mock
-		BDDMockito.doThrow(UnsupportedOperationException.class).when(orchestratorSRV)
-				.dispatchAction(any(ProcessorOperationEnum.class), any(DispatchActionDTO.class)); 
-		// Perform
-	    mvc.perform(
-			postProcessReq(document)
-		).andExpect(status().is4xxClientError());
-    }  
-    
-    @Test
-	@DisplayName("Delete Sync - Connection Refused Exception test")
-    void processConnectionRefusedOperationExceptionTest() throws Exception {
-    	// Data preparation
-    	DocumentReferenceDTO document = new DocumentReferenceDTO(TEST_IDENTIFIER, TEST_OPERATION_DELETE, TEST_JSON_STRING, TEST_PRIORITY_TYPE_ENUM);
-		// Mock
-		Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.eq(HttpMethod.DELETE), Mockito.isNull(), Mockito.eq(ResponseDTO.class)))
-				.thenThrow(ResourceAccessException.class);
-		// Perform
-	    mvc.perform(
-			postProcessReq(document)
-		).andExpect(status().is5xxServerError());
+        // Data preparation
+        DocumentReferenceDTO document = new DocumentReferenceDTO(TEST_IDENTIFIER, TEST_OPERATION_UPDATE,
+                TEST_JSON_STRING, TEST_PRIORITY_TYPE_ENUM);
+        // Mock
+        BDDMockito.doNothing().when(queryClient).fhirPublication(anyString(), anyString(),
+                any(ProcessorOperationEnum.class));
+        // Perform
+        mvc.perform(
+                postProcessReq(document)).andExpect(status().is2xxSuccessful());
     }
 
-	@Test
-	@DisplayName("Publish - Empty Message test")
-	void processPublishEmptyMessageTest() throws Exception {
-		// Data preparation
-    	DocumentReferenceDTO document = new DocumentReferenceDTO(TEST_IDENTIFIER, TEST_OPERATION_DELETE, TEST_JSON_STRING, TEST_PRIORITY_TYPE_ENUM);
-		// Mock
-		BDDMockito.doThrow(ConnectionRefusedException.class).when(orchestratorSRV)
-				.dispatchAction(any(ProcessorOperationEnum.class), any(DispatchActionDTO.class));
-		// Perform
-	    mvc.perform(
-			postProcessReq(document)
-		).andExpect(status().is5xxServerError());
-	}
+    @Test
+    @DisplayName("Delete Sync - Success test")
+    void processDeleteTest() throws Exception {
+        // Data preparation
+        DocumentReferenceDTO document = new DocumentReferenceDTO(TEST_IDENTIFIER, TEST_OPERATION_DELETE,
+                TEST_JSON_STRING, TEST_PRIORITY_TYPE_ENUM);
+        // Mock
+        ResponseDTO responseDTO = new ResponseDTO();
+        responseDTO.setEsito(true);
+        Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.eq(HttpMethod.DELETE), Mockito.isNull(),
+                Mockito.eq(ResponseDTO.class)))
+                .thenReturn(new ResponseEntity<>(responseDTO, HttpStatus.OK));
+        // Perform
+        mvc.perform(
+                postProcessReq(document)).andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    @DisplayName("Delete Sync - Exception test")
+    void processDeleteExceptionTest() throws Exception {
+        // Data preparation
+        DocumentReferenceDTO document = new DocumentReferenceDTO(TEST_IDENTIFIER, TEST_OPERATION_DELETE,
+                TEST_JSON_STRING, TEST_PRIORITY_TYPE_ENUM);
+        // Mock
+        Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.eq(HttpMethod.DELETE), Mockito.isNull(),
+                Mockito.eq(ResponseDTO.class)))
+                .thenThrow(BusinessException.class);
+        // Perform
+        mvc.perform(
+                postProcessReq(document)).andExpect(status().is5xxServerError());
+    }
+
+    @Test
+    @DisplayName("Delete Sync - Unsupported Operation Exception test")
+    void processDeleteUnsupportedOperationExceptionTest() throws Exception {
+        // Data preparation
+        DocumentReferenceDTO document = new DocumentReferenceDTO(TEST_IDENTIFIER, TEST_OPERATION_DELETE,
+                TEST_JSON_STRING, TEST_PRIORITY_TYPE_ENUM);
+        // Mock
+        BDDMockito.doThrow(UnsupportedOperationException.class).when(orchestratorSRV)
+                .dispatchAction(any(ProcessorOperationEnum.class), any(DispatchActionDTO.class));
+        // Perform
+        mvc.perform(
+                postProcessReq(document)).andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    @DisplayName("Delete Sync - Connection Refused Exception test")
+    void processConnectionRefusedOperationExceptionTest() throws Exception {
+        // Data preparation
+        DocumentReferenceDTO document = new DocumentReferenceDTO(TEST_IDENTIFIER, TEST_OPERATION_DELETE,
+                TEST_JSON_STRING, TEST_PRIORITY_TYPE_ENUM);
+        // Mock
+        Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.eq(HttpMethod.DELETE), Mockito.isNull(),
+                Mockito.eq(ResponseDTO.class)))
+                .thenThrow(ResourceAccessException.class);
+        // Perform
+        mvc.perform(
+                postProcessReq(document)).andExpect(status().is5xxServerError());
+    }
+
+    @Test
+    @DisplayName("Publish - Empty Message test")
+    void processPublishEmptyMessageTest() throws Exception {
+        // Data preparation
+        DocumentReferenceDTO document = new DocumentReferenceDTO(TEST_IDENTIFIER, TEST_OPERATION_DELETE,
+                TEST_JSON_STRING, TEST_PRIORITY_TYPE_ENUM);
+        // Mock
+        BDDMockito.doThrow(ConnectionRefusedException.class).when(orchestratorSRV)
+                .dispatchAction(any(ProcessorOperationEnum.class), any(DispatchActionDTO.class));
+        // Perform
+        mvc.perform(
+                postProcessReq(document)).andExpect(status().is5xxServerError());
+    }
 }
