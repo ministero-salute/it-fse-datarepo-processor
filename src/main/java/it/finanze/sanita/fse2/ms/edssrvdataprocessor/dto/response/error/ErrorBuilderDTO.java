@@ -12,9 +12,8 @@
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.error;
 
 import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants.Logs.ERR_VAL_UNABLE_CONVERT;
-import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
-import static org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
 
+import org.apache.hc.core5.http.HttpStatus;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.response.LogTraceInfoDTO;
@@ -51,7 +50,7 @@ public final class ErrorBuilderDTO {
                 ErrorType.VALIDATION.getType(),
                 ErrorType.VALIDATION.getTitle(),
                 violation.getMessage(),
-                SC_BAD_REQUEST,
+                HttpStatus.SC_BAD_REQUEST,
                 ErrorType.VALIDATION.toInstance(ErrorInstance.Validation.CONSTRAINT_FIELD, field));
     }
 
@@ -68,7 +67,7 @@ public final class ErrorBuilderDTO {
                 ErrorType.SERVER.getType(),
                 ErrorType.SERVER.getTitle(),
                 ex.getMessage(),
-                SC_INTERNAL_SERVER_ERROR,
+                HttpStatus.SC_INTERNAL_SERVER_ERROR,
                 ErrorType.SERVER.toInstance(ErrorInstance.Server.INTERNAL));
     }
 
@@ -85,7 +84,7 @@ public final class ErrorBuilderDTO {
                 ErrorType.SERVER.getType(),
                 ErrorType.SERVER.getTitle(),
                 ex.getMessage(),
-                SC_INTERNAL_SERVER_ERROR,
+                HttpStatus.SC_INTERNAL_SERVER_ERROR,
                 ErrorType.SERVER.toInstance(ErrorInstance.Server.INTERNAL));
     }
 
@@ -99,7 +98,7 @@ public final class ErrorBuilderDTO {
                         ERR_VAL_UNABLE_CONVERT,
                         ex.getName(),
                         ex.getParameter().getParameter().getType().getSimpleName()),
-                SC_BAD_REQUEST,
+                HttpStatus.SC_BAD_REQUEST,
                 ErrorType.VALIDATION.toInstance(ErrorInstance.Validation.CONSTRAINT_FIELD, ex.getName()));
     }
 
@@ -109,7 +108,7 @@ public final class ErrorBuilderDTO {
                 ErrorType.VALIDATION.getType(),
                 ErrorType.VALIDATION.getTitle(),
                 ex.getMessage(),
-                SC_BAD_REQUEST,
+                HttpStatus.SC_BAD_REQUEST,
                 ErrorType.VALIDATION.toInstance(ErrorInstance.Validation.CONSTRAINT_FIELD, ex.getField()));
     }
 
@@ -127,7 +126,7 @@ public final class ErrorBuilderDTO {
                 ErrorType.CLIENT.getType(),
                 ErrorType.CLIENT.getTitle(),
                 ex.getMessage(),
-                SC_BAD_REQUEST,
+                HttpStatus.SC_BAD_REQUEST,
                 ErrorType.CLIENT.toInstance(ErrorInstance.Client.UNSUPPORTED));
     }
 
@@ -144,7 +143,7 @@ public final class ErrorBuilderDTO {
                 ErrorType.SERVER.getType(),
                 ErrorType.SERVER.getTitle(),
                 ex.getMessage(),
-                SC_INTERNAL_SERVER_ERROR,
+                HttpStatus.SC_INTERNAL_SERVER_ERROR,
                 ErrorType.SERVER.toInstance(ErrorInstance.Server.INTERNAL));
     }
 
