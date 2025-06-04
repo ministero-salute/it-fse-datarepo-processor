@@ -17,7 +17,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.DispatchActionDTO;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.dto.DocumentReferenceDTO;
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.PriorityTypeEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.NoRecordFoundException;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.OperationException;
@@ -43,8 +42,8 @@ class OrchestratorSRVTest {
     void dispatchActionPublishTest() throws NoRecordFoundException, OperationException {
         // Data preparation
         DispatchActionDTO actionDto = new DispatchActionDTO();
-        DocumentReferenceDTO referenceDto = new DocumentReferenceDTO("test", ProcessorOperationEnum.PUBLISH, "test",
-                PriorityTypeEnum.HIGH);
+        DocumentReferenceDTO referenceDto =
+                new DocumentReferenceDTO("test", ProcessorOperationEnum.PUBLISH, "test");
         actionDto.setMongoId("test");
         actionDto.setDocumentReferenceDTO(referenceDto);
         // Mock

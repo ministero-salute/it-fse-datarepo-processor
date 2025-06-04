@@ -63,29 +63,26 @@ public class KafkaSRV extends KafkaAbstractSRV implements IKafkaSRV {
 	
 	@Autowired
 	private FhirAdvicesCFG advices;
-	
-	
+
 	@Override
-	@KafkaListener(topics = "#{'${kafka.ingestor-publish.topic.low-priority}'}", clientIdPrefix = "#{'${kafka.consumer.client-id.low}'}", containerFactory = "kafkaListenerDeadLetterContainerFactory", autoStartup = "${event.topic.auto.start}", groupId = "#{'${kafka.consumer.group-id-publish}'}")
-	public void lowPriorityListenerPublishIngestor(ConsumerRecord<String, String> cr, @Header(KafkaHeaders.DELIVERY_ATTEMPT) int delivery) throws Exception {
+	@KafkaListener(topics = "#{'${kafka.ingestion-datarepo.publication.topic}'}",
+			clientIdPrefix = "#{'${kafka.consumer.client-id}'}",
+			containerFactory = "kafkaListenerDeadLetterContainerFactory",
+			autoStartup = "${event.topic.auto.start}",
+			groupId = "#{'${kafka.consumer.group-id-publish}'}")
+	public void listenerPublishIngestor(ConsumerRecord<String, String> cr,
+			@Header(KafkaHeaders.DELIVERY_ATTEMPT) int delivery) throws Exception {
 		loop(cr, this::dispatchAction, advices.map(), delivery);
 	}
 
 	@Override
-	@KafkaListener(topics = "#{'${kafka.ingestor-publish.topic.medium-priority}'}", clientIdPrefix = "#{'${kafka.consumer.client-id.medium}'}", containerFactory = "kafkaListenerDeadLetterContainerFactory", autoStartup = "${event.topic.auto.start}", groupId = "#{'${kafka.consumer.group-id-publish}'}")
-	public void mediumPriorityListenerPublishIngestor(ConsumerRecord<String, String> cr, @Header(KafkaHeaders.DELIVERY_ATTEMPT) int delivery) throws Exception {
-		loop(cr, this::dispatchAction, advices.map(), delivery);
-	}
-
-	@Override
-	@KafkaListener(topics = "#{'${kafka.ingestor-publish.topic.high-priority}'}", clientIdPrefix = "#{'${kafka.consumer.client-id.high}'}", containerFactory = "kafkaListenerDeadLetterContainerFactory", autoStartup = "${event.topic.auto.start}", groupId = "#{'${kafka.consumer.group-id-publish}'}")
-	public void highPriorityListenerPublishIngestor(ConsumerRecord<String, String> cr, @Header(KafkaHeaders.DELIVERY_ATTEMPT) int delivery) throws Exception {
-		loop(cr, this::dispatchAction, advices.map(), delivery);
-	}
-
-	@Override
-	@KafkaListener(topics = "#{'${kafka.dataprocessor.generic.topic}'}", clientIdPrefix = "#{'${kafka.consumer.client-id.replace}'}", containerFactory = "kafkaListenerDeadLetterContainerFactory", autoStartup = "${event.topic.auto.start}", groupId = "#{'${kafka.consumer.group-id-publish}'}")
-	public void genericListenerPublishIngestor(ConsumerRecord<String, String> cr, @Header(KafkaHeaders.DELIVERY_ATTEMPT) int delivery) throws Exception {
+	@KafkaListener(topics = "#{'${kafka.ingestion-datarepo.generic.topic}'}",
+			clientIdPrefix = "#{'${kafka.consumer.client-id.replace}'}",
+			containerFactory = "kafkaListenerDeadLetterContainerFactory",
+			autoStartup = "${event.topic.auto.start}",
+			groupId = "#{'${kafka.consumer.group-id-publish}'}")
+	public void listenerPutIngestor(ConsumerRecord<String, String> cr,
+			@Header(KafkaHeaders.DELIVERY_ATTEMPT) int delivery) throws Exception {
 		loop(cr, this::dispatchAction, advices.map(), delivery);
 	}
 

@@ -16,7 +16,6 @@ import static it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility.ValidationUt
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.PriorityTypeEnum;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.enums.ProcessorOperationEnum;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -53,10 +52,5 @@ public class DocumentReferenceDTO {
     @Size(min = DEFAULT_STRING_MIN_SIZE, max = DEFAULT_STRING_MAX_SIZE)
     private String jsonString;
 
-    /**
-     * An Enum representing the priority of the operation (HIGH. MEDIUM or LOW)
-     */
-    @JsonProperty(value = "priorityType", required = false)
-    private PriorityTypeEnum priorityTypeEnum;
 
 }

@@ -34,22 +34,17 @@ public class KafkaTopicCFG {
     private ProfileUtility profileUtility;
 
     /**
-     * Ingestor publish low priority Topic.
+     * Ingestor publish Topic.
      */
-    @Value("${kafka.ingestor-publish.topic.low-priority}")
-    private String ingestorPublishLowPriorityTopic;
+    @Value("${kafka.ingestion-datarepo.publication.topic}")
+    private String ingestorPublishTopic;
+
 
     /**
-     * Ingestor publish medium priority Topic.
+     * Ingestor PUT Operations Topic
      */
-    @Value("${kafka.ingestor-publish.topic.medium-priority}")
-    private String ingestorPublishMediumPriorityTopic;
-
-    /**
-     * Ingestor publish high priority Topic.
-     */
-    @Value("${kafka.ingestor-publish.topic.high-priority}")
-    private String ingestorPublishHighPriorityTopic;
+    @Value("${kafka.ingestion-datarepo.generic.topic}")
+    private String ingestorGenericTopic;
 
     /**
      * Ingestor publish Dead letter Topic.
@@ -57,23 +52,13 @@ public class KafkaTopicCFG {
     @Value("${kafka.ingestor-publish.deadletter.topic}")
     private String ingestorPublishDeadLetterTopic;
 
-    /**
-     * Ingestor Generic Topic
-     */
-    @Value("${kafka.dataprocessor.generic.topic}")
-    private String ingestorGenericTopic;
-
     @Value("${kafka.statusmanager.topic}")
     private String statusManagerTopic;
 
     @PostConstruct
     public void afterInit() {
         if (profileUtility.isTestProfile()) {
-            this.ingestorPublishLowPriorityTopic = Constants.Profile.TEST_PREFIX + this.ingestorPublishLowPriorityTopic;
-            this.ingestorPublishMediumPriorityTopic = Constants.Profile.TEST_PREFIX
-                    + this.ingestorPublishMediumPriorityTopic;
-            this.ingestorPublishHighPriorityTopic = Constants.Profile.TEST_PREFIX
-                    + this.ingestorPublishHighPriorityTopic;
+            this.ingestorPublishTopic = Constants.Profile.TEST_PREFIX + this.ingestorPublishTopic;
             this.ingestorGenericTopic = Constants.Profile.TEST_PREFIX + this.ingestorGenericTopic;
             this.ingestorPublishDeadLetterTopic = Constants.Profile.TEST_PREFIX + this.ingestorPublishDeadLetterTopic;
             this.statusManagerTopic = Constants.Profile.TEST_PREFIX + this.statusManagerTopic;
