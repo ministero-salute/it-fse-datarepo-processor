@@ -1,3 +1,14 @@
+/*
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ * 
+ * Copyright (C) 2023 Ministero della Salute
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,86 +32,85 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.exceptions.UATMockException
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(Constants.Profile.TEST)
 class ExceptionTest {
-    
-    @Test
-	void businessExceptionTest() {
-		BusinessException exc = new BusinessException("Error"); 
-		BusinessException exc2 = new BusinessException("Error2", new RuntimeException());
-		
-		assertEquals(BusinessException.class, exc.getClass()); 
-		assertEquals("Error", exc.getMessage()); 
-		assertEquals(BusinessException.class, exc2.getClass()); 
-		assertEquals("Error2", exc2.getMessage()); 
-	}
-	
-	
-	@Test
-	void businessExceptionTestWithoutMsg() {
-		BusinessException exc = new BusinessException(new RuntimeException()); 
-		
-		assertEquals(BusinessException.class, exc.getClass()); 
-	}
-
-	@Test
-	void blockingExceptionTest() {
-		BlockingException exc = new BlockingException("Error1", new RuntimeException());
-		BlockingException excOnlyMsg = new BlockingException("Error2");
-		
-		assertEquals(BlockingException.class, exc.getClass()); 
-		assertEquals("Error1", exc.getMessage());
-		assertEquals(BlockingException.class, excOnlyMsg.getClass()); 
-		assertEquals("Error2", excOnlyMsg.getMessage());
-	} 
-	
-	@Test
-	void connectionRefusedExceptionTest() {
-		String url = "testUrl";
-		ConnectionRefusedException exc = new ConnectionRefusedException(url, "message"); 
-		
-		assertEquals(ConnectionRefusedException.class, exc.getClass());
-		assertEquals(url, exc.getUrl());
-	}
-	
-    @Test
-	void documentAlreadyExistsExceptionTest() {
-		DocumentAlreadyExistsException exc = new DocumentAlreadyExistsException("Error"); 
-		
-		assertEquals(DocumentAlreadyExistsException.class, exc.getClass());
-		assertEquals("Error", exc.getMessage()); 
-	}
 
     @Test
-	void emptyIdentifierExceptionTest() {
-		EmptyIdentifierException exc = new EmptyIdentifierException("Error"); 
-		
-		assertEquals(EmptyIdentifierException.class, exc.getClass());
-		assertEquals("Error", exc.getMessage()); 
-	}
+    void businessExceptionTest() {
+        BusinessException exc = new BusinessException("Error");
+        BusinessException exc2 = new BusinessException("Error2", new RuntimeException());
 
-    @Test
-	void noRecordFoundExceptionTest() {
-		NoRecordFoundException exc = new NoRecordFoundException("Error"); 
-		
-		assertEquals(NoRecordFoundException.class, exc.getClass());
-		assertEquals("Error", exc.getMessage()); 
-	}
-
-    @Test
-	void outOfRangeExceptionTest() {
-		OutOfRangeException exc = new OutOfRangeException("Error", "Field"); 
-		
-		assertEquals(OutOfRangeException.class, exc.getClass());
-		assertEquals("Error", exc.getMessage());
-        assertEquals("Field", exc.getField());
-	}
-    
-	@Test
-	void UATMockExceptionTest() {
-		UATMockException exc = new UATMockException(EventStatusEnum.BLOCKING_ERROR, "Error"); 
-		
-		assertEquals(UATMockException.class, exc.getClass());
-		assertEquals(EventStatusEnum.BLOCKING_ERROR, exc.getStatus());
+        assertEquals(BusinessException.class, exc.getClass());
         assertEquals("Error", exc.getMessage());
-	}
+        assertEquals(BusinessException.class, exc2.getClass());
+        assertEquals("Error2", exc2.getMessage());
+    }
+
+    @Test
+    void businessExceptionTestWithoutMsg() {
+        BusinessException exc = new BusinessException(new RuntimeException());
+
+        assertEquals(BusinessException.class, exc.getClass());
+    }
+
+    @Test
+    void blockingExceptionTest() {
+        BlockingException exc = new BlockingException("Error1", new RuntimeException());
+        BlockingException excOnlyMsg = new BlockingException("Error2");
+
+        assertEquals(BlockingException.class, exc.getClass());
+        assertEquals("Error1", exc.getMessage());
+        assertEquals(BlockingException.class, excOnlyMsg.getClass());
+        assertEquals("Error2", excOnlyMsg.getMessage());
+    }
+
+    @Test
+    void connectionRefusedExceptionTest() {
+        String url = "testUrl";
+        ConnectionRefusedException exc = new ConnectionRefusedException(url, "message");
+
+        assertEquals(ConnectionRefusedException.class, exc.getClass());
+        assertEquals(url, exc.getUrl());
+    }
+
+    @Test
+    void documentAlreadyExistsExceptionTest() {
+        DocumentAlreadyExistsException exc = new DocumentAlreadyExistsException("Error");
+
+        assertEquals(DocumentAlreadyExistsException.class, exc.getClass());
+        assertEquals("Error", exc.getMessage());
+    }
+
+    @Test
+    void emptyIdentifierExceptionTest() {
+        EmptyIdentifierException exc = new EmptyIdentifierException("Error");
+
+        assertEquals(EmptyIdentifierException.class, exc.getClass());
+        assertEquals("Error", exc.getMessage());
+    }
+
+    @Test
+    void noRecordFoundExceptionTest() {
+        NoRecordFoundException exc = new NoRecordFoundException("Error");
+
+        assertEquals(NoRecordFoundException.class, exc.getClass());
+        assertEquals("Error", exc.getMessage());
+    }
+
+    @Test
+    void outOfRangeExceptionTest() {
+        OutOfRangeException exc = new OutOfRangeException("Error", "Field");
+
+        assertEquals(OutOfRangeException.class, exc.getClass());
+        assertEquals("Error", exc.getMessage());
+        assertEquals("Field", exc.getField());
+    }
+
+    @Test
+    void UATMockExceptionTest() {
+        UATMockException exc = new UATMockException(EventStatusEnum.BLOCKING_ERROR, "Error");
+
+        assertEquals(UATMockException.class, exc.getClass());
+        assertEquals(EventStatusEnum.BLOCKING_ERROR, exc.getStatus());
+        assertEquals("Error", exc.getMessage());
+    }
 
 }
