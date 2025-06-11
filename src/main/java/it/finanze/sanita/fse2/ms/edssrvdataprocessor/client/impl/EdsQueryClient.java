@@ -11,6 +11,8 @@
  */
 package it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.impl;
 
+import java.net.URI;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -19,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.client.IEdsQueryClient;
 import it.finanze.sanita.fse2.ms.edssrvdataprocessor.config.Constants;
@@ -34,60 +37,69 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.utility.StringUtility;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * The implementation of the Srv Query Client 
+ * The implementation of the Srv Query Client
  */
 @Slf4j
 @Component
 public class EdsQueryClient implements IEdsQueryClient {
 
     /**
-     * Rest Template 
+     * Rest Template
      */
     @Autowired
     private RestTemplate restTemplate;
 
     /*
-     * Microservices URL Config 
+     * Microservices URL Config
      */
     @Autowired
     private MicroservicesURLCFG microservicesURLCFG;
-   
-    @Override
-    public ResourceExistResDTO fhirCheckExist(final String masterIdentifier) throws DocumentAlreadyExistsException {
-    	log.debug("[EDS QUERY] Calling EDS check exist ep - START");
-    	ResponseEntity<ResourceExistResDTO> response = null;
-    	String url = microservicesURLCFG.getEdsQueryHost() + "/v1/document/check-exist/" + masterIdentifier;
-
-    	try {
-    		response = restTemplate.getForEntity(url, ResourceExistResDTO.class);
-    		log.info(Constants.Logs.SRV_QUERY_RESPONSE, response.getStatusCode());
-    	} catch(ResourceAccessException cex) {
-    		log.error("Connect error while call eds query check exist ep :" + cex);
-    		throw cex;
-    	}  
-    	return response.getBody();
-    }
-
 
     @Override
-    public void fhirDelete(String masterIdentifier) {
-    	log.info("[EDS QUERY] Calling EDS delete ep - START");
+    public ResourceExistResDTO checkExist(final String masterIdentifier) throws DocumentAlreadyExistsException {
+        log.debug("[EDS QUERY] Calling EDS check exist ep - START");
 
-    	ResponseEntity<ResponseDTO> response = null;
-    	String url = microservicesURLCFG.getEdsQueryHost() + "/v1/document/delete/" + masterIdentifier;
+        ResponseEntity<ResourceExistResDTO> response = null;
+        URI url = UriComponentsBuilder.fromUriString(microservicesURLCFG.getEdsQueryHost())
+                .path("/v1/document/check-exist/{id}")
+                .buildAndExpand(masterIdentifier)
+                .toUri();
 
-    	try {
-    		response = restTemplate.exchange(url, HttpMethod.DELETE, null, ResponseDTO.class);
-    		log.info(Constants.Logs.SRV_QUERY_RESPONSE, response.getStatusCode());
-    	} catch(ResourceAccessException cex) {
-    		log.error("Connect error while call eds query delete ep :" + cex);
-    		throw new ConnectionRefusedException(microservicesURLCFG.getEdsQueryHost(),Constants.Logs.ERROR_CONNECTION_REFUSED);
-    	} 
-
+        try {
+            response = restTemplate.getForEntity(url, ResourceExistResDTO.class);
+            log.info(Constants.Logs.SRV_QUERY_RESPONSE, response.getStatusCode());
+        } catch (ResourceAccessException cex) {
+            log.error("Connect error while call eds query check exist ep :" + cex);
+            throw cex;
+        }
+        return response.getBody();
     }
 
     @Override
-    public void fhirPublication(String masterIdentifier, String jsonString, ProcessorOperationEnum processorOperationEnum) {
+    public void delete(String masterIdentifier) {
+        log.info("[EDS QUERY] Calling EDS delete ep - START");
+
+        ResponseEntity<ResponseDTO> response = null;
+        URI url = UriComponentsBuilder
+                .fromUriString(microservicesURLCFG.getEdsQueryHost())
+                .path("/v1/document/delete/{id}")
+                .buildAndExpand(masterIdentifier)
+                .toUri();
+
+        try {
+            response = restTemplate.exchange(url, HttpMethod.DELETE, null, ResponseDTO.class);
+            log.info(Constants.Logs.SRV_QUERY_RESPONSE, response.getStatusCode());
+        } catch (ResourceAccessException cex) {
+            log.error("Connect error while call eds query delete ep :" + cex);
+            throw new ConnectionRefusedException(microservicesURLCFG.getEdsQueryHost(),
+                    Constants.Logs.ERROR_CONNECTION_REFUSED);
+        }
+
+    }
+
+    @Override
+    public void fhirPublication(String masterIdentifier, String jsonString,
+            ProcessorOperationEnum processorOperationEnum) {
         log.info("[EDS QUERY] Calling EDS {} QUERY ep - START", processorOperationEnum.getName());
 
         String url;
@@ -119,20 +131,22 @@ public class EdsQueryClient implements IEdsQueryClient {
         }
 
         try {
-        	ResponseEntity<ResponseDTO> response = restTemplate.exchange(url, operationMethod, entity, ResponseDTO.class);
-        	ResponseDTO body = response.getBody();
-            if (body!=null && !body.isEsito()) {
+            ResponseEntity<ResponseDTO> response = restTemplate.exchange(url, operationMethod, entity,
+                    ResponseDTO.class);
+            ResponseDTO body = response.getBody();
+            if (body != null && !body.isEsito()) {
                 throw new BusinessException(body.getMessage());
             }
-        	log.info(Constants.Logs.SRV_QUERY_RESPONSE, response.getStatusCode());
-        } catch(ResourceAccessException cex) {
+            log.info(Constants.Logs.SRV_QUERY_RESPONSE, response.getStatusCode());
+        } catch (ResourceAccessException cex) {
             log.error("Connect error while call eds query publish ep :" + cex);
-            throw new ConnectionRefusedException(microservicesURLCFG.getEdsQueryHost(),Constants.Logs.ERROR_CONNECTION_REFUSED);
-        } catch(Exception ex) {
+            throw new ConnectionRefusedException(microservicesURLCFG.getEdsQueryHost(),
+                    Constants.Logs.ERROR_CONNECTION_REFUSED);
+        } catch (Exception ex) {
             log.error("Generic error while call eds query publish ep :" + ex);
             throw new BusinessException(ex.getMessage());
         }
- 
+
     }
-    
+
 }

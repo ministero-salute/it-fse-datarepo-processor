@@ -46,7 +46,7 @@ class EdsQueryClientTest {
         // Configure mock
         when(restTemplate.getForEntity(anyString(), eq(ResourceExistResDTO.class))).thenReturn(mockResponse);
         // Perform method
-        ResourceExistResDTO response = client.fhirCheckExist("test_id");
+        ResourceExistResDTO response = client.checkExist("test_id");
         // Assertion
         assertTrue(response.isExist());
     }
@@ -83,7 +83,7 @@ class EdsQueryClientTest {
         when(restTemplate.getForEntity(anyString(), eq(ResourceExistResDTO.class)))
                 .thenThrow(ResourceAccessException.class);
         // Assertion and perform fhirCheckExist
-        assertThrows(ResourceAccessException.class, () -> client.fhirCheckExist("masterIdentifier"));
+        assertThrows(ResourceAccessException.class, () -> client.checkExist("masterIdentifier"));
     }
 
 }

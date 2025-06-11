@@ -33,56 +33,62 @@ import it.finanze.sanita.fse2.ms.edssrvdataprocessor.service.IOrchestratorSRV;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Orchestrator Service Implementation 
+ * Orchestrator Service Implementation
  *
  */
 @Service
 @Slf4j
 public class OrchestratorSRV implements IOrchestratorSRV {
-	
-	/**
-	 * FHIR Operation Service 
-	 */
-	@Autowired
+
+    /**
+     * FHIR Operation Service
+     */
+    @Autowired
     private IFhirOperationSRV fhirOperationSRV;
 
-	/**
-	 * Document Repo 
-	 */
+    /**
+     * Document Repo
+     */
     @Autowired
     private IDocumentRepo documentRepo;
-    
+
     @Autowired
     private IAccreditamentoSimulationSRV accreditamentoSimulationSRV;
-    
+
     @Autowired
     private AccreditationSimulationCFG accreditamentoSimulationCFG;
 
     @Override
-    public void dispatchAction(ProcessorOperationEnum operationEnum, DispatchActionDTO dispatchActionDTO) throws NoRecordFoundException, OperationException {
+    public void dispatchAction(ProcessorOperationEnum operationEnum, DispatchActionDTO dispatchActionDTO)
+            throws NoRecordFoundException, OperationException {
+
         log.info("[EDS] Dispatching action from type received: {}", operationEnum.getName());
         FhirOperationDTO fhirOperationDTO;
+
         switch (operationEnum) {
             case PUBLISH:
                 fhirOperationDTO = extractFhirData(dispatchActionDTO.getMongoId());
-                if(accreditamentoSimulationCFG.isEnableCheck()) {
-                	accreditamentoSimulationSRV.runSimulation(fhirOperationDTO.getMasterIdentifier());
+                if (accreditamentoSimulationCFG.isEnableCheck()) {
+                    accreditamentoSimulationSRV.runSimulation(fhirOperationDTO.getMasterIdentifier());
                 }
-                
                 fhirOperationSRV.publish(fhirOperationDTO);
                 break;
+
             case UPDATE:
                 String jsonString = dispatchActionDTO.getDocumentReferenceDTO().getJsonString();
                 String masterIdentifier = dispatchActionDTO.getDocumentReferenceDTO().getIdentifier();
                 fhirOperationSRV.update(masterIdentifier, jsonString);
                 break;
+
             case REPLACE:
                 fhirOperationDTO = extractFhirData(dispatchActionDTO.getMongoId());
                 fhirOperationSRV.replace(fhirOperationDTO);
                 break;
+
             case DELETE:
                 fhirOperationSRV.delete(dispatchActionDTO.getDocumentReferenceDTO().getIdentifier());
                 break;
+
             default:
                 throw new UnsupportedOperationException("Operation not configured");
         }
@@ -90,8 +96,9 @@ public class OrchestratorSRV implements IOrchestratorSRV {
 
     /**
      * Extract FHIR data from staging DB
-     * @param mongoId  The Mongo ID of the document 
-     * @return FhirOperationDTO  A DTO representing the retrieved document 
+     * 
+     * @param mongoId The Mongo ID of the document
+     * @return FhirOperationDTO A DTO representing the retrieved document
      */
     private FhirOperationDTO extractFhirData(String mongoId) throws NoRecordFoundException, OperationException {
         IngestionStagingETY documentReferenceETY = documentRepo.findById(mongoId);
@@ -110,7 +117,7 @@ public class OrchestratorSRV implements IOrchestratorSRV {
                 .jsonString(jsonString)
                 .workflowInstanceId(documentReferenceETY.getWorkflowInstanceId())
                 .build();
-    } 
+    }
 
     public String getWorkflowInstanceId(String id) throws OperationException {
         Optional<IngestionStagingETY> entity = Optional.ofNullable(documentRepo.findById(id));
