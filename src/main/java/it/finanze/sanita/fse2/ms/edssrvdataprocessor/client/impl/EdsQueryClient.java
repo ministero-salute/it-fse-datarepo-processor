@@ -56,13 +56,14 @@ public class EdsQueryClient implements IEdsQueryClient {
     private MicroservicesURLCFG microservicesURLCFG;
 
     @Override
-    public ResourceExistResDTO checkExist(final String masterIdentifier) throws DocumentAlreadyExistsException {
+    public ResourceExistResDTO checkExist(String masterIdentifier, String rde)
+            throws DocumentAlreadyExistsException {
         log.debug("[EDS QUERY] Calling EDS check exist ep - START");
-
         ResponseEntity<ResourceExistResDTO> response = null;
+
         URI url = UriComponentsBuilder.fromUriString(microservicesURLCFG.getEdsQueryHost())
-                .path("/v1/document/check-exist/{id}")
-                .buildAndExpand(masterIdentifier)
+                .path("/v1/document/check-exist/{identifier}/{region}")
+                .buildAndExpand(masterIdentifier, rde)
                 .toUri();
 
         try {
@@ -99,7 +100,7 @@ public class EdsQueryClient implements IEdsQueryClient {
 
     @Override
     public void fhirPublication(String masterIdentifier, String jsonString,
-            ProcessorOperationEnum processorOperationEnum) {
+            ProcessorOperationEnum processorOperationEnum, String rde) {
         log.info("[EDS QUERY] Calling EDS {} QUERY ep - START", processorOperationEnum.getName());
 
         String url;
@@ -109,6 +110,7 @@ public class EdsQueryClient implements IEdsQueryClient {
         FhirPublicationDTO requestBody = new FhirPublicationDTO();
         requestBody.setIdentifier(masterIdentifier);
         requestBody.setJsonString(jsonString);
+        requestBody.setRegion(rde);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
         HttpEntity<?> entity = new HttpEntity<>(StringUtility.toJSON(requestBody), headers);

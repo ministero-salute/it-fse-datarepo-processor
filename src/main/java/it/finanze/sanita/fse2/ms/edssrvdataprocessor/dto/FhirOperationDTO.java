@@ -41,6 +41,11 @@ public class FhirOperationDTO {
      */
     private String workflowInstanceId;
 
+    /**
+     * Workflow instance id.
+     */
+    private String rde;
+
     public boolean isUATMock() {
         return masterIdentifier != null && masterIdentifier.contains("UAT_GTW_ID");
     }

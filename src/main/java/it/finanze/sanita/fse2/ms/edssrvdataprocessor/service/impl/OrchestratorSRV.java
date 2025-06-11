@@ -77,7 +77,8 @@ public class OrchestratorSRV implements IOrchestratorSRV {
             case UPDATE:
                 String jsonString = dispatchActionDTO.getDocumentReferenceDTO().getJsonString();
                 String masterIdentifier = dispatchActionDTO.getDocumentReferenceDTO().getIdentifier();
-                fhirOperationSRV.update(masterIdentifier, jsonString);
+                fhirOperationSRV.update(masterIdentifier, jsonString,
+                        dispatchActionDTO.getDocumentReferenceDTO().getRde());
                 break;
 
             case REPLACE:
@@ -112,10 +113,12 @@ public class OrchestratorSRV implements IOrchestratorSRV {
         }
         String masterIdentifier = documentReferenceETY.getIdentifier();
         String jsonString = documentReferenceETY.getDocument().toJson();
+        String rde = documentReferenceETY.getRde();
         return FhirOperationDTO.builder()
                 .masterIdentifier(masterIdentifier)
                 .jsonString(jsonString)
                 .workflowInstanceId(documentReferenceETY.getWorkflowInstanceId())
+                .rde(rde)
                 .build();
     }
 

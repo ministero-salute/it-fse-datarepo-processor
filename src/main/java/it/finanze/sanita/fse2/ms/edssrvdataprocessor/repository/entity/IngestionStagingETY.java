@@ -32,6 +32,7 @@ public class IngestionStagingETY {
 	public static final String FIELD_OPERATION = "operation";
 	public static final String FIELD_DOCUMENT = "document";
 	public static final String FIELD_WIF = "workflow_instance_id";
+	public static final String RDE = "rde";
 
 	/** 
 	 * Mongo ID  
@@ -62,5 +63,11 @@ public class IngestionStagingETY {
 	 */
 	@Field(FIELD_WIF)
 	private String workflowInstanceId;
+
+	/**
+	 * Document Organization ID.
+	 */
+	@Field(RDE)
+	private String rde;
 	
 }

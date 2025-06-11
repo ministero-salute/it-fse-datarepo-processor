@@ -29,7 +29,7 @@ public interface IFhirOperationSRV {
      * @param masterIdentifier  The master identifier of the document 
      * @param jsonString  The Json string of the document 
      */
-    void update(String masterIdentifier, String jsonString);
+    void update(String masterIdentifier, String jsonString, String rde);
 
     /**
      * Delete document on FHIR server

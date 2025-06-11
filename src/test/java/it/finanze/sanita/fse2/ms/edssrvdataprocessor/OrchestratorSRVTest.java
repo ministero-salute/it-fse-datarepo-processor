@@ -53,7 +53,8 @@ class OrchestratorSRVTest {
     void dispatchActionPublishTest() throws NoRecordFoundException, OperationException {
         // Data preparation
         DispatchActionDTO actionDto = new DispatchActionDTO();
-        DocumentReferenceDTO referenceDto = new DocumentReferenceDTO("test", ProcessorOperationEnum.PUBLISH, "test");
+        DocumentReferenceDTO referenceDto =
+                new DocumentReferenceDTO("test", ProcessorOperationEnum.PUBLISH, "test", "rde");
         actionDto.setMongoId("test");
         actionDto.setDocumentReferenceDTO(referenceDto);
         // Mock

@@ -86,7 +86,7 @@ class FhirOperationSRVTest {
         ResourceExistResDTO resourceDto = new ResourceExistResDTO(new LogTraceInfoDTO(null, null), false);
         ValidationResultDTO validationDto = new ValidationResultDTO();
         validationDto.setValid(true);
-        when(query.checkExist(dto.getMasterIdentifier())).thenReturn(resourceDto);
+        when(query.checkExist(dto.getMasterIdentifier(), dto.getRde())).thenReturn(resourceDto);
         when(dataQuality.validateBundleNormativeR4(dto)).thenReturn(validationDto);
         // Perform publish
         assertDoesNotThrow(() -> service.publish(dto));
@@ -108,7 +108,7 @@ class FhirOperationSRVTest {
         ValidationResultDTO validationDto = new ValidationResultDTO();
         validationDto.setValid(true);
         ResourceExistResDTO resourceDto = new ResourceExistResDTO(new LogTraceInfoDTO(null, null), true);
-        when(query.checkExist(dto.getMasterIdentifier())).thenReturn(resourceDto);
+        when(query.checkExist(dto.getMasterIdentifier(), dto.getRde())).thenReturn(resourceDto);
         when(dataQuality.validateBundleNormativeR4(dto)).thenReturn(validationDto);
         // Perform publish and assert exception
         assertThrows(DocumentAlreadyExistsException.class, () -> service.publish(dto));
@@ -126,7 +126,7 @@ class FhirOperationSRVTest {
         ValidationResultDTO validationDto = new ValidationResultDTO();
         validationDto.setValid(false);
         validationDto.setNormativeR4Messages(Arrays.asList("error1", "error2"));
-        when(query.checkExist(dto.getMasterIdentifier())).thenReturn(resourceDto);
+        when(query.checkExist(dto.getMasterIdentifier(), dto.getRde())).thenReturn(resourceDto);
         when(dataQuality.validateBundleNormativeR4(dto)).thenReturn(validationDto);
         // Perform publish and assert
         assertThrows(BusinessException.class, () -> service.publish(dto));
@@ -145,7 +145,7 @@ class FhirOperationSRVTest {
         ResourceExistResDTO resourceDto = new ResourceExistResDTO(new LogTraceInfoDTO(null, null), false);
         ValidationResultDTO validationDto = new ValidationResultDTO();
         validationDto.setValid(true);
-        when(query.checkExist(dto.getMasterIdentifier())).thenReturn(resourceDto);
+        when(query.checkExist(dto.getMasterIdentifier(), dto.getRde())).thenReturn(resourceDto);
         when(dataQuality.validateBundleNormativeR4(dto)).thenReturn(validationDto);
         // Perform publish
         assertDoesNotThrow(() -> service.replace(dto));
@@ -169,7 +169,7 @@ class FhirOperationSRVTest {
         validationDto.setValid(false);
         validationDto.setNormativeR4Messages(Arrays.asList("error1", "error2"));
         validationDto.setNotTraversedResources(Arrays.asList("error1", "error2"));
-        when(query.checkExist(dto.getMasterIdentifier())).thenReturn(resourceDto);
+        when(query.checkExist(dto.getMasterIdentifier(), dto.getRde())).thenReturn(resourceDto);
         when(dataQuality.validateBundleNormativeR4(dto)).thenReturn(validationDto);
         // Perform publish and assert
         assertThrows(UATMockException.class, () -> service.publish(dto));
@@ -190,7 +190,7 @@ class FhirOperationSRVTest {
         validationDto.setValid(false);
         validationDto.setNormativeR4Messages(Arrays.asList("error1", "error2"));
         validationDto.setNotTraversedResources(Arrays.asList("error1", "error2"));
-        when(query.checkExist(dto.getMasterIdentifier())).thenReturn(resourceDto);
+        when(query.checkExist(dto.getMasterIdentifier(), dto.getRde())).thenReturn(resourceDto);
         when(dataQuality.validateBundleNormativeR4(dto)).thenReturn(validationDto);
         // Perform publish and assert
         assertThrows(UATMockException.class, () -> service.replace(dto));
@@ -206,7 +206,8 @@ class FhirOperationSRVTest {
         dto.setMasterIdentifier("id_test");
         dto.setWorkflowInstanceId("wif_test");
         // Mock
-        when(query.checkExist(dto.getMasterIdentifier())).thenThrow(ResourceAccessException.class);
+        when(query.checkExist(dto.getMasterIdentifier(), dto.getRde()))
+                .thenThrow(ResourceAccessException.class);
         // Perform publish and assert exception
         assertThrows(ResourceAccessException.class, () -> service.publish(dto));
     }

@@ -72,7 +72,8 @@ public class FhirOperationSRV extends KafkaAbstractSRV implements IFhirOperation
     public void publish(final FhirOperationDTO dto) {
         log.info("[EDS] Publication - START");
         try {
-            ResourceExistResDTO response = queryClient.checkExist(dto.getMasterIdentifier());
+            ResourceExistResDTO response =
+                    queryClient.checkExist(dto.getMasterIdentifier(), dto.getRde());
             if (Boolean.FALSE.equals(response.isExist())) {
                 Date startDate = new Date();
                 ValidationResultDTO validatedData = dataQualityClient.validateBundleNormativeR4(dto);
@@ -82,7 +83,7 @@ public class FhirOperationSRV extends KafkaAbstractSRV implements IFhirOperation
                         throw new UATMockException(BLOCKING_ERROR, validatedData.getMessage());
                 }
                 queryClient.fhirPublication(dto.getMasterIdentifier(), dto.getJsonString(),
-                        ProcessorOperationEnum.PUBLISH);
+                        ProcessorOperationEnum.PUBLISH, dto.getRde());
                 transactionRepo.insert(from(dto.getWorkflowInstanceId(), ProcessorOperationEnum.PUBLISH));
                 documentRepo.deleteById(dto.getWorkflowInstanceId(), ProcessorOperationEnum.PUBLISH);
                 if (dto.isUATMock())
@@ -103,11 +104,12 @@ public class FhirOperationSRV extends KafkaAbstractSRV implements IFhirOperation
     }
 
     @Override
-    public void update(String masterIdentifier, String jsonString) {
+    public void update(String masterIdentifier, String jsonString, String rde) {
         log.info("[EDS] Update - START");
         try {
             // 1. Update document reference
-            queryClient.fhirPublication(masterIdentifier, jsonString, ProcessorOperationEnum.UPDATE);
+            queryClient.fhirPublication(masterIdentifier, jsonString, ProcessorOperationEnum.UPDATE,
+                    rde);
         } catch (Exception e) {
             throw new BusinessException("Error: failed to update document reference");
         }
@@ -136,7 +138,8 @@ public class FhirOperationSRV extends KafkaAbstractSRV implements IFhirOperation
                 if (dto.isUATMock())
                     throw new UATMockException(BLOCKING_ERROR, validatedData.getMessage());
             }
-            queryClient.fhirPublication(dto.getMasterIdentifier(), dto.getJsonString(), ProcessorOperationEnum.REPLACE);
+            queryClient.fhirPublication(dto.getMasterIdentifier(), dto.getJsonString(),
+                    ProcessorOperationEnum.REPLACE, dto.getRde());
             transactionRepo.insert(from(dto.getWorkflowInstanceId(), ProcessorOperationEnum.REPLACE));
             documentRepo.deleteById(dto.getWorkflowInstanceId(), ProcessorOperationEnum.REPLACE);
             if (dto.isUATMock())

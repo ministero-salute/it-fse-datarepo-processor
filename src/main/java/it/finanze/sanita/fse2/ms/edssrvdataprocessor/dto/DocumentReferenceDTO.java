@@ -52,5 +52,12 @@ public class DocumentReferenceDTO {
     @Size(min = DEFAULT_STRING_MIN_SIZE, max = DEFAULT_STRING_MAX_SIZE)
     private String jsonString;
 
+    /**
+     * RDE
+     */
+    @JsonProperty(value = "rde", required = false)
+    @Size(min = DEFAULT_STRING_MIN_SIZE, max = DEFAULT_STRING_MAX_SIZE)
+    private String rde;
+
 
 }

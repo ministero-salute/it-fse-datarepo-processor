@@ -27,7 +27,8 @@ public interface IEdsQueryClient {
      * @throws DocumentAlreadyExistsException An exception thrown when the document
      *                                        already exists on FHIR Server
      */
-    ResourceExistResDTO checkExist(String masterIdentifier) throws DocumentAlreadyExistsException;
+    ResourceExistResDTO checkExist(final String masterIdentifier, final String rde)
+            throws DocumentAlreadyExistsException;
 
     /**
      * Delete resource on FHIR server by masterIdentifier
@@ -45,5 +46,6 @@ public interface IEdsQueryClient {
      * @param processorOperationEnum The Enum that describes the operation to
      *                               execute
      */
-    void fhirPublication(String masterIdentifier, String jsonString, ProcessorOperationEnum processorOperationEnum);
+    void fhirPublication(String masterIdentifier, String jsonString,
+            ProcessorOperationEnum processorOperationEnum, String rde);
 }

@@ -91,16 +91,17 @@ class ProcessOperationSyncTest extends AbstractTest {
     private ProcessorOperationEnum TEST_OPERATION_UPDATE = ProcessorOperationEnum.UPDATE;
     private ProcessorOperationEnum TEST_OPERATION_DELETE = ProcessorOperationEnum.DELETE;
     private String TEST_JSON_STRING = "{\"test\": \"testString\"}";
+    private String TEST_RDE = "120";
 
     @Test
     @DisplayName("Update Sync - Success test")
     void processUpdateTest() throws Exception {
         // Data preparation
         DocumentReferenceDTO document = new DocumentReferenceDTO(TEST_IDENTIFIER, TEST_OPERATION_UPDATE,
-                        TEST_JSON_STRING);
+                        TEST_JSON_STRING, TEST_RDE);
         // Mock
         BDDMockito.doNothing().when(queryClient).fhirPublication(anyString(), anyString(),
-                any(ProcessorOperationEnum.class));
+                        any(ProcessorOperationEnum.class), anyString());
         // Perform
         mvc.perform(
                 postProcessReq(document)).andExpect(status().is2xxSuccessful());
@@ -111,7 +112,7 @@ class ProcessOperationSyncTest extends AbstractTest {
     void processDeleteTest() throws Exception {
         // Data preparation
         DocumentReferenceDTO document = new DocumentReferenceDTO(TEST_IDENTIFIER, TEST_OPERATION_DELETE,
-                        TEST_JSON_STRING);
+                        TEST_JSON_STRING, TEST_RDE);
         // Mock
         ResponseDTO responseDTO = new ResponseDTO();
         responseDTO.setEsito(true);
@@ -128,7 +129,7 @@ class ProcessOperationSyncTest extends AbstractTest {
     void processDeleteExceptionTest() throws Exception {
         // Data preparation
         DocumentReferenceDTO document = new DocumentReferenceDTO(TEST_IDENTIFIER, TEST_OPERATION_DELETE,
-                        TEST_JSON_STRING);
+                        TEST_JSON_STRING, TEST_RDE);
         // Mock
         Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.eq(HttpMethod.DELETE), Mockito.isNull(),
                 Mockito.eq(ResponseDTO.class)))
@@ -143,7 +144,7 @@ class ProcessOperationSyncTest extends AbstractTest {
     void processDeleteUnsupportedOperationExceptionTest() throws Exception {
         // Data preparation
         DocumentReferenceDTO document = new DocumentReferenceDTO(TEST_IDENTIFIER, TEST_OPERATION_DELETE,
-                        TEST_JSON_STRING);
+                        TEST_JSON_STRING, TEST_RDE);
         // Mock
         BDDMockito.doThrow(UnsupportedOperationException.class).when(orchestratorSRV)
                 .dispatchAction(any(ProcessorOperationEnum.class), any(DispatchActionDTO.class));
@@ -157,7 +158,7 @@ class ProcessOperationSyncTest extends AbstractTest {
     void processConnectionRefusedOperationExceptionTest() throws Exception {
         // Data preparation
         DocumentReferenceDTO document = new DocumentReferenceDTO(TEST_IDENTIFIER, TEST_OPERATION_DELETE,
-                        TEST_JSON_STRING);
+                        TEST_JSON_STRING, TEST_RDE);
         // Mock
         Mockito.when(restTemplate.exchange(Mockito.anyString(), Mockito.eq(HttpMethod.DELETE), Mockito.isNull(),
                 Mockito.eq(ResponseDTO.class)))
@@ -172,7 +173,7 @@ class ProcessOperationSyncTest extends AbstractTest {
     void processPublishEmptyMessageTest() throws Exception {
         // Data preparation
         DocumentReferenceDTO document = new DocumentReferenceDTO(TEST_IDENTIFIER, TEST_OPERATION_DELETE,
-                        TEST_JSON_STRING);
+                        TEST_JSON_STRING, TEST_RDE);
         // Mock
         BDDMockito.doThrow(ConnectionRefusedException.class).when(orchestratorSRV)
                 .dispatchAction(any(ProcessorOperationEnum.class), any(DispatchActionDTO.class));
