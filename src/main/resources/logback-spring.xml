@@ -6,6 +6,9 @@
 	<springProfile name="default">
 		<property file="application.properties" />
 	</springProfile>
+	<springProfile name="docker">
+		<property resource="application-docker.properties" />
+	</springProfile>
 	<springProfile name="dev">
 		<property resource="application-dev.properties" />
 	</springProfile>
